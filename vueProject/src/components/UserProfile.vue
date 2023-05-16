@@ -1,10 +1,11 @@
 <template>
     <div>
         <h2>User Profile</h2>
-        <button @click="login">Log in</button>
+        <button @click="loginGoogle">Log in with Google</button>
+        <button @click="loginMicrosoft">Log in with Microsoft</button>
         <pre v-if="user">
-        <code>{{ user }}</code>
-      </pre>
+            <code>{{ user }}</code>
+        </pre>
     </div>
 </template>
 
@@ -13,16 +14,24 @@ import { ref, inject } from 'vue';
 
 export default {
     setup() {
-        const userManager = inject('userManager');
+        const googleUserManager = inject('googleUserManager');
+        const microsoftUserManager = inject('microsoftUserManager');
         const user = ref(null);
 
-        userManager.getUser().then(u => {
+        googleUserManager.getUser().then(u => {
+            user.value = u;
+        });
+
+        microsoftUserManager.getUser().then(u => {
             user.value = u;
         });
 
         return {
-            login: () => {
-                userManager.signinRedirect();
+            loginGoogle: () => {
+                googleUserManager.signinRedirect();
+            },
+            loginMicrosoft: () => {
+                microsoftUserManager.signinRedirect();
             },
             user
         };
