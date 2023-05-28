@@ -3,21 +3,30 @@
       <v-row>
         <v-col cols="12" sm="6">
           <v-card class="pa-2">
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title class="headline">{{ profile.organization }}</v-list-item-title>
-                <v-list-item-subtitle>{{ profile.phoneNumber }}</v-list-item-subtitle>
-                <v-list-item-subtitle>
-                  <a :href="'http://' + profile.website">{{ profile.website }}</a>
-                </v-list-item-subtitle>
-                <v-list-item-subtitle>{{ profile.email }}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
+            <v-card-item>
+                <v-card-title>Organization Information</v-card-title>
+                <v-card-subtitle></v-card-subtitle>
+                <v-card-text>
+                    Phone Number
+                    <br>
+                    08-1234-5678
+                </v-card-text>
+                <v-card-text>
+                    Website
+                    <br>
+                    <a href="exampl.com">example.com</a>
+                </v-card-text>
+                <v-card-text>
+                    E-mail
+                    <br>
+                    example@gmail.com
+                </v-card-text>
+            </v-card-item>
           </v-card>
         </v-col>
         <v-col cols="12" sm="6">
           <v-card height="100%">
-            <!-- google maps plugin -->
+            Google Maps Plugin
           </v-card>
         </v-col>
       </v-row>
@@ -45,11 +54,9 @@
   };
   </script>
   
-  <style scoped>
-  .v-list-item-title,
-  .v-list-item-subtitle {
-    font-family: Arial, sans-serif;
-    color: #000061;
-  }
+  <style>
+    .v-list-item-subtitle {
+      border-top: 1em;
+    }
   </style>
   
