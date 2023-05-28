@@ -5,34 +5,27 @@
             <div class="circle circle2"></div>
             <div class="circle circle3"></div>
 
-            <!--            logo of the host down below. Question: where do we take it from since the user is not logged it and we don't know where to take the png from -->
             <v-card class="mx-auto" color="white" rounded="lg" max-width="500">
-                <!--                <v-img-->
-                <!--                        src="cube-customer-portal/src/assets/solidPartnersLogo.png"/>-->
-
                 <v-card-title class="text-center">Log in with one of the providers:</v-card-title>
 
-                <!--                HERE: functionality to be added to handle the login process-->
                 <v-card-actions class="justify-center">
-
-                    <!--                    LOGIN PROCESS: router link should work only if the user has the token already-->
-                    <router-link style="text-decoration: none" :to="{name: 'account'}">
-                        <v-btn
-                                variant="outlined"
-                                style="border: 1px solid darkblue; border-radius: 50%;"
-                                icon="mdi-google"
-                        >
-                            <v-icon size="large" icon ="mdi-google"></v-icon>
-                        </v-btn></router-link>
+                    <v-btn
+                        variant="outlined"
+                        style="border: 1px solid darkblue; border-radius: 50%;"
+                        icon="mdi-google"
+                        @click="loginGoogle"
+                    >
+                        <v-icon size="large" icon="mdi-google"></v-icon>
+                    </v-btn>
                     <div>
-                        <router-link style="text-decoration: none" :to="{name: 'account'}">
-                            <v-btn class="mx-2"
-                                   variant="outlined"
-                                   style="border: 1px solid darkblue; border-radius: 50%;"
-                                   icon="mdi-microsoft-windows"
-                            >
-                                <v-icon size="large" icon="mdi-microsoft-windows"></v-icon>
-                            </v-btn></router-link>
+                        <v-btn class="mx-2"
+                               variant="outlined"
+                               style="border: 1px solid darkblue; border-radius: 50%;"
+                               icon="mdi-microsoft-windows"
+                               @click="loginMicrosoft"
+                        >
+                            <v-icon size="large" icon="mdi-microsoft-windows"></v-icon>
+                        </v-btn>
                     </div>
                 </v-card-actions>
             </v-card>
@@ -41,13 +34,59 @@
 </template>
 
 <script>
+import { ref, inject, onMounted } from 'vue';
+import axios from 'axios';
 
 export default {
     name: 'LoginPage',
     setup() {
-        return {};
-    },
-}
+        const googleUserManager = inject('googleUserManager');
+        const microsoftUserManager = inject('microsoftUserManager');
+        const user = ref(null);
+
+        googleUserManager.getUser().then(u => {
+            user.value = u;
+        });
+
+        microsoftUserManager.getUser().then(u => {
+            user.value = u;
+        });
+
+        onMounted(async () => {
+            if (window.location.href.indexOf('code=') > -1 && window.location.href.indexOf('state=') > -1) {
+                if(window.location.href.indexOf('google') > -1) {
+                    googleUserManager.signinRedirectCallback().then(async loggedInUser => {
+                        console.log(loggedInUser);
+                        user.value = loggedInUser;
+
+                        const data = {
+                            ap: "string",
+                            token: loggedInUser.id_token,
+                            email: loggedInUser.profile.email
+                        };
+
+                        const res = await axios.post('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/login', data);
+                        localStorage.setItem('authToken', res.data.token);
+                        this.$router.push({name: 'account'});
+
+                    }).catch(err => {
+                        console.error(err);
+                    });
+                }
+            }
+        });
+
+        return {
+            loginGoogle: () => {
+                googleUserManager.signinRedirect();
+            },
+            loginMicrosoft: () => {
+                microsoftUserManager.signinRedirect();
+            },
+            user
+        };
+    }
+};
 </script>
 
 <style scoped>
