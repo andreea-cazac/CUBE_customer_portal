@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <v-row class="mb-5 pa-5">
+        <v-row class="mb-5 pa-5 text-color">
             <v-col>
                 <h1>Profile</h1>
             </v-col>
