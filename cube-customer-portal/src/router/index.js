@@ -19,11 +19,6 @@ const routes = [
     component: Login
   },
   {
-    path: '/profile',
-    name: Profile,
-    component: Profile
-  },
-  {
     path: '/account',
     name: 'account',
     component: Account,
@@ -32,6 +27,11 @@ const routes = [
         path: 'tickets',
         name: 'tickets',
         component: Tickets,
+      },
+      {
+        path: 'profile',
+        name: 'profile',
+        component: Profile
       },
       {
         path: 'teams',
