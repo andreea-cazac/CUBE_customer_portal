@@ -86,6 +86,7 @@ export default {
 
                     if (response.ok) {
                         const responseData = await response.json();
+                        console.log("bob " + JSON.stringify(response));
                         localStorage.setItem('authToken', responseData.token);
                         this.$router.push({name: 'account'});
                     } else {
