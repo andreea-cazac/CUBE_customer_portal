@@ -54,7 +54,12 @@ export default {
         onMounted(async () => {
             if (window.location.href.indexOf('code=') > -1 && window.location.href.indexOf('state=') > -1) {
                 if(window.location.href.indexOf('google') > -1) {
-                    // Your code...
+                    googleUserManager.signinRedirectCallback().then(loggedInUser => {
+                        console.log(loggedInUser);  // the user object contains the tokens and profile
+                        user.value = loggedInUser; // If Google user logged in, set user to Google user
+                    }).catch(err => {
+                        console.error(err);
+                    });
                 }
             }
         });
