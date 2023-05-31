@@ -35,6 +35,8 @@
 
 <script>
 import { ref, inject, onMounted } from 'vue';
+import {useRouter} from "vue-router";
+
 
 export default {
     name: 'LoginPage',
@@ -42,6 +44,7 @@ export default {
         const googleUserManager = inject('googleUserManager');
         const microsoftUserManager = inject('microsoftUserManager');
         const user = ref(null);
+        const router = useRouter();
 
         googleUserManager.getUser().then(u => {
             user.value = u;
@@ -54,9 +57,44 @@ export default {
         onMounted(async () => {
             if (window.location.href.indexOf('code=') > -1 && window.location.href.indexOf('state=') > -1) {
                 if(window.location.href.indexOf('google') > -1) {
-                    googleUserManager.signinRedirectCallback().then(loggedInUser => {
+                    googleUserManager.signinRedirectCallback().then(async loggedInUser => {
                         console.log(loggedInUser);  // the user object contains the tokens and profile
                         user.value = loggedInUser; // If Google user logged in, set user to Google user
+
+                        if (loggedInUser) {
+                            try {
+                              console.log("Logged in Google");
+                                // user.value = account;
+
+                                const data = {
+                                    ap: "string",
+                                    token: loggedInUser.id_token,
+                                    email: loggedInUser.profile.email
+                                };
+                                console.log(data);
+                                const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
+                                    method: 'POST',
+                                    body: JSON.stringify(data)
+                                });
+                                console.log("Response sent");
+                                if (response.ok) {
+                                    const responseData = await response.json();
+                                    console.log("bob " + JSON.stringify(responseData));
+
+                            //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
+                                    localStorage.setItem('authToken', responseData.token);
+
+                                    // check if token is not null or undefined
+                                    if(responseData.token ){
+                                        router.push('/account');
+                                    }
+                                } else {
+                                    console.error('Response failed');
+                                }
+                            } catch (err) {
+                                console.error(err);
+                            }
+                        }
                     }).catch(err => {
                         console.error(err);
                     });
@@ -69,32 +107,7 @@ export default {
                 googleUserManager.signinRedirect();
             },
             loginMicrosoft: async () => {
-                try {
-                    const account = await microsoftUserManager.signIn();
-                    user.value = account;
 
-                    const data = {
-                        ap: "string",
-                        token: account.idToken,
-                        email: account.username
-                    };
-
-                    const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/login', {
-                        method: 'POST',
-                        body: JSON.stringify(data)
-                    });
-
-                    if (response.ok) {
-                        const responseData = await response.json();
-                        console.log("bob " + JSON.stringify(response));
-                        localStorage.setItem('authToken', responseData.token);
-                        this.$router.push({name: 'account'});
-                    } else {
-                        console.error('Response failed');
-                    }
-                } catch(err) {
-                    console.error(err);
-                }
             },
             user
         };
