@@ -35,7 +35,6 @@
 
 <script>
 import { ref, inject, onMounted } from 'vue';
-import axios from 'axios';
 
 export default {
     name: 'LoginPage',
@@ -55,23 +54,7 @@ export default {
         onMounted(async () => {
             if (window.location.href.indexOf('code=') > -1 && window.location.href.indexOf('state=') > -1) {
                 if(window.location.href.indexOf('google') > -1) {
-                    googleUserManager.signinRedirectCallback().then(async loggedInUser => {
-                        console.log(loggedInUser);
-                        user.value = loggedInUser;
-
-                        const data = {
-                            ap: "string",
-                            token: loggedInUser.id_token,
-                            email: loggedInUser.profile.email
-                        };
-
-                        const res = await axios.post('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/login', data);
-                        localStorage.setItem('authToken', res.data.token);
-                        this.$router.push({name: 'account'});
-
-                    }).catch(err => {
-                        console.error(err);
-                    });
+                    // Your code...
                 }
             }
         });
@@ -80,8 +63,32 @@ export default {
             loginGoogle: () => {
                 googleUserManager.signinRedirect();
             },
-            loginMicrosoft: () => {
-                microsoftUserManager.signinRedirect();
+            loginMicrosoft: async () => {
+                try {
+                    const account = await microsoftUserManager.signIn();
+                    user.value = account;
+
+                    const data = {
+                        ap: "string",
+                        token: account.idToken,
+                        email: account.username
+                    };
+
+                    const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/login', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        localStorage.setItem('authToken', responseData.token);
+                        this.$router.push({name: 'account'});
+                    } else {
+                        console.error('Response failed');
+                    }
+                } catch(err) {
+                    console.error(err);
+                }
             },
             user
         };
