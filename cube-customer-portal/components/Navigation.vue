@@ -13,12 +13,12 @@
       <v-menu location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn variant="flat" class="bg-grey-lighten-3 text-grey" size="small" v-bind="props" >
-            <span class="d-none d-sm-flex ma-3">Active Relation BV</span>
+            <span class="d-none d-sm-flex ma-3">{{ activeRelation.name }}</span>
             <v-icon class="ma-1">mdi-account-switch-outline</v-icon>
           </v-btn>
         </template>
-        <v-list-item v-for="item in items" :key="item.index" :href='item.route' >
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        <v-list-item v-for="(item, index) in relations" :key="index" @click="selectRelation(item)" >
+          <v-list-item-title>{{ item.name }}</v-list-item-title>
         </v-list-item>
       </v-menu>
 
@@ -69,7 +69,33 @@
 
 <script>
 
+import {useRelationsStore} from '@/stores/relations.js';
+import {useActiveRelationStore} from '@/stores/activeRelation.js';
+import {computed, ref} from "vue";
+
+
 export default {
+  setup() {
+    // relations for the dropdown
+    const relationsStore = useRelationsStore();
+    const relations = relationsStore.getRelations;
+
+    const activeRelationStore = useActiveRelationStore();
+    const activeRelationStoreRef = ref(activeRelationStore);
+
+    const selectRelation = (relation) => {
+      activeRelationStoreRef.value.setActiveRelation(relation);
+    };
+
+    const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
+
+    return {
+      relations,
+      activeRelation,
+      activeRelationStore: activeRelationStoreRef, // Expose the store ref
+      selectRelation,
+    }
+  },
   data() {
     return {
       drawer: true,
