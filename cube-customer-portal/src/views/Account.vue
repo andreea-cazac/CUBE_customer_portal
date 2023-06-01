@@ -9,18 +9,52 @@
 <!--      <router-link style="text-decoration: none" :to="{name: 'teams'}"><v-btn>Teams</v-btn></router-link>-->
 <!--    </ul>-->
 
-    <router-view></router-view>
+      <!-- Displaying relations here -->
+      <div>
+          <v-btn v-for="(relation, index) in relations" :key="index" @click="selectRelation(relation)">
+              {{ relation.name }}
+          </v-btn>
+
+<div v-if="selectedRelation">
+              <h2>Selected Relation: {{selectedRelation.name }}</h2>
+              <h3>Permissions:</h3>
+          <ul>
+              <li v-for="(permission, index) in selectedRelation.permissions" :key="index">
+                  {{ permission }}
+              </li>
+          </ul>
+      </div>
+      </div>
   </div>
 </template>
 
 <script>
-import Navigation from '/components/Navigation.vue'
+import {useRelationsStore} from '../stores/relations.js';
+import {ref, watch} from 'vue';
+export default {
+    setup(){
+        const relationsStore = useRelationsStore();
+        const relations = relationsStore.getRelations;
+        let selectedRelation = ref(null);
 
-export default{
-  name: 'App',
-  components: {
-    Navigation
-  }
+        watch(relations, (newRelations) => {
+            // check if newRelations array is not empty before assigning
+            if (newRelations.length > 0) {
+                selectedRelation.value = newRelations[0];
+            }
+        }, { immediate: true });  // { immediate: true } ensures the watcher runs immediately after setup
+
+        const selectRelation = (relation) => {
+            selectedRelation.value = relation;
+        }
+
+
+        return {
+            relations,
+            selectedRelation,
+            selectRelation
+        }
+    }
 }
 </script>
 
