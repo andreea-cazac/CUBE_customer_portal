@@ -52,12 +52,13 @@
 
       <v-list>
         <v-list-item
-            v-for="link in links"
+            v-for="link in permittedPages"
             :key="link.text"
             router
             :to="link.route"
         >
           <v-list-item-action>
+
             <v-icon class="text-white mx-3">{{ link.icon }}</v-icon>
             <v-list-item-title class="text-white">{{ link.text }}</v-list-item-title>
           </v-list-item-action>
@@ -82,38 +83,39 @@ export default {
 
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
+    const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation); // always up to date
 
     const selectRelation = (relation) => {
       activeRelationStoreRef.value.setActiveRelation(relation);
     };
 
-    const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
+
+    const pages = [
+      { icon: "mdi-view-dashboard", text: "Dashboard", route: "/account/dashboard"},
+      { icon: "mdi-account", text: "Profile", route: "/account/profile" },
+      { icon: "mdi-clipboard-text", text: "Tickets", route: "/account/tickets", permission:"show_tickets" },
+      { icon: "mdi-receipt", text: "Invoices", route: "/account/invoices", permission:"show_invoices"},
+      { icon: "mdi-toolbox-outline", text: "Services", route: "/account/services", permission:"show_services"},
+      { icon: "mdi-account-group", text: "Team", route: "/account/teams", permission:"show_team"}
+    ];
+    const permittedPages = computed(() => {
+      const activePermissions = activeRelation.value.permissions;
+      return pages.filter((page) => activePermissions.includes(page.permission) || !page.permission);
+    });
 
     return {
       relations,
       activeRelation,
-      activeRelationStore: activeRelationStoreRef, // Expose the store ref
       selectRelation,
+      permittedPages
     }
   },
   data() {
     return {
       drawer: true,
-      links: [
-        { icon: "mdi-view-dashboard", text: "Dashboard", route: "/account/dashboard" },
-        { icon: "mdi-account", text: "Profile", route: "/account/profile" },
-        { icon: "mdi-clipboard-text", text: "Tickets", route: "/account/tickets" },
-        { icon: "mdi-receipt", text: "Invoices", route: "/account/invoices" },
-        { icon: "mdi-toolbox-outline", text: "Services", route: "/account/services" },
-        { icon: "mdi-account-group", text: "Team", route: "/account/teams" }
-      ],
       languages: [
         {title: 'English', route: 'https://translate.google.com/'},
         {title: 'Nederlands', route: 'https://translate.google.com/'},
-      ],
-      items: [
-        {title: 'Saxion', route: 'https://mijn.saxion.nl/'},
-        {title: 'Solid Partners', route: 'https://mijn-t.solidpartners.nl/'}
       ]
     };
   },
