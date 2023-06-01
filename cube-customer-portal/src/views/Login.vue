@@ -36,7 +36,8 @@
 <script>
 import { ref, inject, onMounted } from 'vue';
 import {useRouter} from "vue-router";
-
+import {useRelationsStore} from '../stores/relations.js'
+import {useUserStore} from '../stores/userStore.js'
 
 export default {
     name: 'LoginPage',
@@ -45,6 +46,8 @@ export default {
         const microsoftUserManager = inject('microsoftUserManager');
         const user = ref(null);
         const router = useRouter();
+        const relationsStore = useRelationsStore(); // use Vuex store
+        const userStore = useUserStore(); // use Vuex store
 
         googleUserManager.getUser().then(u => {
             user.value = u;
@@ -58,37 +61,41 @@ export default {
             if (window.location.href.indexOf('code=') > -1 && window.location.href.indexOf('state=') > -1) {
                 if(window.location.href.indexOf('google') > -1) {
                     googleUserManager.signinRedirectCallback().then(async loggedInUser => {
-                        console.log(loggedInUser);  // the user object contains the tokens and profile
                         user.value = loggedInUser; // If Google user logged in, set user to Google user
 
                         if (loggedInUser) {
                             try {
-                              console.log("Logged in Google");
-                                // user.value = account;
 
                                 const data = {
                                     ap: "string",
                                     token: loggedInUser.id_token,
                                     email: loggedInUser.profile.email
                                 };
-                                console.log(data);
+
                                 const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
                                     method: 'POST',
                                     body: JSON.stringify(data)
                                 });
-                                console.log("Response sent");
+
                                 if (response.ok) {
                                     const responseData = await response.json();
-                                    console.log("bob " + JSON.stringify(responseData));
 
-                            //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
-                                    localStorage.setItem('authToken', responseData.token);
+if(responseData) {
+    // Step 1: Store relations in localStorage
+    const newRelations = responseData.relations.map(relation => ({
+        id: relation.id,
+        name: relation.name,
+        permissions: relation.permissions
+    }));
 
-                                    // check if token is not null or undefined
-                                    if(responseData.token ){
-                                        router.push('/account');
-                                    }
-                                } else {
+    userStore.setToken(responseData.token);
+    relationsStore.setRelations(newRelations);
+
+    // check if token is not null or undefined
+    if (userStore.getToken) {
+        router.push('/account');
+    }
+}} else {
                                     console.error('Response failed');
                                 }
                             } catch (err) {
