@@ -37,6 +37,7 @@
 import { ref, inject, onMounted } from 'vue';
 import {useRouter} from "vue-router";
 import {useRelationsStore} from '../stores/relations.js'
+import {useActiveRelationStore} from '../stores/activeRelation'
 import {useUserStore} from '../stores/userStore.js'
 
 export default {
@@ -47,6 +48,7 @@ export default {
         const user = ref(null);
         const router = useRouter();
         const relationsStore = useRelationsStore(); // use Vuex store
+        const activeRelationStore = useActiveRelationStore(); // use Vuex store
         const userStore = useUserStore(); // use Vuex store
 
         googleUserManager.getUser().then(u => {
@@ -90,10 +92,11 @@ if(responseData) {
 
     userStore.setToken(responseData.token);
     relationsStore.setRelations(newRelations);
+    activeRelationStore.setActiveRelation(newRelations[0]);
 
     // check if token is not null or undefined
     if (userStore.getToken) {
-        router.push('/account');
+        router.push('/account/dashboard');
     }
 }} else {
                                     console.error('Response failed');
