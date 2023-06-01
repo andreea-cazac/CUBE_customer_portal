@@ -82,7 +82,7 @@ export default {
                                     console.log("bob " + JSON.stringify(responseData));
 
                             //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
-                                    localStorage.setItem('authToken', responseData.token);
+                                //    localStorage.setItem('authToken', responseData.token);
 
                                     // check if token is not null or undefined
                                     if(responseData.token ){
@@ -107,7 +107,42 @@ export default {
                 googleUserManager.signinRedirect();
             },
             loginMicrosoft: async () => {
+                try {
+                    const loggedInUser = await microsoftUserManager.signIn();
+                    console.log(loggedInUser); // the user object contains the tokens and profile
+                    user.value = loggedInUser; // If Microsoft user logged in, set user to Microsoft user
+                    const email = loggedInUser.idTokenClaims;
 
+                    if (loggedInUser) {
+                        const data = {
+                            ap: "string",
+                            token: loggedInUser.idToken, // Access the idToken from the Microsoft user
+                            email: email.preferred_username// Access the email from the Microsoft user
+                        };
+                        console.log(data);
+                        const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
+                            method: 'POST',
+                            body: JSON.stringify(data)
+                        });
+                        console.log("Response sent");
+                        if (response.ok) {
+                            const responseData = await response.json();
+                            console.log("bobicel " + JSON.stringify(responseData));
+
+                            //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
+                          //  localStorage.setItem('authToken', responseData.token);
+
+                            // check if token is not null or undefined
+                            if(responseData.token ){
+                                router.push('/account');
+                            }
+                        } else {
+                            console.error('Response failed');
+                        }
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
             },
             user
         };
