@@ -6,6 +6,7 @@ import Invoices from '../views/Invoices.vue'
 import Teams from '../views/Teams.vue'
 import Services from '../views/Services.vue'
 import Profile from "../views/Profile.vue"
+import Dashboard from "../views/Dashboard.vue"
 
 const routes = [
   {
@@ -47,6 +48,11 @@ const routes = [
         path: 'services',
         name: 'services',
         component: Services
+      },
+      {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: Dashboard
       }
     ]
   }
