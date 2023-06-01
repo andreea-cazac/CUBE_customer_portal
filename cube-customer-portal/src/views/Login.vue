@@ -79,7 +79,6 @@ export default {
                                 console.log("Response sent");
                                 if (response.ok) {
                                     const responseData = await response.json();
-                                    console.log("bob " + JSON.stringify(responseData));
 
                             //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
                                 //    localStorage.setItem('authToken', responseData.token);
@@ -127,7 +126,6 @@ export default {
                         console.log("Response sent");
                         if (response.ok) {
                             const responseData = await response.json();
-                            console.log("bobicel " + JSON.stringify(responseData));
 
                             //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
                           //  localStorage.setItem('authToken', responseData.token);
