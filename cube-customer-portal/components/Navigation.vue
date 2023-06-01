@@ -72,12 +72,12 @@
 export default {
   data() {
     return {
-      drawer: false,
+      drawer: true,
       links: [
-        { icon: "mdi-view-dashboard", text: "Dashboard", route: "/account" },
+        { icon: "mdi-view-dashboard", text: "Dashboard", route: "/account/dashboard" },
         { icon: "mdi-account", text: "Profile", route: "/account/profile" },
         { icon: "mdi-clipboard-text", text: "Tickets", route: "/account/tickets" },
-        { icon: "mdi-receipt-text-clock", text: "Invoices", route: "/account/invoices" },
+        { icon: "mdi-receipt", text: "Invoices", route: "/account/invoices" },
         { icon: "mdi-toolbox-outline", text: "Services", route: "/account/services" },
         { icon: "mdi-account-group", text: "Team", route: "/account/teams" }
       ],
