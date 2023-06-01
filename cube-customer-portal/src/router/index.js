@@ -5,6 +5,7 @@ import Tickets from '../views/Tickets.vue'
 import Invoices from '../views/Invoices.vue'
 import Teams from '../views/Teams.vue'
 import Services from '../views/Services.vue'
+import Profile from "../views/Profile.vue"
 
 const routes = [
   {
@@ -26,6 +27,11 @@ const routes = [
         path: 'tickets',
         name: 'tickets',
         component: Tickets,
+      },
+      {
+        path: 'profile',
+        name: 'profile',
+        component: Profile
       },
       {
         path: 'teams',
