@@ -1,6 +1,7 @@
 <template>
   <Navigation/>
   <div class="account ma-5">
+    <router-view></router-view>
 
 <!--    <ul>-->
 <!--      <router-link style="text-decoration: none" :to="{name: 'tickets'}"><v-btn class="ma-3">Tickets</v-btn></router-link>-->
@@ -29,10 +30,13 @@
 </template>
 
 <script>
+
 import {useRelationsStore} from '../stores/relations.js';
 import {ref, watch} from 'vue';
+import Navigation from '../../components/Navigation.vue';
 export default {
-    setup(){
+  components: {Navigation},
+  setup(){
         const relationsStore = useRelationsStore();
         const relations = relationsStore.getRelations;
         let selectedRelation = ref(null);
