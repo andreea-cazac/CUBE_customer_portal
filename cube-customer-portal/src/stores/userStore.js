@@ -2,7 +2,7 @@ import {defineStore} from "pinia";
 
 export const useUserStore = defineStore('userStore', {
     state: () => ({
-        token: '',
+        token: sessionStorage.getItem("token") || "",
     }),
 
     getters: {
@@ -10,8 +10,9 @@ export const useUserStore = defineStore('userStore', {
     },
 
     actions: {
-        setToken(token){
+        setToken(token) {
             this.token = token;
-        }
-    }
+            sessionStorage.setItem("token", token); // Save token to sessionStorage
+        },
+    },
 })

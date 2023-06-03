@@ -143,7 +143,7 @@ if(responseData) {
 
                             // check if token is not null or undefined
                             if(responseData.token ){
-                                router.push('/account');
+                                router.push('/account/dashboard');
                             }
                         } else {
                             console.error('Response failed');
