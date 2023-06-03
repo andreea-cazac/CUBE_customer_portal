@@ -13,7 +13,7 @@
       <v-menu location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn variant="flat" class="bg-grey-lighten-3 text-grey" size="small" v-bind="props" >
-            <span class="d-none d-sm-flex ma-3">{{ activeRelation.name }}</span>
+            <span v-if="activeRelation" class="d-none d-sm-flex ma-3">{{ activeRelation.name }}</span>
             <v-icon class="ma-1">mdi-account-switch-outline</v-icon>
           </v-btn>
         </template>
@@ -50,7 +50,7 @@
       </v-row>
 
 
-      <v-list>
+      <v-list v-if="permittedPages">
         <v-list-item
             v-for="link in permittedPages"
             :key="link.text"
@@ -99,8 +99,12 @@ export default {
       { icon: "mdi-account-group", text: "Team", route: "/account/teams", permission:"show_team"}
     ];
     const permittedPages = computed(() => {
-      const activePermissions = activeRelation.value.permissions;
+      let activePermissions="";
+      if(activeRelation.value.permissions){
+        activePermissions = activeRelation.value.permissions;
+      }
       return pages.filter((page) => activePermissions.includes(page.permission) || !page.permission);
+
     });
 
     return {

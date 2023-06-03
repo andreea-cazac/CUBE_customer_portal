@@ -10,7 +10,7 @@
 
 import {useRelationsStore} from '../stores/relations.js';
 import {computed, ref, watch} from 'vue';
-import Navigation from '../../components/Navigation.vue';
+import Navigation from '../components/Navigation.vue';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 export default {
   components: {Navigation},
@@ -24,8 +24,9 @@ export default {
 
 
         watch(relations, (newRelations) => {
-            // check if newRelations array is not empty before assigning
-            if (newRelations.length > 0) {
+
+          // check if newRelations array is not empty before assigning
+            if (newRelations && newRelations.length > 0) {
                 selectedRelation.value = newRelations[0];
             }
         }, { immediate: true });  // { immediate: true } ensures the watcher runs immediately after setup
