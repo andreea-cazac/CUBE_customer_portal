@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import Navigation from '/src/components/Navigation.vue'
 
 import {useRelationsStore} from '../stores/relations.js';
 import {computed, ref, watch} from 'vue';
