@@ -27,7 +27,7 @@
       </v-col>
 
       <!-- google maps -->
-      <v-col cols="15" sm="6">
+      <v-col cols="12" sm="6">
         <v-row>
           <v-card class="mb-5 w-100" v-for="address in profile.addresses" :key="address.id">
             <v-card-title>
@@ -35,7 +35,7 @@
               <br>
               {{ address.zipcode }}, {{ address.city }}, {{ address.country.name }}
             </v-card-title>
-            <iframe :src="`https://www.google.com/maps/embed/v1/place?key=${process.env.VUE_APP_GOOGLE_MAPS_API_KEY}&q=${address.geoLocation.lat},${address.geoLocation.lng}`" width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            <iframe v-if="address.geoLocation" :src="`https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${address.geoLocation.lat},${address.geoLocation.lng}`" width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
           </v-card>
         </v-row>
       </v-col>
@@ -46,10 +46,13 @@
 <script>
 import axios from 'axios';
 
+
+
 export default {
   data() {
     return {
       profile: {},
+      apiKey: '',
     };
   },
   async created() {
@@ -72,7 +75,7 @@ export default {
     async getGeoInfo(address) {
       try {
         const response = await axios.get(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.VUE_APP_GOOGLE_MAPS_API_KEY}`
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${this.apiKey}`
         );
         if (response.data.results[0]) {
           const location = response.data.results[0].geometry.location;
