@@ -6,6 +6,7 @@ import Invoices from '../views/Invoices.vue'
 import Teams from '../views/Teams.vue'
 import Services from '../views/Services.vue'
 import Profile from "../views/Profile.vue"
+import TicketDetails from "../views/TicketDetails.vue";
 import Dashboard from "../views/Dashboard.vue"
 
 const routes = [
@@ -28,6 +29,11 @@ const routes = [
         path: 'tickets',
         name: 'tickets',
         component: Tickets,
+      },
+      {
+        path: 'tickets/:id',
+        name: 'ticketDetails',
+        component: TicketDetails
       },
       {
         path: 'profile',
@@ -54,6 +60,7 @@ const routes = [
         name: 'dashboard',
         component: Dashboard
       }
+
     ]
   }
 ]
