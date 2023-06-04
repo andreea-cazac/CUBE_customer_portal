@@ -21,23 +21,23 @@
             </v-card>
           </v-col>
 
-          <v-col cols="12" sm="6" md="5" lg="4">
-            <v-card class="text-center ma-1 bg-grey-lighten-3" border>
-              <v-card-item>
-                <div>
-                  <div class="text-h5 mt-5 font-weight-light">Invoices: 5</div>
-                </div>
-              </v-card-item>
-              <v-card-actions class="justify-center px-6 py-3">
-                <router-link to="/account/invoices">
-                <v-btn class="bg-grey-lighten-1">
-                  <span class="text-white" >See all invoices</span>
-                  <v-icon end size="large" color="white">mdi-menu-right-outline</v-icon>
-                </v-btn>
-                </router-link>
-              </v-card-actions>
-            </v-card>
-          </v-col>
+<!--          <v-col cols="12" sm="6" md="5" lg="4">-->
+<!--            <v-card class="text-center ma-1 bg-grey-lighten-3" border>-->
+<!--              <v-card-item>-->
+<!--                <div>-->
+<!--                  <div class="text-h5 mt-5 font-weight-light">Invoices: 5</div>-->
+<!--                </div>-->
+<!--              </v-card-item>-->
+<!--              <v-card-actions class="justify-center px-6 py-3">-->
+<!--                <router-link to="/account/invoices">-->
+<!--                <v-btn class="bg-grey-lighten-1">-->
+<!--                  <span class="text-white" >See all invoices</span>-->
+<!--                  <v-icon end size="large" color="white">mdi-menu-right-outline</v-icon>-->
+<!--                </v-btn>-->
+<!--                </router-link>-->
+<!--              </v-card-actions>-->
+<!--            </v-card>-->
+<!--          </v-col>-->
         </v-row>
       </v-container>
 
@@ -69,13 +69,13 @@
           <v-col cols="6" md="2">
             <div class="caption text-grey-darken-1 ">Priority</div>
 <!--            <div class="text-grey-darken-3">{{ ticket.priority }}</div>-->
-            <v-chip :class="`${ticket.priority} text-white`">{{ ticket.priority }}</v-chip>
+            <v-chip :class="`${ticket.priority} text-white status-badge`">{{ ticket.priority }}</v-chip>
           </v-col>
 
-          <v-col cols="6" md="2" class="text-center">
+          <v-col cols="6" md="2" class="">
              <div class="caption text-grey-darken-1">Status</div>
             <div>
-              <v-chip :class="`${ticket.status} text-white `">{{ ticket.status }}</v-chip>
+              <v-chip :class="`${ticket.status} text-white status-badge`">{{ ticket.status }}</v-chip>
             </div>
           </v-col>
 
@@ -140,6 +140,17 @@ export default {
 
 
 <style>
+.status-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 90px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+}
 .Done {
   border-left: 5px solid rgb(31, 187, 31);
 }

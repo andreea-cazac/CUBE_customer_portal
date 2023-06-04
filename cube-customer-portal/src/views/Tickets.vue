@@ -107,12 +107,12 @@
         <td>{{ item.title }}</td>
         <td>{{ item.date }}</td>
         <td>
-          <div :class="{'bg-green': item.priority === 'Low', 'bg-red': item.priority === 'High', 'bg-yellow': item.priority === 'Medium'}" class="status-badge">
+          <div :class="{'bcg-dark-green': item.priority === 'Low', 'bcg-red': item.priority === 'High', 'bcg-orange': item.priority === 'Medium'}" class="status-badge">
             {{ item.priority }}
           </div>
         </td>
         <td>
-          <div :class="{'bg-green': item.status === 'Open', 'bg-blue': item.status === 'Todo', 'bg-yellow': item.status === 'In Progress'}" class="status-badge">
+          <div :class="{'bcg-green': item.status === 'Done', 'bcg-blue': item.status === 'Todo', 'bcg-orange-light': item.status === 'In Progress'}" class="status-badge">
             {{ item.status }}
           </div>
         </td>
@@ -160,7 +160,7 @@ export default {
           title: 'First ticket',
           date: '2023-05-31 12:00:00',
           priority: 'Low',
-          status: 'Open',
+          status: 'In Progress',
           type: 'Bug'
         },
         {
@@ -176,7 +176,7 @@ export default {
           title: 'Second ticket',
           date: '2023-05-31 13:00:00',
           priority: 'High',
-          status: 'In Progress',
+          status: 'Done',
           type: 'Help'
         },
         {
@@ -184,7 +184,7 @@ export default {
           title: 'Second ticket',
           date: '2023-05-31 05:00:00',
           priority: 'Medium',
-          status: 'Open',
+          status: 'In Progress',
           type: 'Help'
         },
         {
@@ -192,7 +192,7 @@ export default {
           title: 'Second ticket',
           date: '2023-03-25 13:00:00',
           priority: 'Medium',
-          status: 'Open',
+          status: 'In Progress',
           type: 'Help'
         },
         {
@@ -260,7 +260,7 @@ export default {
       return 0;
     },
     sortByStatus(a, b) {
-      const statusOrder = ['To-Do', 'Open', 'In Progress', 'Done'];
+      const statusOrder = ['To-Do', 'In Progress', 'Done'];
       const indexA = statusOrder.indexOf(a.status);
       const indexB = statusOrder.indexOf(b.status);
       if (indexA < indexB) {
@@ -297,7 +297,7 @@ export default {
     filteredTickets() {
       let tickets = this.tickets;
       if (!this.showAll) {
-        tickets = tickets.filter(ticket => ticket.status === 'Open');
+        tickets = tickets.filter(ticket => ticket.status === 'In Progress');
       }
       if (this.search) {
         tickets = tickets.filter(ticket =>
@@ -341,23 +341,33 @@ export default {
   text-align: center;
 }
 
-.bg-green {
-  background-color: #4caf50;  /* You can adjust the color as per your preference */
+.bcg-green {
+  background-color: rgb(31, 187, 31);  /* You can adjust the color as per your preference */
   color: white;  /* Set the text color so it contrasts with the background */
 }
 
-.bg-blue {
+.bcg-blue {
   background-color: #2196f3;  /* You can adjust the color as per your preference */
   color: white;  /* Set the text color so it contrasts with the background */
 }
 
-.bg-yellow {
-  background-color: #ffeb3b;  /* You can adjust the color as per your preference */
-  color: black;  /* Set the text color so it contrasts with the background */
+.bcg-orange-light {
+  background-color: #ffc400;  /* You can adjust the color as per your preference */
+  color: white;  /* Set the text color so it contrasts with the background */
 }
 
-.bg-red {
-  background-color: #d33131;
+.bcg-orange {
+  background-color: #ffab00;  /* You can adjust the color as per your preference */
+  color: white;  /* Set the text color so it contrasts with the background */
+}
+
+.bcg-red {
+  background-color: red;
+  color: white;  /* Set the text color so it contrasts with the background */
+}
+
+.bcg-dark-green {
+  background-color: green;  /* You can adjust the color as per your preference */
   color: white;  /* Set the text color so it contrasts with the background */
 }
 
