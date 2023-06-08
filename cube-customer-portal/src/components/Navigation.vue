@@ -42,7 +42,7 @@
             <v-icon class="ma-1">mdi-account-switch-outline</v-icon>
           </v-btn>
         </template>
-        <v-list-item v-for="(item, index) in relations" :key="index" @click="selectRelation(item)" >
+        <v-list-item class="bg-white border" v-for="(item, index) in relations" :key="index" @click="selectRelation(item)" >
           <v-list-item-title>{{ item.name }}</v-list-item-title>
         </v-list-item>
       </v-menu>
@@ -51,11 +51,11 @@
       <v-menu location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn variant="flat" class="b-solid-blue text-white" size="small" v-bind="props" >
-            <span class="d-none d-sm-flex ma-3"> Active Language </span>
+            <span class=" d-none d-sm-flex ma-3"> Active Language </span>
             <v-icon class="ma-1">mdi-translate</v-icon>
           </v-btn>
         </template>
-        <v-list-item v-for="language in languages" :key="language.index" :href='language.route' >
+        <v-list-item class="bg-white border" v-for="language in languages" :key="language.index" :href='language.route' >
           <v-list-item-title>{{ language.title }}</v-list-item-title>
         </v-list-item>
       </v-menu>
