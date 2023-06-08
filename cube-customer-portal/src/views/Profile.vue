@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       profile: {},
-      apiKey: '',
+      apiKey: 'AIzaSyApCMKI6OviHx9FB2DkxkOVz0NwIpzFo5E',
     };
   },
   async created() {
@@ -90,7 +90,7 @@ export default {
   },
 };
 </script>
-  
+
   <style>
 
     .text-color{
@@ -98,4 +98,3 @@ export default {
     }
 
   </style>
-  
