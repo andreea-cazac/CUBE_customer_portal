@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <!-- Search bar -->
-      <v-col cols="8">
+      <v-col cols="12" md="8">
         <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -12,13 +12,13 @@
         ></v-text-field>
       </v-col>
       <!-- Show all button -->
-      <v-col cols="2" class="text-right">
+      <v-col cols="6" md="2" class="text-md-right text-center">
         <v-btn @click="showAll = !showAll">
           {{ showAll ? 'Show Open Tickets' : 'Show All' }}
         </v-btn>
       </v-col>
       <!-- Create ticket button -->
-      <v-col cols="2" class="text-right">
+      <v-col cols="6" md="2" class="text-md-right text-center">
         <v-btn @click="dialog = true">
           Create Ticket
         </v-btn>
@@ -42,7 +42,9 @@
             </v-col>
             <v-col cols="2" class="text-right">
               <v-btn icon @click="dialog = false">
-                <v-icon>mdi-close</v-icon>
+                <v-btn class="close-button" icon @click="dialog = false">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
               </v-btn>
             </v-col>
           </v-row>
@@ -123,11 +125,11 @@
     <router-view></router-view>
   </div>
 
-<!--  <v-pagination
-      v-model="page"
-      :length="totalPages"
-      color="primary"
-  ></v-pagination>-->
+  <!--  <v-pagination
+        v-model="page"
+        :length="totalPages"
+        color="primary"
+    ></v-pagination>-->
 </template>
 
 <script>
@@ -183,7 +185,7 @@ export default {
           number: 'TCK-004',
           title: 'Second ticket',
           date: '2023-05-31 05:00:00',
-          priority: 'Medium',
+          priority: 'High',
           status: 'In Progress',
           type: 'Help'
         },
@@ -378,5 +380,13 @@ export default {
 .custom-snackbar {
   /*background-color: #f39c12; !* Set your custom background color *!
   color: #fff; !* Set your custom text color *!*/
+}
+
+.v-data-table {
+  margin-top: 20px;  /* Adjust this value as needed */
+}
+
+.v-table {
+  margin-top: 20px;  /* Adjust this value as needed */
 }
 </style>
