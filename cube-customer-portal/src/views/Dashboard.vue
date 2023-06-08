@@ -7,14 +7,14 @@
         <v-row>
           <v-col cols="12" sm="6" md="5" lg="4">
             <v-card class="text-center ma-1 bg-grey-lighten-3" border>
-              <v-card-item>
-                <div class="text-h5 mt-5 font-weight-light">Tickets: 12</div>
+              <v-card-item class="b-solid-blue text-white">
+                <div class=" text-h5 mt-5 font-weight-light">Tickets: 12</div>
               </v-card-item>
-              <v-card-actions class="justify-center px-6 py-3">
+              <v-card-actions class="b-solid-blue justify-center px-6 py-3">
                 <router-link to="/account/tickets">
-                <v-btn class="bg-grey-lighten-1">
-                  <span class="text-white" >See all tickets</span>
-                  <v-icon end size="large" color="white">mdi-menu-right-outline</v-icon>
+                <v-btn class="b-solid-blue-2 text-white">
+                  <span>See all tickets</span>
+                  <v-icon end size="large">mdi-menu-right-outline</v-icon>
                 </v-btn>
                 </router-link>
               </v-card-actions>
@@ -174,6 +174,22 @@ export default {
 }
 .v-chip.High{
   background: red;
+}
+
+.solid-blue{
+  color: #000161;
+}
+.b-solid-blue{
+  background: #000161;
+}
+.b-solid-blue-darken{
+  background: #000157;
+}
+.b-solid-blue-2{
+  background: #262679;
+}
+.b-solid-blue-darken-2{
+  background: #0057a6;
 }
 
 </style>
