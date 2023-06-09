@@ -1,6 +1,6 @@
 <template>
   <div class="invoices">
-    <h3>Your invoices, sir</h3>
+    <h3>{{$t('invoices_page')}}}</h3>
   </div>
 </template>
 
