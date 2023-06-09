@@ -1,44 +1,44 @@
 <template>
   <v-container fluid>
     <!-- header -->
-    <v-row class="mb-5 pa-5 text-color">
-      <v-col>
-        <h1>Profile</h1>
-      </v-col>
-      <v-col>
-        <h5 class="float-right">Mijn Tenant / Profile</h5>
-      </v-col>
-    </v-row>
+      <v-row class="mb-5 pa-5 text-color">
+          <v-col>
+              <h1>{{$t('profile')}}</h1>
+          </v-col>
+          <v-col>
+              <h5 class="float-right">{{$t('my_tenant')}} / {{$t('profile')}}</h5>
+          </v-col>
+      </v-row>
 
     <v-row>
       <!-- contact info -->
-      <v-col cols="12" sm="6">
-        <v-card class="pa-2">
-          <v-card-item>
-            <v-card-title class="text-color mb-5">Organization Information</v-card-title>
-            <v-card-text v-for="detail in profile.contact_details" :key="detail.id">
-              <strong class="text-color">{{ detail.label }}</strong>
-              <br>
-              <a v-if="detail.type === 'website'" :href="`https://${detail.value}`">{{ detail.value }}</a>
-              <span v-else>{{ detail.value }}</span>
-            </v-card-text>
-          </v-card-item>
-        </v-card>
-      </v-col>
+        <v-col cols="12" sm="6">
+            <v-card class="pa-2">
+                <v-card-item>
+                    <v-card-title class="text-color mb-5">{{$t('organization_information')}}</v-card-title>
+                    <v-card-text v-for="detail in profile.contact_details" :key="detail.id">
+                        <strong class="text-color">{{$t(detail.label)}}</strong>
+                        <br>
+                        <a v-if="detail.type === 'website'" :href="`https://${detail.value}`">{{ detail.value }}</a>
+                        <span v-else>{{ detail.value }}</span>
+                    </v-card-text>
+                </v-card-item>
+            </v-card>
+        </v-col>
 
       <!-- google maps -->
-      <v-col cols="12" sm="6">
-        <v-row>
-          <v-card class="mb-5 w-100" v-for="address in profile.addresses" :key="address.id">
-            <v-card-title>
-              {{ address.street }} {{ address.number }}
-              <br>
-              {{ address.zipcode }}, {{ address.city }}, {{ address.country.name }}
-            </v-card-title>
-            <iframe v-if="address.geoLocation" :src="`https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${address.geoLocation.lat},${address.geoLocation.lng}`" width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-          </v-card>
-        </v-row>
-      </v-col>
+        <v-col cols="12" sm="6">
+            <v-row>
+                <v-card class="mb-5 w-100" v-for="address in profile.addresses" :key="address.id">
+                    <v-card-title>
+                        {{ address.street }} {{ address.number }}
+                        <br>
+                        {{ address.zipcode }}, {{ address.city }}, {{ $t(address.country.name) }}
+                    </v-card-title>
+                    <iframe v-if="address.geoLocation" :src="`https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${address.geoLocation.lat},${address.geoLocation.lng}`" width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </v-card>
+            </v-row>
+        </v-col>
     </v-row>
   </v-container>
 </template>

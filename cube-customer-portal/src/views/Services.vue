@@ -1,19 +1,20 @@
 <template>
-  <div class="services">
-    <h3>Services, no way</h3>
-    <h3>TOKEN: {{token}}</h3>
-    <br>
-    <div>
-      <h2>Active Relation: {{selectedRelation.name }}</h2>
-      <h3>Permissions:</h3>
-      <ul>
-        <li v-for="(permission, index) in selectedRelation.permissions" :key="index">
-          {{ permission }}
-        </li>
-      </ul>
+    <div class="services">
+        <h3>{{$t('services_no_way')}}</h3>
+        <h3>{{$t('token')}}: {{token}}</h3>
+        <br>
+        <div>
+            <h2>{{$t('active_relation')}}: {{selectedRelation.name }}</h2>
+            <h3>{{$t('permissions')}}:</h3>
+            <ul>
+                <li v-for="(permission, index) in selectedRelation.permissions" :key="index">
+                    {{$t(permission)}}
+                </li>
+            </ul>
+        </div>
     </div>
-  </div>
 </template>
+
 
 <script>
 import {useUserStore} from "@/stores/userStore";
