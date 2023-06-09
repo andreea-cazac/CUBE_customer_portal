@@ -12,10 +12,10 @@
               </v-card-item>
               <v-card-actions class="b-solid-blue justify-center px-6 py-3">
                 <router-link to="/account/tickets">
-                <v-btn class="b-solid-blue-2 text-white">
-                  <span>See all tickets</span>
-                  <v-icon end size="large">mdi-menu-right-outline</v-icon>
-                </v-btn>
+                    <v-btn class="b-solid-blue-2 text-white">
+                        <span>{{$t('see_all_tickets')}}</span>
+                        <v-icon end size="large">mdi-menu-right-outline</v-icon>
+                    </v-btn>
                 </router-link>
               </v-card-actions>
             </v-card>
@@ -47,33 +47,33 @@
 
         <v-row class="pa-1">
           <v-col cols="12" md="2">
-            <div class="caption text-grey-darken-1 mb-2">Ticket number</div>
+              <div class="caption text-grey-darken-1 mb-2">{{$t('ticket_number')}}</div>
             <div class="text-grey-darken-3">{{ ticket.number }}</div>
           </v-col>
 
           <v-col cols="12" md="2">
-            <div class="caption text-grey-darken-1 mb-2">Title</div>
+              <div class="caption text-grey-darken-1 mb-2">{{$t('title')}}</div>
             <div class="text-grey-darken-3">{{ ticket.title }}</div>
           </v-col>
 
           <v-col cols="6" md="2">
-            <div class="caption text-grey-darken-1 mb-2">Date</div>
+              <div class="caption text-grey-darken-1 mb-2">{{$t('date')}}</div>
             <div class="text-grey-darken-3">{{ ticket.date }}</div>
           </v-col>
 
           <v-col cols="6" md="2">
-            <div class="caption text-grey-darken-1 mb-2">Type</div>
+              <div class="caption text-grey-darken-1 mb-2">{{$t('type')}}</div>
             <div class="text-grey-darken-3">{{ ticket.type }}</div>
           </v-col>
 
           <v-col cols="6" md="2">
-            <div class="caption text-grey-darken-1 ">Priority</div>
+              <div class="caption text-grey-darken-1 ">{{$t('priority')}}</div>
 <!--            <div class="text-grey-darken-3">{{ ticket.priority }}</div>-->
             <v-chip :class="`${ticket.priority} text-white status-badge`">{{ ticket.priority }}</v-chip>
           </v-col>
 
           <v-col cols="6" md="2" class="">
-             <div class="caption text-grey-darken-1">Status</div>
+              <div class="caption text-grey-darken-1">{{$t('status')}}</div>
             <div>
               <v-chip :class="`${ticket.status} text-white status-badge`">{{ ticket.status }}</v-chip>
             </div>

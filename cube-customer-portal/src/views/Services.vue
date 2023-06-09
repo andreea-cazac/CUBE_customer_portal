@@ -17,8 +17,8 @@
         </li>
       </ul>
     </div>
-  </div>
 </template>
+
 
 <script>
 import {useUserStore} from "@/stores/userStore";
