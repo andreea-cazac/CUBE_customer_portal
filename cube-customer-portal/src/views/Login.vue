@@ -36,22 +36,20 @@
 <script>
 import { ref, inject, onMounted } from 'vue';
 import {useRouter} from "vue-router";
+import {useRelationsStore} from '../stores/relations.js'
 import {useActiveRelationStore} from '../stores/activeRelation'
 import {useUserStore} from '../stores/userStore.js'
-import {useUserRelationsStore} from "@/stores/userRelationsStore";
 
 export default {
     name: 'LoginPage',
     setup() {
-      try {
         const googleUserManager = inject('googleUserManager');
         const microsoftUserManager = inject('microsoftUserManager');
         const user = ref(null);
         const router = useRouter();
+        const relationsStore = useRelationsStore(); // use Vuex store
         const activeRelationStore = useActiveRelationStore(); // use Vuex store
         const userStore = useUserStore(); // use Vuex store
-
-        const userRelations = useUserRelationsStore();
 
         googleUserManager.getUser().then(u => {
             user.value = u;
@@ -73,7 +71,7 @@ export default {
                                 const data = {
                                     ap: "string",
                                     token: loggedInUser.id_token,
-                                    email: loggedInUser.profile.emaile
+                                    email: loggedInUser.profile.email
                                 };
 
                                 const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
@@ -86,16 +84,15 @@ export default {
 
 if(responseData) {
     // Step 1: Store relations in localStorage
-    let newRelations = responseData.relations.map(relation => ({
+    const newRelations = responseData.relations.map(relation => ({
         id: relation.id,
         name: relation.name,
         permissions: relation.permissions
     }));
 
-
     userStore.setToken(responseData.token);
+    relationsStore.setRelations(newRelations);
     activeRelationStore.setActiveRelation(newRelations[0]);
-    userRelations.setUserRelations(newRelations);
 
     // check if token is not null or undefined
     if (userStore.getToken) {
@@ -158,14 +155,8 @@ if(responseData) {
             },
             user
         };
-
-  } catch (error) {
-  console.error('Error in setup:', error);
-  throw error; // Rethrow the error to ensure it's not silently suppressed
-}
     }
 };
-
 </script>
 
 <style scoped>
