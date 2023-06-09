@@ -5,6 +5,11 @@
     <br>
     <div>
       <h2>Active Relation: {{selectedRelation.name }}</h2>
+      <br>
+<!--      <h2>tok : {{tok}}</h2>-->
+      <h2>a rel : {{ar}}</h2>
+      <h2>rels : {{newrel}}</h2>
+      <br>
       <h3>Permissions:</h3>
       <ul>
         <li v-for="(permission, index) in selectedRelation.permissions" :key="index">
@@ -30,12 +35,22 @@ export default{
     const activeRelationStoreRef = ref(activeRelationStore);
     const userStoreRef = ref(userStore);
 
+
     const selectedRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const token = computed(() => userStoreRef.value.getToken)
 
+
+    let tok = localStorage.getItem("token")
+    let ar = localStorage.getItem("activeRelation")
+
+    let newrel = localStorage.getItem("userRelations")
+
     return {
       selectedRelation,
-      token
+      token,
+      tok,
+      ar,
+      newrel
     }
 
   }

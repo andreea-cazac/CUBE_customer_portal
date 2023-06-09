@@ -71,16 +71,18 @@
 
 <script>
 
-import {useRelationsStore} from '@/stores/relations.js';
 import {useActiveRelationStore} from '@/stores/activeRelation.js';
 import {computed, ref} from "vue";
+import {useUserRelationsStore} from "@/stores/userRelationsStore";
 
 
 export default {
   setup() {
     // relations for the dropdown
-    const relationsStore = useRelationsStore();
-    const relations = relationsStore.getRelations;
+    const relationsStore = useUserRelationsStore();
+
+
+    const relations = relationsStore.getUserRelations;
 
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
@@ -96,16 +98,15 @@ export default {
       { icon: "mdi-account", text: "Profile", route: "/account/profile" },
       { icon: "mdi-clipboard-text", text: "Tickets", route: "/account/tickets", permission:"show_tickets" },
       { icon: "mdi-receipt", text: "Invoices", route: "/account/invoices", permission:"show_invoices"},
-      { icon: "mdi-toolbox-outline", text: "Services", route: "/account/services", permission:"show_services"},
+      { icon: "mdi-toolbox-outline", text: "Services", route: "/account/services"},
       { icon: "mdi-account-group", text: "Team", route: "/account/teams", permission:"show_team"}
     ];
     const permittedPages = computed(() => {
-      let activePermissions="";
-      if(activeRelation.value.permissions){
-        activePermissions = activeRelation.value.permissions;
-      }
-      return pages.filter((page) => activePermissions.includes(page.permission) || !page.permission);
-
+        let activePermissions = "";
+        if (activeRelation && activeRelation.value && activeRelation.value.permissions) {
+          activePermissions = activeRelation.value.permissions;
+        }
+        return pages.filter((page) => activePermissions.includes(page.permission) || !page.permission);
     });
 
     return {
