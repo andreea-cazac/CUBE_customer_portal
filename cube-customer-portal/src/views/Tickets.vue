@@ -2,27 +2,27 @@
   <div>
     <v-row>
       <!-- Search bar -->
-      <v-col cols="12" md="8">
-        <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-        ></v-text-field>
-      </v-col>
+        <v-col cols="12" md="8">
+            <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    :label="$t('search')"
+                    single-line
+                    hide-details
+            ></v-text-field>
+        </v-col>
       <!-- Show all button -->
-      <v-col cols="6" md="2" class="text-md-right text-center">
-        <v-btn @click="showAll = !showAll">
-          {{ showAll ? 'Show Open Tickets' : 'Show All' }}
-        </v-btn>
-      </v-col>
+        <v-col cols="6" md="2" class="text-md-right text-center">
+            <v-btn @click="showAll = !showAll">
+                {{ showAll ? $t('showOpenTickets') : $t('showAll') }}
+            </v-btn>
+        </v-col>
       <!-- Create ticket button -->
-      <v-col cols="6" md="2" class="text-md-right text-center">
-        <v-btn @click="dialog = true">
-          Create Ticket
-        </v-btn>
-      </v-col>
+        <v-col cols="6" md="2" class="text-md-right text-center">
+            <v-btn @click="dialog = true">
+                {{ $t('createTicket') }}
+            </v-btn>
+        </v-col>
     </v-row>
 
 
@@ -38,7 +38,7 @@
         <v-card-title>
           <v-row>
             <v-col cols="10">
-              <span class="headline">Create New Ticket</span>
+              <span class="headline">{{$t('createNewTicket')}}</span>
             </v-col>
             <v-col cols="2" class="text-right">
               <v-btn icon @click="dialog = false">
@@ -66,8 +66,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="createTicket" :disabled="!isFormValid">Create</v-btn>
+          <v-btn color="blue darken-1" text @click="dialog = false">{{$t('cancel')}}</v-btn>
+          <v-btn color="blue darken-1" text @click="createTicket" :disabled="!isFormValid">{{$t('create')}}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -80,27 +80,27 @@
     <v-table density="compact">
       <thead>
       <tr>
-        <th class="text-left">Ticket Number</th>
-        <th class="text-left">Title</th>
+        <th class="text-left">{{$t('ticket_number')}}</th>
+        <th class="text-left">{{$t('title')}}</th>
         <th class="text-left">
           <div class="header-wrapper" @click="sortDate">
-            Date/Time created
+            {{$t('date_time_created')}}
             <v-icon :class="sortColumn === 'date' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
         <th class="text-left">
           <div class="header-wrapper" @click="sortPriority">
-            Priority
+              {{$t('priority')}}
             <v-icon :class="sortColumn === 'priority' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
         <th class="text-left">
           <div class="header-wrapper" @click="sortStatus">
-            Status
+              {{$t('status')}}
             <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
-        <th class="text-left">Type</th>
+        <th class="text-left">{{$t('type')}}</th>
       </tr>
       </thead>
       <tbody>
