@@ -71,49 +71,64 @@
 
 <script>
 
+import {useRelationsStore} from '@/stores/relations.js';
 import {useActiveRelationStore} from '@/stores/activeRelation.js';
 import {computed, ref} from "vue";
-import {useUserRelationsStore} from "@/stores/userRelationsStore";
 
 
 export default {
-  setup() {
-    // relations for the dropdown
-    const relationsStore = useUserRelationsStore();
+    setup() {
+        // relations for the dropdown
+        const relationsStore = useRelationsStore();
+        const relations = relationsStore.getRelations;
+
+        const activeRelationStore = useActiveRelationStore();
+        const activeRelationStoreRef = ref(activeRelationStore);
+        const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation); // always up to date
+
+        const selectRelation = (relation) => {
+            activeRelationStoreRef.value.setActiveRelation(relation);
+        };
 
 
-    const relations = relationsStore.getUserRelations;
+        const pages = [
+            { icon: "mdi-view-dashboard", textKey: "dashboard", route: "/account/dashboard"},
+            { icon: "mdi-account", textKey: "profile", route: "/account/profile" },
+            { icon: "mdi-clipboard-text", textKey: "tickets", route: "/account/tickets", permission:"show_tickets" },
+            { icon: "mdi-receipt", textKey: "invoices", route: "/account/invoices", permission:"show_invoices"},
+            { icon: "mdi-toolbox-outline", textKey: "services", route: "/account/services", permission:"show_services"},
+            { icon: "mdi-account-group", textKey: "team", route: "/account/teams", permission:"show_team"}
+        ];
 
-    const activeRelationStore = useActiveRelationStore();
-    const activeRelationStoreRef = ref(activeRelationStore);
-    const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation); // always up to date
+        const permittedPages = computed(() => {
+            let activePermissions="";
+            if(activeRelation.value.permissions){
+                activePermissions = activeRelation.value.permissions;
+            }
+            return pages.filter((page) => activePermissions.includes(page.permission) || !page.permission);
 
-    const selectRelation = (relation) => {
-      activeRelationStoreRef.value.setActiveRelation(relation);
-    };
+        });
 
-
-    const pages = [
-      { icon: "mdi-view-dashboard", text: "Dashboard", route: "/account/dashboard"},
-      { icon: "mdi-account", text: "Profile", route: "/account/profile" },
-      { icon: "mdi-clipboard-text", text: "Tickets", route: "/account/tickets", permission:"show_tickets" },
-      { icon: "mdi-receipt", text: "Invoices", route: "/account/invoices", permission:"show_invoices"},
-      { icon: "mdi-toolbox-outline", text: "Services", route: "/account/services"},
-      { icon: "mdi-account-group", text: "Team", route: "/account/teams", permission:"show_team"}
-    ];
-    const permittedPages = computed(() => {
-        let activePermissions = "";
-        if (activeRelation && activeRelation.value && activeRelation.value.permissions) {
-          activePermissions = activeRelation.value.permissions;
+        return {
+            relations,
+            activeRelation,
+            selectRelation,
+            permittedPages
         }
-        return pages.filter((page) => activePermissions.includes(page.permission) || !page.permission);
-    });
-
-    return {
-      relations,
-      activeRelation,
-      selectRelation,
-      permittedPages
+    },
+    data() {
+        return {
+            drawer: true,
+            languages: [
+                {title: 'English', code: 'en'},
+                {title: 'Nederlands', code: 'nl'},
+            ]
+        };
+    },
+    methods: {
+        changeLanguage(lang) {
+            this.$i18n.locale = lang;
+        }
     }
 
 };
