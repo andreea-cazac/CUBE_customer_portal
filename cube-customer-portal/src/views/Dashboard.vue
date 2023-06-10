@@ -1,14 +1,11 @@
 <template>
   <div class="dashboard mb-4">
-
-    <v-container class="">
       <v-container class="">
-
-        <v-row>
-          <v-col cols="12" sm="6" md="5" lg="4">
-            <v-card class="text-center ma-1 bg-grey-lighten-3" border>
+        <v-row class="mb-2">
+          <v-col cols="12" md="4">
+            <v-card class="text-center bg-grey-lighten-3" border>
               <v-card-item class="b-solid-blue text-white">
-                <div class=" text-h5 mt-5 font-weight-light">Tickets: 12</div>
+                <div class="text-h5 mt-5 font-weight-light">Tickets: 12</div>
               </v-card-item>
               <v-card-actions class="b-solid-blue justify-center px-6 py-3">
                 <router-link to="/account/tickets">
@@ -39,50 +36,54 @@
 <!--            </v-card>-->
 <!--          </v-col>-->
         </v-row>
-      </v-container>
 
+  <v-card class="b-solid-blue-darken-2" max-width="700px" min-width="">
+    <v-card-title class="w-100 b-solid-blue-darken-2">
+      <v-row>
+        <v-card-item class="ma-1">
+          <v-icon color="white">mdi-comment-multiple-outline</v-icon>
+          <span class="font-weight-regular text-white"> Recent tickets </span>
+        </v-card-item>
 
-      <v-card class="pa-3 ma-1" v-for="ticket in ticketData" :key="ticket.number" :class="`pa-3 ${ticket.status}`">
-        <v-row cols="12"> <v-divider></v-divider> </v-row>
+        <v-spacer></v-spacer>
 
-        <v-row class="pa-1">
-          <v-col cols="12" md="2">
-              <div class="caption text-grey-darken-1 mb-2">{{$t('ticket_number')}}</div>
-            <div class="text-grey-darken-3">{{ ticket.number }}</div>
-          </v-col>
+        <v-card-actions class="">
+          <router-link to="/account/tickets">
+            <v-btn class="text-white b-solid-blue-darken-2">
+              <p>Show all</p>
+              <v-icon end size="small">mdi-arrow-right</v-icon>
+            </v-btn>
+          </router-link>
+        </v-card-actions>
+      </v-row>
+    </v-card-title>
 
-          <v-col cols="12" md="2">
-              <div class="caption text-grey-darken-1 mb-2">{{$t('title')}}</div>
-            <div class="text-grey-darken-3">{{ ticket.title }}</div>
-          </v-col>
+    <v-table class="">
+      <thead class="">
+      <tr>
+        <th class="text-left font-weight-bold text-grey-darken-4">Number</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">Title</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">Date</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">Priority</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">Status</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">Type</th>
+      </tr>
+      </thead>
 
-          <v-col cols="6" md="2">
-              <div class="caption text-grey-darken-1 mb-2">{{$t('date')}}</div>
-            <div class="text-grey-darken-3">{{ ticket.date }}</div>
-          </v-col>
+      <tbody>
+      <tr v-for="ticket in ticketData" :key="ticket.number">
+        <td>{{ ticket.number }}</td>
+        <td>{{ ticket.title }}</td>
+        <td>{{ ticket.date }}</td>
+        <td><v-chip :class="`${ticket.priority} text-white status-badge`">{{ ticket.priority }}</v-chip></td>
+        <td><v-chip :class="`${ticket.status} text-white status-badge`">{{ ticket.status }}</v-chip></td>
+        <td>{{ ticket.type }}</td>
+      </tr>
+      </tbody>
+    </v-table>
 
-          <v-col cols="6" md="2">
-              <div class="caption text-grey-darken-1 mb-2">{{$t('type')}}</div>
-            <div class="text-grey-darken-3">{{ ticket.type }}</div>
-          </v-col>
-
-          <v-col cols="6" md="2">
-              <div class="caption text-grey-darken-1 ">{{$t('priority')}}</div>
-<!--            <div class="text-grey-darken-3">{{ ticket.priority }}</div>-->
-            <v-chip :class="`${ticket.priority} text-white status-badge`">{{ ticket.priority }}</v-chip>
-          </v-col>
-
-          <v-col cols="6" md="2" class="">
-              <div class="caption text-grey-darken-1">{{$t('status')}}</div>
-            <div>
-              <v-chip :class="`${ticket.status} text-white status-badge`">{{ ticket.status }}</v-chip>
-            </div>
-          </v-col>
-
-        </v-row>
-        <v-row cols="12"> <v-divider></v-divider> </v-row>
-      </v-card>
-    </v-container>
+  </v-card>
+</v-container>
   </div>
 </template>
 
@@ -93,7 +94,7 @@ export default {
     return {
       ticketData: [
         {
-          number: 125,
+          number: 127,
           title: 'Tasks 1',
           date: '11/05/23',
           type: 'change',
@@ -101,7 +102,7 @@ export default {
           status: 'To-Do'
         },
         {
-          number: 124,
+          number: 126,
           title: 'Tasks 2',
           date: '09/08/22',
           type: 'change',
@@ -109,15 +110,7 @@ export default {
           status: 'In-Progress'
         },
         {
-          number: 123,
-          title: 'Tasks 3',
-          date: '01/01/23',
-          type: 'change',
-          priority: 'Low',
-          status: 'Done'
-        },
-        {
-          number: 126,
+          number: 125,
           title: 'Tasks 4',
           date: '17/05/23',
           type: 'change',
@@ -125,7 +118,7 @@ export default {
           status: 'In-Progress'
         },
         {
-          number: 127,
+          number: 124,
           title: 'Tasks 5',
           date: '01/06/23',
           type: 'change',
@@ -140,6 +133,10 @@ export default {
 
 
 <style>
+.v-list{
+  width: 700px;
+  overflow-x: auto;
+}
 .status-badge {
   display: flex;
   align-items: center;

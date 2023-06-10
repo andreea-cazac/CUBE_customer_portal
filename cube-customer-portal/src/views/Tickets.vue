@@ -25,8 +25,6 @@
         </v-col>
     </v-row>
 
-
-
     <v-data-table
         :headers="headers"
         :items="pageTickets"
