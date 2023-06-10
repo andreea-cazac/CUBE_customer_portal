@@ -1,32 +1,36 @@
 <template>
-    <v-app style="background: darkblue;">
+    <v-app class="backgroundPage">
         <v-container style="display: flex; justify-content: center; align-items: center; height: 100vh;">
             <div class="circle circle1"></div>
             <div class="circle circle2"></div>
             <div class="circle circle3"></div>
+            <div class="circle circle4"></div>
+            <div class="circle circle5"></div>
 
-            <v-card class="mx-auto" color="white" rounded="lg" max-width="500">
-                <v-card-title class="text-center">Log in with one of the providers:</v-card-title>
+            <v-card class="loginCard"  rounded="lg" >
+              <v-img aspect-ratio="2.5" class="logoContainer"></v-img>
+                <v-card-title class="loginText">Log in with one of the providers:</v-card-title>
 
                 <v-card-actions class="justify-center">
+                  <div class="button-group">
                     <v-btn
                         variant="outlined"
-                        style="border: 1px solid darkblue; border-radius: 50%;"
+                        class="loginButtons"
                         icon="mdi-google"
                         @click="loginGoogle"
                     >
-                        <v-icon size="large" icon="mdi-google"></v-icon>
+                      <v-icon size="x-large" icon="mdi-google"></v-icon>
                     </v-btn>
-                    <div>
-                        <v-btn class="mx-2"
-                               variant="outlined"
-                               style="border: 1px solid darkblue; border-radius: 50%;"
-                               icon="mdi-microsoft-windows"
-                               @click="loginMicrosoft"
-                        >
-                            <v-icon size="large" icon="mdi-microsoft-windows"></v-icon>
-                        </v-btn>
-                    </div>
+
+                    <v-btn
+                        variant="outlined"
+                        class="loginButtons"
+                        icon="mdi-microsoft-windows"
+                        @click="loginMicrosoft"
+                    >
+                      <v-icon size="x-large" icon="mdi-microsoft-windows"></v-icon>
+                    </v-btn>
+                  </div>
                 </v-card-actions>
             </v-card>
         </v-container>
@@ -34,11 +38,12 @@
 </template>
 
 <script>
-import { ref, inject, onMounted } from 'vue';
+import {ref, inject, onMounted, computed} from 'vue';
 import {useRouter} from "vue-router";
 import {useRelationsStore} from '../stores/relations.js'
 import {useActiveRelationStore} from '../stores/activeRelation'
 import {useUserStore} from '../stores/userStore.js'
+import {useTenantStore} from '../stores/tenant';
 
 export default {
     name: 'LoginPage',
@@ -47,9 +52,20 @@ export default {
         const microsoftUserManager = inject('microsoftUserManager');
         const user = ref(null);
         const router = useRouter();
-        const relationsStore = useRelationsStore(); // use Vuex store
-        const activeRelationStore = useActiveRelationStore(); // use Vuex store
+        const relationsStore = useRelationsStore();
+        const activeRelationStore = useActiveRelationStore();
         const userStore = useUserStore(); // use Vuex store
+        const tenantStore = useTenantStore();
+        const tenantStoreRef = ref(tenantStore);
+      //has to be decommented after we set a normal host
+        //const hostUrl = ref(window.location.href);
+        const tenantData = ref(null);
+      const logoUrl = computed(() => {
+        if (tenantStore.tenant.value && tenantStore.tenant.value.settings && tenantStore.tenant.value.settings.logo) {
+          return tenantStore.tenant.value.settings.logo;
+        }
+        return "";  // return an empty string or a placeholder image URL when logo is not yet fetched.
+      });
 
         googleUserManager.getUser().then(u => {
             user.value = u;
@@ -60,6 +76,29 @@ export default {
         });
 
         onMounted(async () => {
+
+          //Retrieving tenant design
+          //console.log(window.location.href);
+          //has to be changed to: https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/${hostUrl.value} after setting up a normal host
+          const response = await fetch(`https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/mijn.solidpartners.nl`);
+          if (response.ok) {
+            tenantData.value = await response.json();
+            tenantStore.setTenant(tenantData);
+
+            // Update the CSS variables
+            if (tenantData.value) {
+                document.documentElement.style.setProperty('--primary-color', tenantData.value.settings.primary_color);
+                document.documentElement.style.setProperty('--accent-color', tenantData.value.settings.accent_color);
+                document.documentElement.style.setProperty('--background-image', `url(${tenantData.value.settings.backgroundImage})`);
+                document.documentElement.style.setProperty('--logo', `url(${tenantData.value.settings.logo})`);
+                document.documentElement.style.setProperty('--favicon', `url(${tenantData.value.settings.favicon})`);
+            }
+
+            console.log(logoUrl); // print the computed ref value
+          } else {
+            console.log("Tenant not figured out");
+          }
+
             if (window.location.href.indexOf('code=') > -1 && window.location.href.indexOf('state=') > -1) {
                 if(window.location.href.indexOf('google') > -1) {
                     googleUserManager.signinRedirectCallback().then(async loggedInUser => {
@@ -153,7 +192,8 @@ if(responseData) {
                     console.error(err);
                 }
             },
-            user
+          logoUrl,
+          user
         };
     }
 };
@@ -168,15 +208,15 @@ if(responseData) {
 .circle1 {
     width: 200px;
     height: 200px;
-    border: 2px solid cyan;
+    background: var(--accent-color);
     top: -5%;
-    left: -10%;
+    left: -5%;
 }
 
 .circle2 {
     width: 150px;
     height: 150px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--accent-color);
     bottom: 20%;
     right: 10%;
 }
@@ -184,9 +224,74 @@ if(responseData) {
 .circle3 {
     width: 300px;
     height: 300px;
-    border: 2px solid cyan;
-    background: rgba(255, 255, 255, 0.1);
-    bottom: -50px;
-    right: -50px;
+    border: 2px solid var(--accent-color);
+    bottom: 10%;
+    right: 60%;
 }
+
+.circle4 {
+  width: 300px;
+  height: 300px;
+  border: 2px solid var(--accent-color);
+  bottom: -5%;
+  right: -5%;
+}
+
+.circle5 {
+  width: 100px;
+  height: 100px;
+  border: 2px solid var(--accent-color);
+  bottom: 70%;
+  right: 40%;
+}
+
+
+.loginCard{
+  width: 600px;
+  height: 400px;
+  background-image: var(--background-image);
+  background-size: 700px 400px;
+}
+.backgroundPage {
+  background-color: var(--primary-color);
+  background-size: 1920px 980px;
+}
+
+.loginText{
+  color: var(--primary-color);
+  text-align: center;
+  font-size: x-large;
+}
+
+ .button-group {
+   display: flex;
+   justify-content: space-between;
+   padding: 0;
+ }
+
+.loginButtons{
+  border-color: var(--primary-color);
+  border-radius: 50%;
+  border-width: 0.15rem;
+  width: 80px; /* default width for larger screens */
+  height: 80px; /* default height for larger screens */
+  margin: 1.5rem; /* Increase the spacing around the buttons */
+}
+
+@media (max-width: 360px) {
+  .loginButtons{
+    width: 50px; /* smaller width for screens less than or equal to 360px wide */
+    height: 50px; /* smaller height for screens less than or equal to 360px wide */
+  }
+}
+
+.logoContainer {
+  background-image: var(--logo);
+  background-position: center;
+  height: 170px;
+}
+
+
 </style>
+
+
