@@ -71,24 +71,26 @@
 
 <script>
 
-import {useRelationsStore} from '@/stores/relations.js';
 import {useActiveRelationStore} from '@/stores/activeRelation.js';
 import {computed, ref} from "vue";
+import {useUserRelationsStore} from "@/stores/userRelationsStore";
 
 
 export default {
     setup() {
         // relations for the dropdown
-        const relationsStore = useRelationsStore();
-        const relations = relationsStore.getRelations;
+      const relationsStore = useUserRelationsStore();
 
-        const activeRelationStore = useActiveRelationStore();
-        const activeRelationStoreRef = ref(activeRelationStore);
-        const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation); // always up to date
 
-        const selectRelation = (relation) => {
-            activeRelationStoreRef.value.setActiveRelation(relation);
-        };
+      const relations = relationsStore.getUserRelations;
+
+      const activeRelationStore = useActiveRelationStore();
+      const activeRelationStoreRef = ref(activeRelationStore);
+      const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation); // always up to date
+
+      const selectRelation = (relation) => {
+        activeRelationStoreRef.value.setActiveRelation(relation);
+      };
 
 
         const pages = [
@@ -100,14 +102,13 @@ export default {
             { icon: "mdi-account-group", textKey: "team", route: "/account/teams", permission:"show_team"}
         ];
 
-        const permittedPages = computed(() => {
-            let activePermissions="";
-            if(activeRelation.value.permissions){
-                activePermissions = activeRelation.value.permissions;
-            }
-            return pages.filter((page) => activePermissions.includes(page.permission) || !page.permission);
-
-        });
+      const permittedPages = computed(() => {
+        let activePermissions = "";
+        if (activeRelation.value && activeRelation.value.permissions) {
+          activePermissions = activeRelation.value.permissions;
+        }
+        return pages.filter((page) => activePermissions.includes(page.permission) || !page.permission);
+      });
 
         return {
             relations,
