@@ -38,6 +38,8 @@ export default {
     send: 'Versturen',
     comment_added: 'Reactie succesvol toegevoegd!',
     information: 'Informatie',
-    attachments: 'Bijlagen'
+    attachments: 'Bijlagen',
+    recent_tickets: '  Recente tickets',
+    show_all: 'Toon alles'
     // other Dutch translations...
 }
