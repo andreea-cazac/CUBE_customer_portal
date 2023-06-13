@@ -114,8 +114,24 @@
 
 <script>
 import axios from 'axios';
+import {useActiveRelationStore} from "@/stores/activeRelation";
+import {computed, ref} from "vue";
 
 export default {
+  setup() {
+    const activeRelationStore = useActiveRelationStore();
+    const activeRelationStoreRef = ref(activeRelationStore);
+
+    const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
+    const relationId = computed(() => activeRelation.value.id);
+    const relationName = computed(() => activeRelation.value.name);
+
+    return {
+      relationId,
+      relationName
+    }
+  },
+
   data() {
     return {
       title: '',
@@ -130,7 +146,7 @@ export default {
 
   async created() {
     try {
-      const response = await axios.get('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/50018/work_orders/1', {
+      const response = await axios.get(`https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
         headers: {
           'Content-Type': 'application/json',
           // Add any necessary headers here
@@ -138,6 +154,7 @@ export default {
       });
 
       this.ticket = response.data;
+      console.log(`${this.$route.params.id}`)
     } catch (error) {
       console.error('Error fetching ticket data:', error);
     }

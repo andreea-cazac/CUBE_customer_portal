@@ -91,6 +91,7 @@ export default {
 
       const selectRelation = (relation) => {
         activeRelationStoreRef.value.setActiveRelation(relation);
+        window.location.reload();
       };
 
       const logout = () => {
