@@ -1,11 +1,11 @@
 <template>
   <div class="dashboard mb-4">
-      <v-container class="">
+      <v-container fluid>
         <v-row class="mb-2">
           <v-col cols="12" md="4">
             <v-card class="text-center bg-grey-lighten-3" border>
               <v-card-item class="b-solid-blue text-white">
-                <div class="text-h5 mt-5 font-weight-light">Tickets: 12</div>
+                <div class="text-h5 mt-5 font-weight-light">{{$t('tickets')}}: {{ tickets.length }}</div>
               </v-card-item>
               <v-card-actions class="b-solid-blue justify-center px-6 py-3">
                 <router-link to="/account/tickets">
@@ -37,12 +37,12 @@
 <!--          </v-col>-->
         </v-row>
 
-  <v-card class="b-solid-blue-darken-2" max-width="700px" min-width="">
+  <v-card class="b-solid-blue-darken-2" max-width="900px" min-width="">
     <v-card-title class="w-100 b-solid-blue-darken-2">
       <v-row>
         <v-card-item class="ma-1">
           <v-icon color="white">mdi-comment-multiple-outline</v-icon>
-          <span class="font-weight-regular text-white"> Recent tickets </span>
+          <span class="font-weight-regular text-white">  Recent tickets</span>
         </v-card-item>
 
         <v-spacer></v-spacer>
@@ -50,7 +50,7 @@
         <v-card-actions class="">
           <router-link to="/account/tickets">
             <v-btn class="text-white b-solid-blue-darken-2">
-              <p>Show all</p>
+              <span>Show all</span>
               <v-icon end size="small">mdi-arrow-right</v-icon>
             </v-btn>
           </router-link>
@@ -61,23 +61,24 @@
     <v-table class="">
       <thead class="">
       <tr>
-        <th class="text-left font-weight-bold text-grey-darken-4">Number</th>
-        <th class="text-left font-weight-bold text-grey-darken-4">Title</th>
-        <th class="text-left font-weight-bold text-grey-darken-4">Date</th>
-        <th class="text-left font-weight-bold text-grey-darken-4">Priority</th>
-        <th class="text-left font-weight-bold text-grey-darken-4">Status</th>
-        <th class="text-left font-weight-bold text-grey-darken-4">Type</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">{{$t('ticket_number')}}</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">{{$t('title')}}</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">{{$t('date')}}</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">{{$t('priority')}}</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">{{$t('status')}}</th>
+        <th class="text-left font-weight-bold text-grey-darken-4">{{$t('type')}}</th>
       </tr>
       </thead>
 
       <tbody>
-      <tr v-for="ticket in ticketData" :key="ticket.number">
-        <td>{{ ticket.number }}</td>
+      <tr v-for="ticket in ticketData" :key="ticket.number" @click="goToTicket(ticket)" class="clickable">
+        <td>{{ ticket.code }}</td>
         <td>{{ ticket.title }}</td>
-        <td>{{ ticket.date }}</td>
-        <td><v-chip :class="`${ticket.priority} text-white status-badge`">{{ ticket.priority }}</v-chip></td>
-        <td><v-chip :class="`${ticket.status} text-white status-badge`">{{ ticket.status }}</v-chip></td>
-        <td>{{ ticket.type }}</td>
+        <td>{{ ticket.created_at }}</td>
+        <td><v-chip :class="{'Low': getPriority(ticket.priority_index) === 'Low', 'High': getPriority(ticket.priority_index) === 'High', 'Medium': getPriority(ticket.priority_index) === 'Medium'}"
+             class="status-badge text-white">{{ getPriority(ticket.priority_index) }}</v-chip></td>
+        <td><v-chip :class="`${ticket.status} text-white status-badge`">{{ getStatus(ticket.status) }}</v-chip></td>
+        <td>{{ ticket.type_label }}</td>
       </tr>
       </tbody>
     </v-table>
@@ -89,45 +90,68 @@
 
 
 <script>
+import axios from "axios";
+import {useActiveRelationStore} from "@/stores/activeRelation";
+import {computed, ref} from "vue";
+
 export default {
+  setup() {
+    const activeRelationStore = useActiveRelationStore();
+    const activeRelationStoreRef = ref(activeRelationStore);
+
+    const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
+    const relationId = computed(() => activeRelation.value.id);
+    const relationName = computed(() => activeRelation.value.name);
+
+    return {
+      relationId,
+      relationName
+    }
+  },
   data() {
     return {
-      ticketData: [
-        {
-          number: 127,
-          title: 'Tasks 1',
-          date: '11/05/23',
-          type: 'change',
-          priority: 'High',
-          status: 'To-Do'
-        },
-        {
-          number: 126,
-          title: 'Tasks 2',
-          date: '09/08/22',
-          type: 'change',
-          priority: 'Low',
-          status: 'In-Progress'
-        },
-        {
-          number: 125,
-          title: 'Tasks 4',
-          date: '17/05/23',
-          type: 'change',
-          priority: 'High',
-          status: 'In-Progress'
-        },
-        {
-          number: 124,
-          title: 'Tasks 5',
-          date: '01/06/23',
-          type: 'change',
-          priority: 'High',
-          status: 'To-Do'
-        },
-      ]
+      tickets: []
     };
   },
+
+  created() {
+    axios.get(`https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/${this.relationId}/work_orders/`)
+        .then(response => {
+          console.log(response.data);
+          console.log(this.relationId);
+          console.log(this.relationName);
+          this.tickets = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+  },
+
+  methods: {
+    goToTicket(ticket) {
+      // this.$router.push(`/account/tickets/${ticket}`);
+      this.$router.push({ name: 'ticketDetails', params: { id: `${ticket.id}`} });
+    }
+  },
+  computed: {
+    getPriority() {
+      return function(priorityIndex) {
+        return priorityIndex === 0 ? 'Low' : priorityIndex &&
+        priorityIndex === 1 ? 'Medium' : priorityIndex &&
+        priorityIndex === 2 ? 'High' : priorityIndex;
+      }
+    },
+    getStatus() {
+      return function(statusName) {
+        return statusName === "finished" ? 'Finished' : statusName &&
+        statusName === "todo" ? 'To-Do' : statusName &&
+        statusName === "in_progress" ? 'In-Progress' : statusName
+      }
+    },
+    ticketData() {
+      return this.tickets.slice(0, 4);
+    }
+  }
 };
 </script>
 
@@ -136,6 +160,9 @@ export default {
 .v-list{
   width: 700px;
   overflow-x: auto;
+}
+.clickable{
+  cursor: pointer;
 }
 .status-badge {
   display: flex;
@@ -148,29 +175,32 @@ export default {
   font-weight: bold;
   text-align: center;
 }
-.Done {
+.finished {
   border-left: 5px solid rgb(31, 187, 31);
 }
-.To-Do {
+.todo {
   border-left: 5px solid rgb(33, 144, 242);
 }
-.In-Progress {
+.in_progress {
   border-left: 5px solid orange
 }
-.v-chip.Done {
+.v-chip.finished {
   background: rgb(31, 187, 31)
 }
-.v-chip.In-Progress {
+.v-chip.in_progress {
   background: orange
 }
-.v-chip.To-Do {
+.v-chip.todo {
   background: rgb(33, 144, 242);
 }
-.v-chip.Low{
+.Low{
   background: green;
 }
-.v-chip.High{
+.High{
   background: red;
+}
+.Medium{
+  background: orange;
 }
 
 .solid-blue{

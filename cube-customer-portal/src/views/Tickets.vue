@@ -130,8 +130,24 @@
 
 <script>
 import axios from 'axios';
+import {useActiveRelationStore} from "@/stores/activeRelation";
+import {computed, ref} from "vue";
 
 export default {
+  setup() {
+    const activeRelationStore = useActiveRelationStore();
+    const activeRelationStoreRef = ref(activeRelationStore);
+
+    const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
+    const relationId = computed(() => activeRelation.value.id);
+    const relationName = computed(() => activeRelation.value.name);
+
+    return {
+      relationId,
+      relationName
+    }
+  },
+
   data() {
     return {
       search: '',
@@ -292,10 +308,11 @@ export default {
 
   created() {
     // Fetch data from the API when the component is created
-    axios.get('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/50018/work_orders/')
+    axios.get(`https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/${this.relationId}/work_orders/`)
         .then(response => {
           // Log the data returned from the API
           console.log(response.data);
+          console.log(this.relationName);
           // Assign the response data to your tickets data property
           this.tickets = response.data;
         })
