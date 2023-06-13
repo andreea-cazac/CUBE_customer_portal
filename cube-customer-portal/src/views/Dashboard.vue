@@ -42,7 +42,7 @@
       <v-row>
         <v-card-item class="ma-1">
           <v-icon color="white">mdi-comment-multiple-outline</v-icon>
-          <span class="font-weight-regular text-white">  Recent tickets</span>
+          <span class="font-weight-regular text-white">{{ $t('recent_tickets') }}</span>
         </v-card-item>
 
         <v-spacer></v-spacer>
@@ -50,7 +50,7 @@
         <v-card-actions class="">
           <router-link to="/account/tickets">
             <v-btn class="text-white b-solid-blue-darken-2">
-              <span>Show all</span>
+              <span> {{ $t('show_all') }}</span>
               <v-icon end size="small">mdi-arrow-right</v-icon>
             </v-btn>
           </router-link>
