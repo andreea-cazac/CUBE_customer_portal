@@ -25,11 +25,6 @@
         </v-col>
     </v-row>
 
-    <v-data-table
-        :headers="headers"
-        :items="pageTickets"
-        :items-per-page="itemsPerPage"
-    ></v-data-table>
 
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
@@ -75,7 +70,7 @@
     </v-snackbar>
 
 
-    <v-table density="compact">
+    <v-table density="comfortable" style="table-layout: fixed; width: 100%;">
       <thead>
       <tr>
         <th class="text-left">{{$t('ticket_number')}}</th>
@@ -102,21 +97,24 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="item in filteredTickets" :key="item.number" @click="goToTicket(item.number)" class="clickable-row">
-        <td>{{ item.number }}</td>
+      <tr v-for="item in filteredTickets" :key="item.code" @click="goToTicket(item.code)" class="clickable-row">
+        <td>{{ item.code }}</td>
         <td>{{ item.title }}</td>
-        <td>{{ item.date }}</td>
+        <td>{{ item.created_at }}</td>
         <td>
-          <div :class="{'bcg-dark-green': item.priority === 'Low', 'bcg-red': item.priority === 'High', 'bcg-orange': item.priority === 'Medium'}" class="status-badge">
-            {{ item.priority }}
+          <div :class="{'bcg-dark-green': displayPriority(item.priority_index) === 'Low',
+               'bcg-red': displayPriority(item.priority_index) === 'High',
+               'bcg-orange': displayPriority(item.priority_index) === 'Medium'}"
+               class="status-badge">
+            {{ displayPriority(item.priority_index) }}
           </div>
         </td>
         <td>
-          <div :class="{'bcg-green': item.status === 'Done', 'bcg-blue': item.status === 'Todo', 'bcg-orange-light': item.status === 'In Progress'}" class="status-badge">
-            {{ item.status }}
+          <div :class="{'bcg-green': displayStatus(item.status) === 'Finished', 'bcg-blue': displayStatus(item.status) === 'To-Do', 'bcg-orange-light': displayStatus(item.status) === 'In-Progress'}" class="status-badge">
+            {{ displayStatus(item.status) }}
           </div>
         </td>
-        <td>{{ item.type }}</td>
+        <td>{{ item.type_label }}</td>
       </tr>
       </tbody>
     </v-table>
@@ -131,6 +129,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -147,15 +147,15 @@ export default {
         description:''
       },
       headers: [
-        { text: 'Ticket Number', value: 'number', sortable: true },
+        { text: 'Ticket Number', value: 'code', sortable: true },
         { text: 'Title', value: 'title', sortable: true },
-        { text: 'Date/time created', value: 'date', sortable: true },
-        { text: 'Priority', value: 'priority', sortable: true },
+        { text: 'Date/time created', value: 'created_at', sortable: true },
+        { text: 'Priority', value: 'priority_index', sortable: true },
         { text: 'Status', value: 'status', sortable: true },
-        { text: 'Type', value: 'type', sortable: true },
+        { text: 'Type', value: 'type_label', sortable: true },
       ],
       tickets: [
-        {
+        /*{
           number: 'TCK-001',
           title: 'First ticket',
           date: '2023-05-31 12:00:00',
@@ -202,7 +202,7 @@ export default {
           priority: 'Medium',
           status: 'Todo',
           type: 'Help'
-        },
+        },*/
 
         // ... add more items here
       ],
@@ -212,8 +212,8 @@ export default {
   },
 
   methods: {
-    goToTicket(number) {
-      this.$router.push(`/account/tickets/${number}`);
+    goToTicket(code) {
+      this.$router.push(`/account/tickets/${code}`);
     },
     createTicket() {
       // Implement your logic for creating the ticket here
@@ -260,7 +260,7 @@ export default {
       return 0;
     },
     sortByStatus(a, b) {
-      const statusOrder = ['To-Do', 'In Progress', 'Done'];
+      const statusOrder = ['todo', 'in_progress', 'finished'];
       const indexA = statusOrder.indexOf(a.status);
       const indexB = statusOrder.indexOf(b.status);
       if (indexA < indexB) {
@@ -272,8 +272,8 @@ export default {
       return 0;
     },
     sortByDate(a, b) {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
+      const dateA = new Date(a.created_at);
+      const dateB = new Date(b.created_at);
 
       if (dateA < dateB) {
         return this.sortDirection === 'asc' ? -1 : 1;
@@ -285,27 +285,53 @@ export default {
     },
     checkFormValidity() {
       this.isFormValid = !!this.ticket.title && !!this.ticket.description;
-    }
+    },
+
+
   },
 
   created() {
+    // Fetch data from the API when the component is created
+    axios.get('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/50018/work_orders/')
+        .then(response => {
+          // Log the data returned from the API
+          console.log(response.data);
+          // Assign the response data to your tickets data property
+          this.tickets = response.data;
+        })
+        .catch(error => {
+          // Handle error here
+          console.error(error);
+        });
+
     this.checkFormValidity();
   },
 
 
   computed: {
+
+    /*To show only the open tickets*/
     filteredTickets() {
       let tickets = this.tickets;
+
+      // If showAll is false, filter the tickets to only show those with status 'In-Progress'
       if (!this.showAll) {
-        tickets = tickets.filter(ticket => ticket.status === 'In Progress');
+        tickets = tickets.filter(ticket => this.displayStatus(ticket.status) === 'In-Progress');
       }
+
+      // Apply the search filter, regardless of the value of showAll
       if (this.search) {
         tickets = tickets.filter(ticket =>
-            Object.values(ticket).some(val =>
-                val.toString().toLowerCase().includes(this.search.toLowerCase())
-            )
+            (ticket.status && ticket.status.toLowerCase().includes(this.search.toLowerCase())) ||
+            (ticket.title && ticket.title.toLowerCase().includes(this.search.toLowerCase())) ||
+            (ticket.type_label && ticket.type_label.toLowerCase().includes(this.search.toLowerCase())) ||
+            (ticket.code && ticket.code.toLowerCase().includes(this.search.toLowerCase())) ||
+            (ticket.created_at && ticket.created_at.toString().includes(this.search)) ||
+            (this.displayPriority(ticket.priority_index) && this.displayPriority(ticket.priority_index).toLowerCase().includes(this.search.toLowerCase())) ||
+            (this.displayStatus(ticket.status) && this.displayStatus(ticket.status).toLowerCase().includes(this.search.toLowerCase()))
         );
       }
+
       return tickets;
     },
     /*totalPages() {
@@ -315,6 +341,21 @@ export default {
       const start = (this.page - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
       return this.filteredTickets.slice(start, end);
+    },
+    /*Based on the api (it displays 0, 1 or 2) it will display the name of the priority*/
+    displayPriority() {
+      return function(priorityIndex) {
+        return priorityIndex === 0 ? 'Low' : priorityIndex &&
+        priorityIndex === 1 ? 'Medium' : priorityIndex &&
+        priorityIndex === 2 ? 'High' : priorityIndex;
+      }
+    },
+    displayStatus() {
+      return function(statusName) {
+        return statusName === "finished" ? 'Finished' : statusName &&
+        statusName === "todo" ? 'To-Do' : statusName &&
+        statusName === "in_progress" ? 'In-Progress' : statusName
+      }
     },
   },
 };
@@ -386,5 +427,16 @@ export default {
 
 .v-table {
   margin-top: 20px;  /* Adjust this value as needed */
+}
+
+.table-fixed {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table-fixed td {
+  white-space: normal;  /* Allows text to wrap to next line */
+  overflow: hidden;    /* Hides content that still doesn't fit */
+  text-overflow: ellipsis;  /* Adds an ellipsis (...) when content is hidden */
 }
 </style>
