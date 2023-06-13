@@ -61,7 +61,7 @@
 
 
             <v-btn color="b-solid-blue text-white" :key="logout" router :to="loginRoute">
-                <span class="d-none d-sm-flex"  @click="something()" >{{ $t('signOut') }}</span>
+                <span class="d-none d-sm-flex"  @click="logout()" >{{ $t('signOut') }}</span>
                 <v-icon>mdi-exit-to-app</v-icon>
             </v-btn>
         </v-toolbar>
@@ -93,8 +93,7 @@ export default {
         activeRelationStoreRef.value.setActiveRelation(relation);
       };
 
-      const something = () => {
-        console.log("something");
+      const logout = () => {
         activeRelationStore.removeActiveRelation();
         relationsStore.removeUserRelations();
         userStore.removeToken();
@@ -124,7 +123,7 @@ export default {
             activeRelation,
             selectRelation,
             permittedPages,
-          something,
+          logout,
           loginRoute
         }
     },
