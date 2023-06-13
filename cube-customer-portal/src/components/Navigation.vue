@@ -4,7 +4,6 @@
             <v-row no-gutters>
                 <v-col class="mt-6 text-center">
                     <v-img cover src="https://mijn.solidpartners.nl/upload/site/118-0083%20Solid%20Partners%202021%20Logo%20RGB%20Color%20Blue%202x.png" alt=""></v-img>
-                    <!--          <p class="text-white ma-10 center text-h5 ">Solid partners</p>-->
                 </v-col>
             </v-row>
 
@@ -61,8 +60,8 @@
             </v-menu>
 
 
-            <v-btn color="b-solid-blue text-white">
-                <span class="d-none d-sm-flex">{{ $t('signOut') }}</span>
+            <v-btn color="b-solid-blue text-white" :key="logout" router :to="loginRoute">
+                <span class="d-none d-sm-flex"  @click="something()" >{{ $t('signOut') }}</span>
                 <v-icon>mdi-exit-to-app</v-icon>
             </v-btn>
         </v-toolbar>
@@ -74,15 +73,17 @@
 import {useActiveRelationStore} from '@/stores/activeRelation.js';
 import {computed, ref} from "vue";
 import {useUserRelationsStore} from "@/stores/userRelationsStore";
+import {useUserStore} from "@/stores/userStore";
 
 
 export default {
     setup() {
         // relations for the dropdown
       const relationsStore = useUserRelationsStore();
+      const relationStoreRef = ref(relationsStore);
+      const relations = computed(() => relationStoreRef.value.getUserRelations);
 
-
-      const relations = relationsStore.getUserRelations;
+      const userStore = useUserStore();
 
       const activeRelationStore = useActiveRelationStore();
       const activeRelationStoreRef = ref(activeRelationStore);
@@ -92,6 +93,12 @@ export default {
         activeRelationStoreRef.value.setActiveRelation(relation);
       };
 
+      const something = () => {
+        console.log("something");
+        activeRelationStore.removeActiveRelation();
+        relationsStore.removeUserRelations();
+        userStore.removeToken();
+      };
 
         const pages = [
             { icon: "mdi-view-dashboard", textKey: "dashboard", route: "/account/dashboard"},
@@ -101,6 +108,8 @@ export default {
             { icon: "mdi-toolbox-outline", textKey: "services", route: "/account/services", permission:"show_services"},
             { icon: "mdi-account-group", textKey: "team", route: "/account/teams", permission:"show_team"}
         ];
+
+        const loginRoute = "/login";
 
       const permittedPages = computed(() => {
         let activePermissions = "";
@@ -114,7 +123,9 @@ export default {
             relations,
             activeRelation,
             selectRelation,
-            permittedPages
+            permittedPages,
+          something,
+          loginRoute
         }
     },
     data() {
