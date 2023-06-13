@@ -12,10 +12,11 @@ export const useUserStore = defineStore('userStore', {
     actions: {
         setToken(token) {
             this.token = token;
-            localStorage.setItem("token", token); // Save token to localStorage
+            localStorage.setItem("token", token);
         },
 
-        deleteToken() {
+        removeToken() {
+            this.token = "";
             localStorage.removeItem("token");
         }
     },
