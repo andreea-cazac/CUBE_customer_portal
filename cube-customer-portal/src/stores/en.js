@@ -38,7 +38,8 @@ export default {
     send: 'Send',
     comment_added: 'Comment added successfully!',
     information:'Information',
-    attachments: 'Attachments'
-
+    attachments: 'Attachments',
+    recent_tickets: '  Recent tickets',
+    show_all: 'Show all'
     // other English translations...
 }
