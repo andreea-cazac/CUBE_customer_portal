@@ -129,9 +129,6 @@ export default {
 
                               const response2 = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
                                 method: 'POST',
-                                headers: {
-                                  'Content-Type': 'application/json'
-                                },
                                 body: JSON.stringify(data2)
                               });
 
