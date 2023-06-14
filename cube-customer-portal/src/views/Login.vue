@@ -138,12 +138,13 @@ if(responseData) {
                         console.log("Response sent");
                         if (response.ok) {
                             const responseData = await response.json();
+                            userStore.setToken(responseData.token);
 
                             //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
                           //  localStorage.setItem('authToken', responseData.token);
 
                             // check if token is not null or undefined
-                            if(responseData.token ){
+                            if (userStore.getToken) {
                                 router.push('/account/dashboard');
                             }
                         } else {
