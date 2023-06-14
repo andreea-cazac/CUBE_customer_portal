@@ -40,14 +40,15 @@
 <script>
 import {ref, inject, onMounted, computed} from 'vue';
 import {useRouter} from "vue-router";
-import {useRelationsStore} from '../stores/relations.js'
 import {useActiveRelationStore} from '../stores/activeRelation'
 import {useUserStore} from '../stores/userStore.js'
 import {useTenantStore} from '../stores/tenant';
+import {useUserRelationsStore} from "../stores/userRelationsStore";
 
 export default {
     name: 'LoginPage',
     setup() {
+      try{
         const googleUserManager = inject('googleUserManager');
         const microsoftUserManager = inject('microsoftUserManager');
         const user = ref(null);
@@ -67,6 +68,11 @@ export default {
         return "";  // return an empty string or a placeholder image URL when logo is not yet fetched.
       });
 
+      const activeRelationStore = useActiveRelationStore(); // use Vuex store
+      const userStore = useUserStore(); // use Vuex store
+
+
+      const userRelations = useUserRelationsStore();
         googleUserManager.getUser().then(u => {
             user.value = u;
         });
@@ -108,32 +114,32 @@ export default {
                             try {
 
                               //our approach with the mock API
-                            //    const data = {
-                            //        ap: "google",
-                            //        token: loggedInUser.id_token,
-                            //        email: loggedInUser.profile.email
-                            //    };
+                                const data = {
+                                    ap: "google",
+                                    token: loggedInUser.id_token,
+                                    email: loggedInUser.profile.email
+                                };
 //
-                            //    const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
-                            //        method: 'POST',
-                            //        body: JSON.stringify(data)
-                            //    });
+                                const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
+                                    method: 'POST',
+                                    body: JSON.stringify(data)
+                                });
 
                               //Frans approach, with the real test API
 
-                              const data2 = {
-                                ap: "google",
-                                token: loggedInUser.access_token,
-                                email: loggedInUser.profile.email
-                              };
+                              // const data2 = {
+                              //   ap: "google",
+                              //   token: loggedInUser.access_token,
+                              //   email: loggedInUser.profile.email
+                              // };
 
-                              const response2 = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
-                                method: 'POST',
-                                body: JSON.stringify(data2)
-                              });
+                              // const response2 = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
+                              //   method: 'POST',
+                              //   body: JSON.stringify(data2)
+                              // });
 
-                                if (response2.ok) {
-                                    const responseData = await response2.json();
+                                if (response.ok) {
+                                    const responseData = await response.json();
 
 
 
@@ -145,9 +151,9 @@ if(responseData) {
         permissions: relation.permissions
     }));
 
-    userStore.setToken(responseData.token);
-    relationsStore.setRelations(newRelations);
-    activeRelationStore.setActiveRelation(newRelations[0]);
+  userStore.setToken(responseData.token);
+  activeRelationStore.setActiveRelation(newRelations[0]);
+  userRelations.setUserRelations(newRelations);
 
     // check if token is not null or undefined
     if (userStore.getToken) {
@@ -227,6 +233,11 @@ if(responseData) {
           logoUrl,
           user
         };
+    } catch (error) {
+    console.error('Error in setup:', error);
+    throw error; // Rethrow the error to ensure it's not silently suppressed
+  }
+
     }
 };
 </script>

@@ -1,28 +1,34 @@
 <template>
-    <div class="services">
-        <h3>{{$t('services_no_way')}}</h3>
-        <h3>{{$t('token')}}: {{token}}</h3>
-        <br>
-        <div>
-            <h2>{{$t('active_relation')}}: {{selectedRelation.name }}</h2>
-            <h3>{{$t('permissions')}}:</h3>
-            <ul>
-                <li v-for="(permission, index) in selectedRelation.permissions" :key="index">
-                    {{$t(permission)}}
-                </li>
-            </ul>
-        </div>
-    </div>
-</template>
+  <div className="services">
+    <h3>Services, no way</h3>
+    <br>
+    <h3><b><u>Token in LocalStorage:</u> </b> {{ tok }}</h3>
+    <h3> <b><u> Active Relation in LocalStorage:</u> </b> {{ ar }}</h3>
+    <h3><b> <u> Relations in LocalStorage:</u></b> {{ newrel }}</h3>
+    <br>
+    <div>
+      <h2>Active Relation: {{ selectedRelation.name }}</h2>
+      <br>
+      <!--      <h2>tok : {{tok}}</h2>-->
 
+      <br>
+      <h3>Permissions:</h3>
+      <ul>
+        <li v-for="(permission, index) in selectedRelation.permissions" :key="index">
+          {{ permission }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
 
 <script>
 import {useUserStore} from "@/stores/userStore";
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
 
-export default{
-  setup(){
+export default {
+  setup() {
 
     const activeRelationStore = useActiveRelationStore();
     const userStore = useUserStore();
@@ -31,12 +37,22 @@ export default{
     const activeRelationStoreRef = ref(activeRelationStore);
     const userStoreRef = ref(userStore);
 
+
     const selectedRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const token = computed(() => userStoreRef.value.getToken)
 
+
+    let tok = localStorage.getItem("token")
+    let ar = localStorage.getItem("activeRelation")
+
+    let newrel = localStorage.getItem("userRelations")
+
     return {
       selectedRelation,
-      token
+      token,
+      tok,
+      ar,
+      newrel
     }
 
   }
