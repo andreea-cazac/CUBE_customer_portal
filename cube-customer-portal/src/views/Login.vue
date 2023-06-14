@@ -153,7 +153,6 @@ if(responseData) {
   userStore.setToken(responseData.token);
   activeRelationStore.setActiveRelation(newRelations[0]);
   userRelations.setUserRelations(newRelations);
-  console.log(responseData.token);
 
     // check if token is not null or undefined
     if (userStore.getToken) {
