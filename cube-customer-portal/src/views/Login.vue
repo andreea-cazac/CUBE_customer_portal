@@ -58,7 +58,7 @@ export default {
         const userStore = useUserStore(); // use Vuex store
         const tenantStore = useTenantStore();
         //const tenantStoreRef = ref(tenantStore);
-      //has to be decommented after we set a normal host
+        //has to be decommented after we set a normal host
         //const hostUrl = ref(window.location.href);
         const tenantData = ref(null);
       const logoUrl = computed(() => {
@@ -97,7 +97,6 @@ export default {
                 document.documentElement.style.setProperty('--favicon', `url(${tenantData.value.settings.favicon})`);
             }
 
-            console.log(logoUrl); // print the computed ref value
           } else {
             console.log("Tenant not figured out");
           }
@@ -132,11 +131,14 @@ export default {
 
                               const response2 = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
                                 method: 'POST',
+                                headers: {
+                                  'Content-Type': 'application/json'
+                                },
                                 body: JSON.stringify(data2)
                               });
 
                                 if (response2.ok) {
-                                    const responseData = await response2.json();
+                                  const responseData = await response2.json();
 
 
 
@@ -151,6 +153,7 @@ if(responseData) {
   userStore.setToken(responseData.token);
   activeRelationStore.setActiveRelation(newRelations[0]);
   userRelations.setUserRelations(newRelations);
+  console.log(responseData.token);
 
     // check if token is not null or undefined
     if (userStore.getToken) {
@@ -177,7 +180,6 @@ if(responseData) {
             loginMicrosoft: async () => {
                 try {
                     const loggedInUser = await microsoftUserManager.signIn();
-                    console.log(loggedInUser); // the user object contains the tokens and profile
                     user.value = loggedInUser; // If Microsoft user logged in, set user to Microsoft user
                     const email = loggedInUser.idTokenClaims;
 
@@ -202,13 +204,12 @@ if(responseData) {
                    token: loggedInUser.accessToken, // Access the idToken from the Microsoft user
                    email: email.preferred_username// Access the email from the Microsoft user
                  };
-                 console.log(data);
+
                  const response = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
                    method: 'POST',
                    body: JSON.stringify(data)
                  });
 //
-                      console.log("Response sent");
                         if (response.ok) {
                             const responseData = await response.json();
                             userStore.setToken(responseData.token);
