@@ -10,21 +10,18 @@
         <v-col cols="12" sm="4">
           <v-card class="pa-2" style="height: 100%;">
             <v-card-item>
-              <v-card-title class="text-color mb-5"></v-card-title>
+              <v-card-title class="text-color mb-5">{{ $t('ticket_number') }}: {{ ticket.code }}</v-card-title>
               <v-card-text>
-                <strong class="text-color">{{$t('ticket_number')}}: 123123123</strong>
+                <strong class="text-color">{{ $t('created') }}: {{ ticket.created_at }}</strong>
                 <br>
                 <br>
-                <strong class="text-color">{{ $t('created') }}: 31 Dec 2022</strong>
+                <strong class="text-color">{{ $t('type') }}: {{ ticket.type_label }}</strong>
                 <br>
                 <br>
-                <strong class="text-color">{{ $t('type') }}: Bug</strong>
+                <strong :class="priorityClass" class="text-color">{{ $t('priority') }}: {{ displayPriority(ticket.priority_index) }}</strong>
                 <br>
                 <br>
-                <strong class="text-color">{{ $t('priority') }}: Low</strong>
-                <br>
-                <br>
-                <strong class="text-color">{{ $t('status') }}: Todo</strong>
+                <strong :class="statusClass" class="text-color">{{ $t('status') }}: {{ displayStatus(ticket.status) }}</strong>
               </v-card-text>
             </v-card-item>
           </v-card>
@@ -35,7 +32,7 @@
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('description') }}</v-card-title>
               <v-card-text>
-                <strong class="text-color">{{$t('random_description')}}</strong>
+                <strong class="text-color">{{ ticket.description }}</strong>
                 <br>
               </v-card-text>
             </v-card-item>
@@ -74,7 +71,7 @@
         </v-col>
       </v-row>
       <v-snackbar v-model="showSnackbar" :timeout="snackbarTimeout" class="custom-snackbar" multi-line>
-          {{ $t('comment_added') }}
+        {{ $t('comment_added') }}
       </v-snackbar>
       <v-row>
         <!-- Panel Information -->
@@ -83,10 +80,12 @@
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('information') }}</v-card-title>
               <v-card-text>
-                <h3>System</h3>
-                <h4>31 Dec 2022, 14:57PM</h4>
-                <br>
-                <h3>test 1</h3>
+                <div v-for="note in ticket.notes" :key="note.id">
+                  <h3>{{ note.title }}</h3>
+                  <h4>{{ note.created_at }}</h4>
+                  <p v-html="note.body"></p>
+                  <br>
+                </div>
               </v-card-text>
             </v-card-item>
           </v-card>
@@ -97,13 +96,12 @@
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('attachments') }}</v-card-title>
               <v-card-text>
-                <strong class="text-color">File 1</strong>
-                <br>
-                <br>
-                <strong class="text-color">File 2</strong>
-                <br>
-                <br>
-                <strong class="text-color">File 3</strong>
+                <div v-for="attachment in ticket.attachments" :key="attachment.name">
+                  <a :href="attachment.url" target="_blank" rel="noopener noreferrer">
+                    <strong class="text-color">{{ attachment.name }}</strong>
+                  </a>
+                  <br>
+                </div>
               </v-card-text>
             </v-card-item>
           </v-card>
@@ -115,7 +113,25 @@
 </template>
 
 <script>
+import axios from 'axios';
+import {useActiveRelationStore} from "@/stores/activeRelation";
+import {computed, ref} from "vue";
+
 export default {
+  setup() {
+    const activeRelationStore = useActiveRelationStore();
+    const activeRelationStoreRef = ref(activeRelationStore);
+
+    const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
+    const relationId = computed(() => activeRelation.value.id);
+    const relationName = computed(() => activeRelation.value.name);
+
+    return {
+      relationId,
+      relationName
+    }
+  },
+
   data() {
     return {
       title: '',
@@ -124,8 +140,24 @@ export default {
       attachment: null,
       showSnackbar: false,
       snackbarTimeout: 3000,
-
+      ticket: {},
     };
+  },
+
+  async created() {
+    try {
+      const response = await axios.get(`https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any necessary headers here
+        },
+      });
+
+      this.ticket = response.data;
+      console.log(`${this.$route.params.id}`)
+    } catch (error) {
+      console.error('Error fetching ticket data:', error);
+    }
   },
   methods: {
     attachFiles() {
@@ -147,15 +179,116 @@ export default {
       this.attachment = null;
       this.isFormValid = false; // Reset the form validity
     },
+    displayPriority(priorityIndex) {
+      if (priorityIndex === 0) {
+        return 'Low';
+      } else if (priorityIndex === 1) {
+        return 'Medium';
+      } else if (priorityIndex === 2) {
+        return 'High';
+      } else {
+        return priorityIndex;
+      }
+    },
+    displayStatus(statusName) {
+      if (statusName === 'finished') {
+        return 'Finished';
+      } else if (statusName === 'todo') {
+        return 'To-Do';
+      } else if (statusName === 'in_progress') {
+        return 'In-Progress';
+      } else {
+        return statusName;
+      }
+    },
+  },
+  computed: {
+    priorityClass() {
+      const ticket = this.ticket;
+      if (ticket.priority_index === 0) {
+        return 'low-priority';
+      } else if (ticket.priority_index === 1) {
+        return 'medium-priority';
+      } else if (ticket.priority_index === 2) {
+        return 'high-priority';
+      } else {
+        return '';
+      }
+    },
+    statusClass() {
+      const ticket = this.ticket;
+      if (ticket.status === 'finished') {
+        return 'finished-status';
+      } else if (ticket.status === 'todo') {
+        return 'todo-status';
+      } else if (ticket.status === 'in_progress') {
+        return 'in-progress-status';
+      } else {
+        return '';
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
+/* Add your custom styles here */
+
 .back-button {
   position: absolute;
   top: 75px;
   left: 25px;
   z-index: 10;
+}
+
+.text-color {
+  color: #212121;
+}
+
+.low-priority {
+  background-color: green;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.medium-priority {
+  background-color: #ffa726;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.high-priority {
+  background-color: red;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.finished-status {
+  background-color: rgb(31, 187, 31);
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.todo-status {
+  background-color: #2196f3;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.in-progress-status {
+  background-color: #2196f3;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.custom-snackbar {
+  background-color: #43a047;
+  color: #ffffff;
 }
 </style>
