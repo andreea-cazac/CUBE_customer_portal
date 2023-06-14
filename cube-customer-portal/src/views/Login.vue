@@ -53,11 +53,11 @@ export default {
         const microsoftUserManager = inject('microsoftUserManager');
         const user = ref(null);
         const router = useRouter();
-        const relationsStore = useRelationsStore();
+        const userRelations = useUserRelationsStore();
         const activeRelationStore = useActiveRelationStore();
         const userStore = useUserStore(); // use Vuex store
         const tenantStore = useTenantStore();
-        const tenantStoreRef = ref(tenantStore);
+        //const tenantStoreRef = ref(tenantStore);
       //has to be decommented after we set a normal host
         //const hostUrl = ref(window.location.href);
         const tenantData = ref(null);
@@ -68,11 +68,8 @@ export default {
         return "";  // return an empty string or a placeholder image URL when logo is not yet fetched.
       });
 
-      const activeRelationStore = useActiveRelationStore(); // use Vuex store
-      const userStore = useUserStore(); // use Vuex store
 
 
-      const userRelations = useUserRelationsStore();
         googleUserManager.getUser().then(u => {
             user.value = u;
         });
@@ -113,33 +110,33 @@ export default {
                         if (loggedInUser) {
                             try {
 
-                              //our approach with the mock API
-                                const data = {
-                                    ap: "google",
-                                    token: loggedInUser.id_token,
-                                    email: loggedInUser.profile.email
-                                };
+                        // //our approach with the mock API
+                        //   const data = {
+                        //       ap: "google",
+                        //       token: loggedInUser.id_token,
+                        //       email: loggedInUser.profile.email
+                        //   };
 //
-                                const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
-                                    method: 'POST',
-                                    body: JSON.stringify(data)
-                                });
+                        //   const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
+                        //       method: 'POST',
+                        //       body: JSON.stringify(data)
+                        //   });
 
                               //Frans approach, with the real test API
 
-                              // const data2 = {
-                              //   ap: "google",
-                              //   token: loggedInUser.access_token,
-                              //   email: loggedInUser.profile.email
-                              // };
+                              const data2 = {
+                                ap: "google",
+                                token: loggedInUser.access_token,
+                                email: loggedInUser.profile.email
+                              };
 
-                              // const response2 = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
-                              //   method: 'POST',
-                              //   body: JSON.stringify(data2)
-                              // });
+                              const response2 = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
+                                method: 'POST',
+                                body: JSON.stringify(data2)
+                              });
 
-                                if (response.ok) {
-                                    const responseData = await response.json();
+                                if (response2.ok) {
+                                    const responseData = await response2.json();
 
 
 
@@ -186,30 +183,30 @@ if(responseData) {
 
                     if (loggedInUser) {
 
-                      //our approach with the mock API
-                     //   const data = {
-                     //       ap: "microsoft",
-                     //       token: loggedInUser.idToken, // Access the idToken from the Microsoft user
-                     //       email: email.preferred_username// Access the email from the Microsoft user
-                     //   };
-                     //   console.log(data);
-                     //   const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
-                     //       method: 'POST',
-                     //       body: JSON.stringify(data)
-                     //   });
+                   //our approach with the mock API
+          //      const data = {
+          //          ap: "microsoft",
+          //          token: loggedInUser.idToken, // Access the idToken from the Microsoft user
+          //          email: email.preferred_username// Access the email from the Microsoft user
+          //      };
+          //      console.log(data);
+          //      const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
+          //          method: 'POST',
+          //          body: JSON.stringify(data)
+          //      });
 
 
-                        //Frans approach with the real test API
-                      const data = {
-                        ap: "microsoft",
-                        token: loggedInUser.accessToken, // Access the idToken from the Microsoft user
-                        email: email.preferred_username// Access the email from the Microsoft user
-                      };
-                      console.log(data);
-                      const response = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
-                        method: 'POST',
-                        body: JSON.stringify(data)
-                      });
+                   //Frans approach with the real test API
+                 const data = {
+                   ap: "microsoft",
+                   token: loggedInUser.accessToken, // Access the idToken from the Microsoft user
+                   email: email.preferred_username// Access the email from the Microsoft user
+                 };
+                 console.log(data);
+                 const response = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
+                   method: 'POST',
+                   body: JSON.stringify(data)
+                 });
 //
                       console.log("Response sent");
                         if (response.ok) {
