@@ -32,7 +32,6 @@
                     </v-btn>
                   </div>
                 </v-card-actions>
-                
             </v-card>
         </v-container>
     </v-app>
@@ -296,7 +295,6 @@ export default {
   bottom: 70%;
   right: 40%;
 }
-
 
 .loginCard{
   width: 600px;
