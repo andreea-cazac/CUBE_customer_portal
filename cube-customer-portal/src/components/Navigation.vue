@@ -103,10 +103,10 @@ export default {
         const pages = [
             { icon: "mdi-view-dashboard", textKey: "dashboard", route: "/account/dashboard"},
             { icon: "mdi-account", textKey: "profile", route: "/account/profile" },
-            { icon: "mdi-clipboard-text", textKey: "tickets", route: "/account/tickets", permission:"show_tickets" },
-            { icon: "mdi-receipt", textKey: "invoices", route: "/account/invoices", permission:"show_invoices"},
-            { icon: "mdi-toolbox-outline", textKey: "services", route: "/account/services", permission:"show_services"},
-            { icon: "mdi-account-group", textKey: "team", route: "/account/teams", permission:"show_team"}
+            { icon: "mdi-clipboard-text", textKey: "tickets", route: "/account/tickets", permission:"customer:ticket:show" },
+            { icon: "mdi-receipt", textKey: "invoices", route: "/account/invoices", permission:"customer:invoice:show"},
+            { icon: "mdi-toolbox-outline", textKey: "services", route: "/account/services", permission:"customer:service:show"},
+            { icon: "mdi-account-group", textKey: "team", route: "/account/teams", permission:"customer:team:show"}
         ];
 
         const loginRoute = "/login";
