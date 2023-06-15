@@ -158,9 +158,10 @@ export default {
                                           permissions: relation.permissions
                                       }));
 
-                                    userStore.setToken(responseData.token);
-                                    activeRelationStore.setActiveRelation(newRelations[0]);
-                                    userRelations.setUserRelations(newRelations);
+  console.log("checking");
+  userStore.setToken(responseData.token);
+  activeRelationStore.setActiveRelation(newRelations[0]);
+  userRelations.setUserRelations(newRelations);
 
                                       // check if token is not null or undefined
                                       if (userStore.getToken) {
@@ -221,6 +222,7 @@ export default {
                   handleResponse(response).then(responseData => {
                       if(responseData) {
                             userStore.setToken(responseData.token);
+
                             //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
                           //  localStorage.setItem('authToken', responseData.token);
 
@@ -295,6 +297,7 @@ export default {
   bottom: 70%;
   right: 40%;
 }
+
 
 .loginCard{
   width: 600px;
