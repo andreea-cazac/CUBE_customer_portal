@@ -1,6 +1,6 @@
 <template>
     <v-app class="backgroundPage">
-        <v-container style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <v-container style="display: flex; justify-content: center; align-items: center; height: 100vh">
             <div class="circle circle1"></div>
             <div class="circle circle2"></div>
             <div class="circle circle3"></div>
@@ -9,8 +9,8 @@
 
             <v-card class="loginCard"  rounded="lg" >
               <v-img aspect-ratio="2.5" class="logoContainer"></v-img>
-                <v-card-title class="loginText">Log in with one of the providers:</v-card-title>
-
+                <v-card-title class="loginText mb-10">Log in with one of the providers:</v-card-title>
+                <p v-if="errorMessage" class="errorText">{{ errorMessage }}</p>
                 <v-card-actions class="justify-center">
                   <div class="button-group">
                     <v-btn
@@ -57,6 +57,7 @@ export default {
         const activeRelationStore = useActiveRelationStore();
         const userStore = useUserStore(); // use Vuex store
         const tenantStore = useTenantStore();
+        const errorMessage = ref("");
         //const tenantStoreRef = ref(tenantStore);
         //has to be decommented after we set a normal host
         //const hostUrl = ref(window.location.href);
@@ -79,7 +80,18 @@ export default {
         });
 
         onMounted(async () => {
-
+          const handleResponse = async (response) => {
+              if (response.ok) {
+                  return response.json();
+              } else if (response.status === 401 || response.status === 422) {
+                  // redirect to error page
+                  errorMessage.value = "You are an unauthorized user for this Customer Portal";
+                  throw new Error('Unauthorized');
+              } else {
+                  console.error('Response failed');
+                  throw new Error('Response failed');
+              }
+          }
           //Retrieving tenant design
           //console.log(window.location.href);
           //has to be changed to: https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/${hostUrl.value} after setting up a normal host
@@ -137,31 +149,28 @@ export default {
                                 body: JSON.stringify(data2)
                               });
 
-                                if (response2.ok) {
-                                  const responseData = await response2.json();
-
-
-
-if(responseData) {
-    // Step 1: Store relations in localStorage
-    const newRelations = responseData.relations.map(relation => ({
-        id: relation.id,
-        name: relation.name,
-        permissions: relation.permissions
-    }));
+                              handleResponse(response2).then(responseData => {
+                                  if(responseData) {
+                                       // Step 1: Store relations in localStorage
+                                       const newRelations = responseData.relations.map(relation => ({
+                                          id: relation.id,
+                                          name: relation.name,
+                                          permissions: relation.permissions
+                                      }));
 
   console.log("checking");
   userStore.setToken(responseData.token);
   activeRelationStore.setActiveRelation(newRelations[0]);
   userRelations.setUserRelations(newRelations);
 
-    // check if token is not null or undefined
-    if (userStore.getToken) {
-        router.push('/account/dashboard');
-    }
-}} else {
-                                    console.error('Response failed');
-                                }
+                                      // check if token is not null or undefined
+                                      if (userStore.getToken) {
+                                          router.push('/account/dashboard');
+                                      }
+                                  }
+                              }).catch(err => {
+                                  console.error(err);
+                              });
                             } catch (err) {
                                 console.error(err);
                             }
@@ -210,8 +219,8 @@ if(responseData) {
                    body: JSON.stringify(data)
                  });
 //
-                        if (response.ok) {
-                            const responseData = await response.json();
+                  handleResponse(response).then(responseData => {
+                      if(responseData) {
                             userStore.setToken(responseData.token);
 
                             //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
@@ -221,16 +230,18 @@ if(responseData) {
                             if (userStore.getToken) {
                                 router.push('/account/dashboard');
                             }
-                        } else {
-                            console.error('Response failed');
-                        }
+                      }
+                  }).catch(err => {
+                      console.error(err);
+                  });
                     }
                 } catch (err) {
                     console.error(err);
                 }
             },
           logoUrl,
-          user
+          user,
+          errorMessage
         };
     } catch (error) {
     console.error('Error in setup:', error);
@@ -290,9 +301,9 @@ if(responseData) {
 
 .loginCard{
   width: 600px;
-  height: 400px;
+  height: 500px;
   background-image: var(--background-image);
-  background-size: 700px 400px;
+  background-size: 700px 500px;
 }
 .backgroundPage {
   background-color: var(--primary-color);
@@ -331,6 +342,13 @@ if(responseData) {
   background-image: var(--logo);
   background-position: center;
   height: 170px;
+}
+
+.errorText {
+  color: red;
+  text-align: center;
+  font-size: large;
+
 }
 
 
