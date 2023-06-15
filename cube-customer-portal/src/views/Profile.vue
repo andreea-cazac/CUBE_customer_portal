@@ -56,7 +56,7 @@ export default {
   },
   async created() {
     try {
-      const response = await axios.get('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/1');
+      const responseRelations = await axios.get('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/1');
       this.profile = responseRelations.data;
       for (const address of this.profile.addresses) {
         const formattedAddress = `${address.street} ${address.number}, ${address.city}, ${address.country.name}`;
