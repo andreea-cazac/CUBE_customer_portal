@@ -150,6 +150,7 @@ if(responseData) {
         permissions: relation.permissions
     }));
 
+  console.log("checking");
   userStore.setToken(responseData.token);
   activeRelationStore.setActiveRelation(newRelations[0]);
   userRelations.setUserRelations(newRelations);
