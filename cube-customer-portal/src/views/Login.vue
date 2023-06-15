@@ -44,9 +44,12 @@ import {useActiveRelationStore} from '../stores/activeRelation'
 import {useUserStore} from '../stores/userStore.js'
 import {useTenantStore} from '../stores/tenant';
 import {useUserRelationsStore} from "../stores/userRelationsStore";
+import {useFavicon} from "@vueuse/core";
+import mixins from '../stores/mixins.js';
 
 export default {
     name: 'LoginPage',
+   mixins: [mixins],
     setup() {
       try{
         const googleUserManager = inject('googleUserManager');
@@ -55,20 +58,19 @@ export default {
         const router = useRouter();
         const userRelations = useUserRelationsStore();
         const activeRelationStore = useActiveRelationStore();
-        const userStore = useUserStore(); // use Vuex store
+        const userStore = useUserStore();
         const tenantStore = useTenantStore();
         //const tenantStoreRef = ref(tenantStore);
         //has to be decommented after we set a normal host
         //const hostUrl = ref(window.location.href);
         const tenantData = ref(null);
+
       const logoUrl = computed(() => {
         if (tenantStore.tenant.value && tenantStore.tenant.value.settings && tenantStore.tenant.value.settings.logo) {
           return tenantStore.tenant.value.settings.logo;
         }
         return "";  // return an empty string or a placeholder image URL when logo is not yet fetched.
       });
-
-
 
         googleUserManager.getUser().then(u => {
             user.value = u;
@@ -86,7 +88,7 @@ export default {
           const response = await fetch(`https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/mijn.solidpartners.nl`);
           if (response.ok) {
             tenantData.value = await response.json();
-            tenantStore.setTenant(tenantData);
+            tenantStore.setTenant(tenantData.value);
 
             // Update the CSS variables
             if (tenantData.value) {
@@ -95,7 +97,12 @@ export default {
                 document.documentElement.style.setProperty('--background-image', `url(${tenantData.value.settings.backgroundImage})`);
                 document.documentElement.style.setProperty('--logo', `url(${tenantData.value.settings.logo})`);
                 document.documentElement.style.setProperty('--favicon', `url(${tenantData.value.settings.favicon})`);
-            }
+
+              //Favicon usage
+              //console.log(tenantStore.getTenantDesign().settings.favicon);
+             const favicon = computed(() => tenantStore.tenant.settings.favicon);
+              useFavicon(favicon.value);
+             }
 
           } else {
             console.log("Tenant not figured out");
@@ -123,22 +130,22 @@ export default {
 
                               //Frans approach, with the real test API
 
-                              const data2 = {
+                              const googleData = {
                                 ap: "google",
                                 token: loggedInUser.access_token,
                                 email: loggedInUser.profile.email
                               };
 
-                              const response2 = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
+                              const tokenGoogle = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
                                 method: 'POST',
                                 headers: {
                                   'Content-Type': 'application/json'
                                 },
-                                body: JSON.stringify(data2)
+                                body: JSON.stringify(googleData)
                               });
 
-                                if (response2.ok) {
-                                  const responseData = await response2.json();
+                                if (tokenGoogle.ok) {
+                                  const responseData = await tokenGoogle.json();
 
 
 
@@ -150,7 +157,6 @@ if(responseData) {
         permissions: relation.permissions
     }));
 
-  console.log("checking");
   userStore.setToken(responseData.token);
   activeRelationStore.setActiveRelation(newRelations[0]);
   userRelations.setUserRelations(newRelations);
@@ -199,19 +205,22 @@ if(responseData) {
 
 
                    //Frans approach with the real test API
-                 const data = {
+                 const microsoftData = {
                    ap: "microsoft",
                    token: loggedInUser.accessToken, // Access the idToken from the Microsoft user
                    email: email.preferred_username// Access the email from the Microsoft user
                  };
 
-                 const response = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
+                 const tokenMicrosoft = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
                    method: 'POST',
-                   body: JSON.stringify(data)
+                   headers: {
+                     'Content-Type': 'application/json'
+                   },
+                   body: JSON.stringify(microsoftData)
                  });
 //
-                        if (response.ok) {
-                            const responseData = await response.json();
+                        if (tokenMicrosoft.ok) {
+                            const responseData = await tokenMicrosoft.json();
                             userStore.setToken(responseData.token);
 
                             //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
