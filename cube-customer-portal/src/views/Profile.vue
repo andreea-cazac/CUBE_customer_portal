@@ -47,7 +47,6 @@
 import axios from 'axios';
 
 
-
 export default {
   data() {
     return {
@@ -57,8 +56,8 @@ export default {
   },
   async created() {
     try {
-      const response = await axios.get('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/1');
-      this.profile = response.data;
+      const responseRelations = await axios.get('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/1');
+      this.profile = responseRelations.data;
       for (const address of this.profile.addresses) {
         const formattedAddress = `${address.street} ${address.number}, ${address.city}, ${address.country.name}`;
         const location = await this.getGeoInfo(formattedAddress);
@@ -74,11 +73,11 @@ export default {
   methods: {
     async getGeoInfo(address) {
       try {
-        const response = await axios.get(
+        const responseGoogleApi = await axios.get(
           `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${this.apiKey}`
         );
-        if (response.data.results[0]) {
-          const location = response.data.results[0].geometry.location;
+        if (responseGoogleApi.data.results[0]) {
+          const location = responseGoogleApi.data.results[0].geometry.location;
           return location;
         } else {
           console.log('No results for this address');
