@@ -116,6 +116,7 @@
 import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
+import {useUserStore} from "@/stores/userStore";
 
 export default {
   setup() {
@@ -146,10 +147,10 @@ export default {
 
   async created() {
     try {
-      const response = await axios.get(`https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
+      const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
         headers: {
           'Content-Type': 'application/json',
-          // Add any necessary headers here
+          'Authorization': 'Bearer ' + useUserStore().token
         },
       });
 
@@ -184,8 +185,10 @@ export default {
         return 'Low';
       } else if (priorityIndex === 1) {
         return 'Medium';
-      } else if (priorityIndex === 2) {
+      } else if (priorityIndex === 10) {
         return 'High';
+      } else if (priorityIndex === 34) {
+        return 'TBD';
       } else {
         return priorityIndex;
       }
@@ -209,8 +212,10 @@ export default {
         return 'low-priority';
       } else if (ticket.priority_index === 1) {
         return 'medium-priority';
-      } else if (ticket.priority_index === 2) {
+      } else if (ticket.priority_index === 10) {
         return 'high-priority';
+      } else if (ticket.priority_index === 34) {
+        return 'tbd-priority';
       } else {
         return '';
       }
@@ -261,6 +266,13 @@ export default {
 
 .high-priority {
   background-color: red;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.tbd-priority {
+  background-color: #b7b7b7;
   color: #ffffff;
   padding: 5px 10px;
   border-radius: 4px;
