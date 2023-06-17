@@ -324,23 +324,31 @@ export default {
 
   },
 
-  created() {
-    // Fetch data from the API when the component is created
-    axios.get(`https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/${this.relationId}/work_orders/`)
-        .then(response => {
-          // Log the data returned from the API
-          console.log(response.data);
-          console.log(this.relationName);
-          // Assign the response data to your tickets data property
-          this.tickets = response.data;
-        })
-        .catch(error => {
-          // Handle error here
-          console.error(error);
-        });
+    created() {
+        // Fetch data from the API when the component is created
+        let url = `https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/`;
+        let bearerToken = useUserStore().token;
 
-    this.checkFormValidity();
-  },
+        axios.get(url, {
+            headers: {
+                'Authorization': 'Bearer ' + bearerToken
+            }
+        })
+            .then(response => {
+                // Log the data returned from the API
+                console.log(response.data);
+                console.log(this.relationName);
+                // Assign the response data to your tickets data property
+                this.tickets = response.data;
+            })
+            .catch(error => {
+                // Handle error here
+                console.error(error);
+            });
+
+        this.checkFormValidity();
+    },
+
 
 
   computed: {
