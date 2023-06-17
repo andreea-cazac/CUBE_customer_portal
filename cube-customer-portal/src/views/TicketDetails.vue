@@ -64,7 +64,7 @@
                 ></v-file-input>
               </div>
               <div class="text-right">
-                <v-btn color="primary" @click="send" :disabled="!isFormValid">{{ $t('send') }}</v-btn>
+                <v-btn color="green" @click="send" :disabled="!isFormValid">{{ $t('send') }}</v-btn>
               </div>
             </v-card-text>
           </v-card>
@@ -116,19 +116,28 @@
 import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
+import {useTenantStore} from "@/stores/tenant";
 
 export default {
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
-
+    const tenantStore = useTenantStore();
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
 
+    //tenantDesign
+    const logo = tenantStore.tenant.settings.logo;
+    const accent_color = tenantStore.tenant.settings.accent_color;
+    const primary_color = tenantStore.tenant.settings.primary_color;
+
     return {
       relationId,
-      relationName
+      relationName,
+      logo,
+      accent_color,
+      primary_color
     }
   },
 

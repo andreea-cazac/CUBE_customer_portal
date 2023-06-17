@@ -4,12 +4,12 @@
         <v-row class="mb-2">
           <v-col cols="12" md="4">
             <v-card class="text-center bg-grey-lighten-3" border>
-              <v-card-item class="b-solid-blue text-white">
+              <v-card-item :style="{ 'background-color': primary_color, color: 'white' }">
                 <div class="text-h5 mt-5 font-weight-light">{{$t('tickets')}}: {{ tickets.length }}</div>
               </v-card-item>
-              <v-card-actions class="b-solid-blue justify-center px-6 py-3">
+              <v-card-actions :style="{ 'background-color': primary_color }" class="justify-center px-6 py-3">
                 <router-link to="/account/tickets">
-                    <v-btn class="b-solid-blue-2 text-white">
+                    <v-btn :style="{ 'background-color': primary_color, color: 'white' }">
                         <span>{{$t('see_all_tickets')}}</span>
                         <v-icon end size="large">mdi-menu-right-outline</v-icon>
                     </v-btn>
@@ -37,26 +37,27 @@
 <!--          </v-col>-->
         </v-row>
 
-  <v-card class="b-solid-blue-darken-2" max-width="900px" min-width="">
-    <v-card-title class="w-100 b-solid-blue-darken-2">
-      <v-row>
-        <v-card-item class="ma-1">
-          <v-icon color="white">mdi-comment-multiple-outline</v-icon>
-          <span class="font-weight-regular text-white">{{ $t('recent_tickets') }}</span>
-        </v-card-item>
+        <v-card :style="{ 'background-color': accent_color }" max-width="900px" min-width="">
+          <v-card-title class="w-100" :style="{ 'background-color': accent_color }">
+            <v-row>
+              <v-card-item class="ma-1">
+                <v-icon color="white">mdi-comment-multiple-outline</v-icon>
+                <span class="font-weight-regular text-white">{{ $t('recent_tickets') }}</span>
+              </v-card-item>
 
-        <v-spacer></v-spacer>
+              <v-spacer></v-spacer>
 
-        <v-card-actions class="">
-          <router-link to="/account/tickets">
-            <v-btn class="text-white b-solid-blue-darken-2">
-              <span> {{ $t('show_all') }}</span>
-              <v-icon end size="small">mdi-arrow-right</v-icon>
-            </v-btn>
-          </router-link>
-        </v-card-actions>
-      </v-row>
-    </v-card-title>
+              <v-card-actions class="">
+                <router-link to="/account/tickets">
+                  <v-btn class="text-white" :style="{ 'background-color': accent_color }">
+                    <span> {{ $t('show_all') }}</span>
+                    <v-icon end size="small">mdi-arrow-right</v-icon>
+                  </v-btn>
+                </router-link>
+              </v-card-actions>
+            </v-row>
+          </v-card-title>
+
 
     <v-table class="">
       <thead class="">
@@ -93,19 +94,30 @@
 import axios from "axios";
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
+import {useTenantStore} from "@/stores/tenant";
 
 export default {
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
-
+    const tenantStore = useTenantStore();
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
 
+    //tenantDesign
+    const favicon = tenantStore.tenant.settings.favicon;
+    const logo = tenantStore.tenant.settings.logo;
+    const accent_color = tenantStore.tenant.settings.accent_color;
+    const primary_color = tenantStore.tenant.settings.primary_color;
+
     return {
       relationId,
-      relationName
+      relationName,
+      favicon,
+      accent_color,
+      primary_color,
+      logo
     }
   },
   data() {
@@ -202,21 +214,4 @@ export default {
 .Medium{
   background: orange;
 }
-
-.solid-blue{
-  color: #000161;
-}
-.b-solid-blue{
-  background: #000161;
-}
-.b-solid-blue-darken{
-  background: #000157;
-}
-.b-solid-blue-2{
-  background: #262679;
-}
-.b-solid-blue-darken-2{
-  background: #0057a6;
-}
-
 </style>

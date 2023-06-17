@@ -2,27 +2,27 @@
   <div>
     <v-row>
       <!-- Search bar -->
-        <v-col cols="12" md="8">
-            <v-text-field
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    :label="$t('search')"
-                    single-line
-                    hide-details
-            ></v-text-field>
-        </v-col>
+      <v-col cols="12" md="8">
+        <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            :label="$t('search')"
+            single-line
+            hide-details
+        ></v-text-field>
+      </v-col>
       <!-- Show all button -->
-        <v-col cols="6" md="2" class="text-md-right text-center">
-            <v-btn @click="showAll = !showAll">
-                {{ showAll ? $t('showOpenTickets') : $t('showAll') }}
-            </v-btn>
-        </v-col>
+      <v-col cols="6" md="2" class="text-md-right text-center">
+        <v-btn @click="showAll = !showAll" v-bind:color="primary_color" class="text-white">
+          {{ showAll ? $t('showOpenTickets') : $t('showAll') }}
+        </v-btn>
+      </v-col>
       <!-- Create ticket button -->
-        <v-col cols="6" md="2" class="text-md-right text-center">
-            <v-btn @click="dialog = true">
-                {{ $t('createTicket') }}
-            </v-btn>
-        </v-col>
+      <v-col cols="6" md="2" class="text-md-right text-center text-white">
+        <v-btn @click="dialog = true" v-bind:color="accent_color">
+          {{ $t('createTicket') }}
+        </v-btn>
+      </v-col>
     </v-row>
 
 
@@ -73,27 +73,27 @@
     <v-table density="comfortable" style="table-layout: fixed; width: 100%;">
       <thead>
       <tr>
-        <th class="text-left">{{$t('ticket_number')}}</th>
-        <th class="text-left">{{$t('title')}}</th>
-        <th class="text-left">
+        <th class="text-left" :style="{ color: 'black' }">{{$t('ticket_number')}}</th>
+        <th class="text-left" :style="{ color: 'black' }">{{$t('title')}}</th>
+        <th class="text-left" :style="{ color: 'black' }">
           <div class="header-wrapper" @click="sortDate">
             {{$t('date_time_created')}}
             <v-icon :class="sortColumn === 'date' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
-        <th class="text-left">
+        <th class="text-left" :style="{ color: 'black' }">
           <div class="header-wrapper" @click="sortPriority">
               {{$t('priority')}}
             <v-icon :class="sortColumn === 'priority' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
-        <th class="text-left">
+        <th class="text-left" :style="{ color: 'black' }">
           <div class="header-wrapper" @click="sortStatus">
               {{$t('status')}}
             <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
-        <th class="text-left">{{$t('type')}}</th>
+        <th class="text-left" :style="{ color: 'black' }">{{$t('type')}}</th>
       </tr>
       </thead>
       <tbody>
@@ -132,19 +132,28 @@
 import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
+import {useTenantStore} from "@/stores/tenant";
 
 export default {
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
-
+    const tenantStore = useTenantStore();
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
 
+    //tenantDesign
+    const logo = tenantStore.tenant.settings.logo;
+    const accent_color = tenantStore.tenant.settings.accent_color;
+    const primary_color = tenantStore.tenant.settings.primary_color;
+
     return {
       relationId,
-      relationName
+      relationName,
+      accent_color,
+      primary_color,
+      logo
     }
   },
 

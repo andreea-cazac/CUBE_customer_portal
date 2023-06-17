@@ -1,33 +1,24 @@
 <template>
-    <v-app class="backgroundPage">
-        <v-container style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-            <div class="circle circle1"></div>
-            <div class="circle circle2"></div>
-            <div class="circle circle3"></div>
-            <div class="circle circle4"></div>
-            <div class="circle circle5"></div>
+    <v-app :style="{backgroundColor: primary_color}">
+      <v-container class="d-flex align-center justify-center fill-height">
+        <v-avatar class="circle" :style="getCircleStyle(200, { top: '-5%', left: '-5%' }, { fill: true, fillColor: accent_color})"></v-avatar>
+        <v-avatar class="circle" :style="getCircleStyle(150, { bottom: '20%', right: '10%' }, { fill: true, fillColor: accent_color})"></v-avatar>
+        <v-avatar class="circle" :style="getCircleStyle(300, { bottom: '10%', right: '60%' }, { fill: false, border: true, borderColor: accent_color})"></v-avatar>
+        <v-avatar class="circle" :style="getCircleStyle(300, { bottom: '-5%', right: '-5%' }, { fill: false, border: true, borderColor: accent_color })"></v-avatar>
+        <v-avatar class="circle" :style="getCircleStyle(100, { bottom: '70%', right: '40%' }, { fill: false, border: true, borderColor: accent_color })"></v-avatar>
 
-            <v-card class="loginCard"  rounded="lg" >
-              <v-img aspect-ratio="2.5" class="logoContainer"></v-img>
-                <v-card-title class="loginText">Log in with one of the providers:</v-card-title>
+
+        <v-card rounded="lg" >
+          <v-img v-bind:src="logo" alt="logo"></v-img>
+          <v-card-title class="text-center" :style="{color: primary_color}">Log in with one of the providers:</v-card-title>
 
                 <v-card-actions class="justify-center">
-                  <div class="button-group">
-                    <v-btn
-                        variant="outlined"
-                        class="loginButtons"
-                        icon="mdi-google"
-                        @click="loginGoogle"
-                    >
+                  <div>
+                    <v-btn size="x-large" v-bind:color="primary_color" variant="outlined" icon="mdi-google" @click="loginGoogle">
                       <v-icon size="x-large" icon="mdi-google"></v-icon>
                     </v-btn>
 
-                    <v-btn
-                        variant="outlined"
-                        class="loginButtons"
-                        icon="mdi-microsoft-windows"
-                        @click="loginMicrosoft"
-                    >
+                    <v-btn style="margin: 25px" size="x-large" v-bind:color="primary_color" variant="outlined" icon="mdi-microsoft-windows" @click="loginMicrosoft">
                       <v-icon size="x-large" icon="mdi-microsoft-windows"></v-icon>
                     </v-btn>
                   </div>
@@ -65,12 +56,39 @@ export default {
         //const hostUrl = ref(window.location.href);
         const tenantData = ref(null);
 
+        //tenantDesign
+        const logo = tenantStore.tenant.settings.logo;
+        const accent_color = tenantStore.tenant.settings.accent_color;
+        const primary_color = tenantStore.tenant.settings.primary_color;
+
       const logoUrl = computed(() => {
         if (tenantStore.tenant.value && tenantStore.tenant.value.settings && tenantStore.tenant.value.settings.logo) {
           return tenantStore.tenant.value.settings.logo;
         }
         return "";  // return an empty string or a placeholder image URL when logo is not yet fetched.
       });
+
+      //Circle styling
+        const getCircleStyle = (size, position, options = {}) => {
+          const { fill = true, fillColor = accent_color, border = true, borderColor = accent_color } = options;
+
+          const style = {
+            width: `${size}px`,
+            height: `${size}px`,
+            ...position,
+          };
+
+          if (fill) {
+            style.background = fillColor;
+          }
+
+          if (border) {
+            style.border = `2px solid ${borderColor}`;
+          }
+
+          return style;
+        };
+
 
         googleUserManager.getUser().then(u => {
             user.value = u;
@@ -85,19 +103,13 @@ export default {
           //Retrieving tenant design
           //console.log(window.location.href);
           //has to be changed to: https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/${hostUrl.value} after setting up a normal host
-          const response = await fetch(`https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/mijn.solidpartners.nl`);
+          const response = await fetch(`https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/localhost`);
           if (response.ok) {
             tenantData.value = await response.json();
             tenantStore.setTenant(tenantData.value);
 
             // Update the CSS variables
             if (tenantData.value) {
-                document.documentElement.style.setProperty('--primary-color', tenantData.value.settings.primary_color);
-                document.documentElement.style.setProperty('--accent-color', tenantData.value.settings.accent_color);
-                document.documentElement.style.setProperty('--background-image', `url(${tenantData.value.settings.backgroundImage})`);
-                document.documentElement.style.setProperty('--logo', `url(${tenantData.value.settings.logo})`);
-                document.documentElement.style.setProperty('--favicon', `url(${tenantData.value.settings.favicon})`);
-
               //Favicon usage
               //console.log(tenantStore.getTenantDesign().settings.favicon);
              const favicon = computed(() => tenantStore.tenant.settings.favicon);
@@ -115,27 +127,15 @@ export default {
 
                         if (loggedInUser) {
                             try {
-
-                        // //our approach with the mock API
-                        //   const data = {
-                        //       ap: "google",
-                        //       token: loggedInUser.id_token,
-                        //       email: loggedInUser.profile.email
-                        //   };
-//
-                        //   const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
-                        //       method: 'POST',
-                        //       body: JSON.stringify(data)
-                        //   });
-
-                              //Frans approach, with the real test API
-
+//logging in with Google
                               const googleData = {
                                 ap: "google",
                                 token: loggedInUser.access_token,
                                 email: loggedInUser.profile.email
                               };
 
+                              console.log(loggedInUser.access_token);
+                              console.log(loggedInUser.id_token);
                               const tokenGoogle = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
                                 method: 'POST',
                                 headers: {
@@ -143,6 +143,7 @@ export default {
                                 },
                                 body: JSON.stringify(googleData)
                               });
+
 
                                 if (tokenGoogle.ok) {
                                   const responseData = await tokenGoogle.json();
@@ -239,7 +240,11 @@ if(responseData) {
                 }
             },
           logoUrl,
-          user
+          getCircleStyle,
+          user,
+          accent_color,
+          primary_color,
+          logo
         };
     } catch (error) {
     console.error('Error in setup:', error);
@@ -253,72 +258,8 @@ if(responseData) {
 <style scoped>
 .circle {
     position: absolute;
-    border-radius: 50%;
-}
 
-.circle1 {
-    width: 200px;
-    height: 200px;
-    background: var(--accent-color);
-    top: -5%;
-    left: -5%;
 }
-
-.circle2 {
-    width: 150px;
-    height: 150px;
-    background: var(--accent-color);
-    bottom: 20%;
-    right: 10%;
-}
-
-.circle3 {
-    width: 300px;
-    height: 300px;
-    border: 2px solid var(--accent-color);
-    bottom: 10%;
-    right: 60%;
-}
-
-.circle4 {
-  width: 300px;
-  height: 300px;
-  border: 2px solid var(--accent-color);
-  bottom: -5%;
-  right: -5%;
-}
-
-.circle5 {
-  width: 100px;
-  height: 100px;
-  border: 2px solid var(--accent-color);
-  bottom: 70%;
-  right: 40%;
-}
-
-
-.loginCard{
-  width: 600px;
-  height: 400px;
-  background-image: var(--background-image);
-  background-size: 700px 400px;
-}
-.backgroundPage {
-  background-color: var(--primary-color);
-  background-size: 1920px 980px;
-}
-
-.loginText{
-  color: var(--primary-color);
-  text-align: center;
-  font-size: x-large;
-}
-
- .button-group {
-   display: flex;
-   justify-content: space-between;
-   padding: 0;
- }
 
 .loginButtons{
   border-color: var(--primary-color);
@@ -329,19 +270,9 @@ if(responseData) {
   margin: 1.5rem; /* Increase the spacing around the buttons */
 }
 
-@media (max-width: 360px) {
-  .loginButtons{
-    width: 50px; /* smaller width for screens less than or equal to 360px wide */
-    height: 50px; /* smaller height for screens less than or equal to 360px wide */
-  }
-}
-
-.logoContainer {
-  background-image: var(--logo);
-  background-position: center;
-  height: 170px;
-}
-
+@use 'vuetify/settings' with (
+$button-padding: 10rem,
+);
 
 </style>
 
