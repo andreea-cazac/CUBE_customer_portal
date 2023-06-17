@@ -97,7 +97,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="item in filteredTickets" :key="item.code" @click="goToTicket(item.code)" class="clickable-row">
+      <tr v-for="item in filteredTickets" :key="item.code" @click="goToTicket(item)" class="clickable-row">
         <td>{{ item.code }}</td>
         <td>{{ item.title }}</td>
         <td>{{ item.created_at }}</td>
@@ -228,8 +228,9 @@ export default {
   },
 
   methods: {
-    goToTicket(code) {
-      this.$router.push(`/account/tickets/${code}`);
+    goToTicket(ticket) {
+      // this.$router.push(`/account/tickets/${ticket}`);
+      this.$router.push({ name: 'ticketDetails', params: { id: `${ticket.id}`} });
     },
     createTicket() {
       // Implement your logic for creating the ticket here
