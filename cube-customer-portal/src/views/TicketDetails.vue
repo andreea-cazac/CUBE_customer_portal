@@ -10,18 +10,25 @@
         <v-col cols="12" sm="4">
           <v-card class="pa-2" style="height: 100%;">
             <v-card-item>
-              <v-card-title class="text-color mb-5">{{ $t('ticket_number') }}: {{ ticket.code }}</v-card-title>
+              <v-card-title class="text-color mb-5">{{ ticket.title }}</v-card-title>
               <v-card-text>
-                <strong class="text-color">{{ $t('created') }}: {{ ticket.created_at }}</strong>
+                <strong class="text-color">{{ $t('ticket_number') }}: </strong>
+                 <strong class="font-weight-regular"> {{ ticket.code }}</strong>
+                <br><br>
+                <strong class="text-color">{{ $t('created') }}: </strong>
+                  <strong class="font-weight-regular"> {{ ticket.created_at }}</strong>
                 <br>
                 <br>
-                <strong class="text-color">{{ $t('type') }}: {{ ticket.type_label }}</strong>
+                <strong class="text-color" >{{ $t('type') }}: </strong>
+                <strong class="font-weight-regular">{{ ticket?.type?.label }}</strong>
                 <br>
                 <br>
-                <strong :class="priorityClass" class="text-color">{{ $t('priority') }}: {{ displayPriority(ticket.priority_index) }}</strong>
+                <strong class="text-color">{{ $t('priority') }}: </strong>
+                <strong :class="priorityClass" class="text-color">{{ displayPriority(ticket.priority_index) }}</strong>
                 <br>
                 <br>
-                <strong :class="statusClass" class="text-color">{{ $t('status') }}: {{ displayStatus(ticket.status) }}</strong>
+                <strong class="text-color">{{ $t('status') }}: </strong>
+                <strong :class="statusClass" class="text-color">{{ displayStatus(ticket.status_label) }}</strong>
               </v-card-text>
             </v-card-item>
           </v-card>
@@ -32,7 +39,7 @@
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('description') }}</v-card-title>
               <v-card-text>
-                <strong class="text-color">{{ ticket.description }}</strong>
+                <strong class="font-weight-regular" v-html="ticket.description"></strong>
                 <br>
               </v-card-text>
             </v-card-item>
@@ -64,7 +71,7 @@
                 ></v-file-input>
               </div>
               <div class="text-right">
-                <v-btn color="primary" @click="send" :disabled="!isFormValid">{{ $t('send') }}</v-btn>
+                <v-btn class="clientColor" @click="send" :disabled="!isFormValid">{{ $t('send') }}</v-btn>
               </div>
             </v-card-text>
           </v-card>
@@ -117,6 +124,7 @@ import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
 import {useUserStore} from "@/stores/userStore";
+import {useTenantStore} from "@/stores/tenant";
 
 export default {
   setup() {
@@ -127,9 +135,18 @@ export default {
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
 
+    const tenantStore = useTenantStore();
+    const tenantStoreRef = ref(tenantStore);
+
+    const primaryColor = computed(() => tenantStoreRef.value.primaryColor);
+    const accentColor = computed(() => tenantStoreRef.value.accentColor);
+
+
     return {
       relationId,
-      relationName
+      relationName,
+      primaryColor,
+      accentColor
     }
   },
 
@@ -142,10 +159,12 @@ export default {
       showSnackbar: false,
       snackbarTimeout: 3000,
       ticket: {},
+      // aColor: this.setup.accentColor
+
     };
   },
 
-  async created() {
+async created() {
     try {
       const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
         headers: {
@@ -194,6 +213,8 @@ export default {
       }
     },
     displayStatus(statusName) {
+      console.log('name: ');
+      console.log(statusName);
       if (statusName === 'finished') {
         return 'Finished';
       } else if (statusName === 'todo') {
@@ -203,7 +224,7 @@ export default {
       } else {
         return statusName;
       }
-    },
+    }
   },
   computed: {
     priorityClass() {
@@ -222,11 +243,11 @@ export default {
     },
     statusClass() {
       const ticket = this.ticket;
-      if (ticket.status === 'finished') {
+      if (ticket.status_label === 'finished') {
         return 'finished-status';
-      } else if (ticket.status === 'todo') {
+      } else if (ticket.status_label === 'todo') {
         return 'todo-status';
-      } else if (ticket.status === 'in_progress') {
+      } else if (ticket.status_label === 'in_progress') {
         return 'in-progress-status';
       } else {
         return '';
@@ -293,7 +314,7 @@ export default {
 }
 
 .in-progress-status {
-  background-color: #2196f3;
+  background-color: #ffc400;
   color: #ffffff;
   padding: 5px 10px;
   border-radius: 4px;
@@ -303,4 +324,9 @@ export default {
   background-color: #43a047;
   color: #ffffff;
 }
+
+.clientColor{
+  /*background: var(primary-color);*/
+}
+
 </style>

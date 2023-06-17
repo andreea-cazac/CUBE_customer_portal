@@ -97,13 +97,14 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="item in filteredTickets" :key="item.code" @click="goToTicket(item.code)" class="clickable-row">
+      <tr v-for="item in filteredTickets" :key="item.code" @click="goToTicket(item)" class="clickable-row">
         <td>{{ item.code }}</td>
         <td>{{ item.title }}</td>
         <td>{{ item.created_at }}</td>
         <td>
           <div :class="{'bcg-dark-green': displayPriority(item.priority_index) === 'Low',
                'bcg-red': displayPriority(item.priority_index) === 'High',
+               'bcg-grey': displayPriority(item.priority_index) === 'TBD',
                'bcg-orange': displayPriority(item.priority_index) === 'Medium'}"
                class="status-badge">
             {{ displayPriority(item.priority_index) }}
@@ -132,6 +133,7 @@
 import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
+import {useUserStore} from "@/stores/userStore";
 
 export default {
   setup() {
@@ -228,8 +230,10 @@ export default {
   },
 
   methods: {
-    goToTicket(code) {
-      this.$router.push(`/account/tickets/${code}`);
+    goToTicket(ticket) {
+      this.$router.push({ name: 'ticketDetails', params: { id: `${ticket.id}`} });
+
+      // this.$router.push(`/account/tickets/${code}`);
     },
     createTicket() {
       // Implement your logic for creating the ticket here
@@ -264,7 +268,7 @@ export default {
       this.filteredTickets.sort(this.sortByDate);
     },
     sortByPriority(a, b) {
-      const priorityOrder = ['Low', 'Medium', 'High'];
+      const priorityOrder = ['TBD', 'Low', 'Medium', 'High'];
       const indexA = priorityOrder.indexOf(a.priority);
       const indexB = priorityOrder.indexOf(b.priority);
       if (indexA < indexB) {
@@ -308,7 +312,12 @@ export default {
 
   created() {
     // Fetch data from the API when the component is created
-    axios.get(`https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/${this.relationId}/work_orders/`)
+    axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/`, {
+      headers: {
+        'Authorization': 'Bearer ' + useUserStore().token,
+        'Access-Control-Allow-Origin': 'http://localhost:5173'
+      }
+    })
         .then(response => {
           // Log the data returned from the API
           console.log(response.data);
@@ -333,7 +342,7 @@ export default {
 
       // If showAll is false, filter the tickets to only show those with status 'In-Progress'
       if (!this.showAll) {
-        tickets = tickets.filter(ticket => this.displayStatus(ticket.status) === 'In-Progress');
+        tickets = tickets.filter(ticket => this.displayStatus(ticket.status) === 'In-Progress' || this.displayStatus(ticket.status) === 'To-Do');
       }
 
       // Apply the search filter, regardless of the value of showAll
@@ -364,7 +373,8 @@ export default {
       return function(priorityIndex) {
         return priorityIndex === 0 ? 'Low' : priorityIndex &&
         priorityIndex === 1 ? 'Medium' : priorityIndex &&
-        priorityIndex === 2 ? 'High' : priorityIndex;
+        priorityIndex === 10 ? 'High' : priorityIndex &&
+        priorityIndex === 34 ? 'TBD' : priorityIndex;
       }
     },
     displayStatus() {
@@ -421,6 +431,11 @@ export default {
 
 .bcg-red {
   background-color: red;
+  color: white;  /* Set the text color so it contrasts with the background */
+}
+
+ .bcg-grey {
+  background: #b7b7b7;
   color: white;  /* Set the text color so it contrasts with the background */
 }
 
