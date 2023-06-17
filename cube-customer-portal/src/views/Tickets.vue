@@ -131,6 +131,7 @@
 <script>
 import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
+import {useUserStore} from "@/stores/userStore";
 import {computed, ref} from "vue";
 
 export default {
@@ -141,7 +142,6 @@ export default {
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
-
     return {
       relationId,
       relationName
@@ -232,9 +232,27 @@ export default {
       this.$router.push(`/account/tickets/${code}`);
     },
     createTicket() {
-      // Implement your logic for creating the ticket here
-      // For example, you might call an API to create the ticket on the server
-      console.log(this.ticket.title, this.ticket.description);
+        const id = useActiveRelationStore().activeRelation.id;
+        let url = `https://cube-testing.solidpartners.nl/cp/relations/${id}/work_orders`;
+        let bearerToken = useUserStore().token;
+        let postData = {
+            title : this.ticket.title,
+            description: this.ticket.description
+        };
+        axios.post(url, postData, {
+            headers: {
+                'Authorization': 'Bearer ' + bearerToken
+            }
+        })
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+
+
 
       // Clear the ticket data
       this.ticket = {
