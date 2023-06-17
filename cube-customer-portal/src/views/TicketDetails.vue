@@ -127,6 +127,8 @@
 
 <script>
 import axios from 'axios';
+import {useActiveRelationStore} from "@/stores/activeRelation";
+import {computed, ref} from "vue";
 
 export default {
   data() {
@@ -141,19 +143,36 @@ export default {
     };
   },
 
-  async created() {
-    try {
-      const response = await axios.get('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/50018/work_orders/1', {
-        headers: {
-          'Content-Type': 'application/json',
-          // Add any necessary headers here
-        },
-      });
+  setup() {
+    const activeRelationStore = useActiveRelationStore();
+    const activeRelationStoreRef = ref(activeRelationStore);
 
-      this.ticket = response.data;
-    } catch (error) {
-      console.error('Error fetching ticket data:', error);
+    const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
+    const relationId = computed(() => activeRelation.value.id);
+    const relationName = computed(() => activeRelation.value.name);
+
+    return {
+      relationId,
+      relationName
     }
+  },
+
+  created() {
+    const id = this.$route.params.id;
+
+    axios.get(`https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/${this.relationId}/work_orders/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        // Add any necessary headers here
+      },
+    })
+        .then(response => {
+          console.log(response.data);
+          this.ticket = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching ticket data:', error);
+        });
   },
   methods: {
     attachFiles() {
