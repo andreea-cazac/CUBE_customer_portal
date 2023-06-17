@@ -39,7 +39,7 @@
           </v-card>
         </v-col>
         <!-- Panel Add Comments -->
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="4" v-if="!isTicketFinished">
           <v-card class="pa-2" style="height: 100%;">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('add_comments') }}</v-card-title>
@@ -64,7 +64,20 @@
                 ></v-file-input>
               </div>
               <div class="text-right">
-                <v-btn color="primary" @click="send" :disabled="!isFormValid">{{ $t('send') }}</v-btn>
+                <v-btn color="#080464" class="white-text" @click="send" :disabled="!isFormValid">{{ $t('send') }}</v-btn>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="4" v-else>
+          <v-card class="pa-2" style="height: 100%;">
+            <v-card-item>
+              <v-card-title class="text-color mb-5">{{ $t('add_comments') }}</v-card-title>
+            </v-card-item>
+            <v-card-text>
+              <div class="finished-message">
+                <v-icon class="finished-icon">mdi-check-circle-outline</v-icon>
+                <p class="finished-text">{{ $t('This ticket is already finished') }}</p>
               </div>
             </v-card-text>
           </v-card>
@@ -119,6 +132,18 @@ import {computed, ref} from "vue";
 import {useUserStore} from "@/stores/userStore";
 
 export default {
+  data() {
+    return {
+      title: '',
+      description: '',
+      isFormValid: false,
+      attachment: null,
+      showSnackbar: false,
+      snackbarTimeout: 3000,
+      ticket: {},
+    };
+  },
+
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
@@ -131,18 +156,6 @@ export default {
       relationId,
       relationName
     }
-  },
-
-  data() {
-    return {
-      title: '',
-      description: '',
-      isFormValid: false,
-      attachment: null,
-      showSnackbar: false,
-      snackbarTimeout: 3000,
-      ticket: {},
-    };
   },
 
   async created() {
@@ -232,6 +245,11 @@ export default {
         return '';
       }
     },
+    isTicketFinished() {
+      return this.ticket.status === 'finished';
+    },
+
+
   },
 };
 </script>
@@ -299,8 +317,33 @@ export default {
   border-radius: 4px;
 }
 
-.custom-snackbar {
+/*.custom-snackbar {
   background-color: #43a047;
   color: #ffffff;
+}*/
+
+.finished-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
 }
+
+.finished-icon {
+  font-size: 64px;
+  color: rgb(31, 187, 31);
+  margin-bottom: 16px;
+}
+
+.finished-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: rgb(31, 187, 31);
+  text-align: center;
+}
+.white-text {
+  color: white;
+}
+
 </style>
