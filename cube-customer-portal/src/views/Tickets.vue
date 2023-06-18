@@ -147,6 +147,7 @@ export default {
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
+
     return {
       relationId,
       relationName
@@ -352,9 +353,8 @@ export default {
                 console.error(error);
             });
 
-        this.checkFormValidity();
-    },
-
+    this.checkFormValidity();
+  },
 
 
   computed: {
@@ -363,12 +363,12 @@ export default {
     filteredTickets() {
       let tickets = this.tickets;
 
-      // If showAll is false, filter the tickets to only show those with status 'In-Progress' and 'To-Do
+      // If showAll is false, filter the tickets to only show those with status 'In-Progress'
       if (!this.showAll) {
-        tickets = tickets.filter(ticket => this.displayStatus(ticket.status) === 'In-Progress' || this.displayStatus(ticket.status) === 'To-Do');
+        tickets = tickets.filter(ticket => this.displayStatus(ticket.status) === 'In-Progress');
       }
 
-      // Apply the search filter
+      // Apply the search filter, regardless of the value of showAll
       if (this.search) {
         tickets = tickets.filter(ticket =>
             (ticket.status && ticket.status.toLowerCase().includes(this.search.toLowerCase())) ||
@@ -396,8 +396,8 @@ export default {
       return function(priorityIndex) {
         return priorityIndex === 0 ? 'Low' : priorityIndex &&
         priorityIndex === 1 ? 'Medium' : priorityIndex &&
-        priorityIndex === 34 ? 'TBD' : priorityIndex && //WRONG VALUE
-        priorityIndex === 10 ? 'High' : priorityIndex; //WRONG VALUE
+        priorityIndex === 10 ? 'High' : priorityIndex &&
+        priorityIndex === 34 ? 'TBD' : priorityIndex;
       }
     },
     displayStatus() {
@@ -462,13 +462,14 @@ export default {
   color: white;  /* Set the text color so it contrasts with the background */
 }
 
+ .bcg-grey {
+  background: #b7b7b7;
+  color: white;  /* Set the text color so it contrasts with the background */
+}
+
 .bcg-dark-green {
   background-color: green;  /* You can adjust the color as per your preference */
   color: white;  /* Set the text color so it contrasts with the background */
-}
-.bcg-grey {
-  background-color: #b7b7b7;
-  color: white;
 }
 
 .rotate180 {
