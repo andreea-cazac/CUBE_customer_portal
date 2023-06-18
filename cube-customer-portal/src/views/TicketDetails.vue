@@ -46,7 +46,7 @@
           </v-card>
         </v-col>
         <!-- Panel Add Comments -->
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="4" v-if="!isTicketFinished">
           <v-card class="pa-2" style="height: 100%;">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('add_comments') }}</v-card-title>
@@ -71,7 +71,20 @@
                 ></v-file-input>
               </div>
               <div class="text-right">
-                <v-btn class="clientColor" @click="send" :disabled="!isFormValid">{{ $t('send') }}</v-btn>
+                <v-btn color="#080464" class="white-text" @click="send" :disabled="!isFormValid">{{ $t('send') }}</v-btn>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="4" v-else>
+          <v-card class="pa-2" style="height: 100%;">
+            <v-card-item>
+              <v-card-title class="text-color mb-5">{{ $t('add_comments') }}</v-card-title>
+            </v-card-item>
+            <v-card-text>
+              <div class="finished-message">
+                <v-icon class="finished-icon">mdi-check-circle-outline</v-icon>
+                <p class="finished-text">{{ $t('This ticket is already finished') }}</p>
               </div>
             </v-card-text>
           </v-card>
@@ -135,18 +148,9 @@ export default {
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
 
-    const tenantStore = useTenantStore();
-    const tenantStoreRef = ref(tenantStore);
-
-    const primaryColor = computed(() => tenantStoreRef.value.primaryColor);
-    const accentColor = computed(() => tenantStoreRef.value.accentColor);
-
-
     return {
       relationId,
-      relationName,
-      primaryColor,
-      accentColor
+      relationName
     }
   },
 
@@ -159,12 +163,10 @@ export default {
       showSnackbar: false,
       snackbarTimeout: 3000,
       ticket: {},
-      // aColor: this.setup.accentColor
-
     };
   },
 
-async created() {
+  async created() {
     try {
       const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
         headers: {
@@ -213,8 +215,6 @@ async created() {
       }
     },
     displayStatus(statusName) {
-      console.log('name: ');
-      console.log(statusName);
       if (statusName === 'finished') {
         return 'Finished';
       } else if (statusName === 'todo') {
@@ -224,7 +224,7 @@ async created() {
       } else {
         return statusName;
       }
-    }
+    },
   },
   computed: {
     priorityClass() {
@@ -253,6 +253,11 @@ async created() {
         return '';
       }
     },
+    isTicketFinished() {
+      return this.ticket.status === 'finished';
+    },
+
+
   },
 };
 </script>
@@ -314,7 +319,7 @@ async created() {
 }
 
 .in-progress-status {
-  background-color: #ffc400;
+  background-color: #2196f3;
   color: #ffffff;
   padding: 5px 10px;
   border-radius: 4px;
@@ -323,10 +328,30 @@ async created() {
 .custom-snackbar {
   background-color: #43a047;
   color: #ffffff;
+}*/
+
+.finished-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
 }
 
-.clientColor{
-  /*background: var(primary-color);*/
+.finished-icon {
+  font-size: 64px;
+  color: rgb(31, 187, 31);
+  margin-bottom: 16px;
+}
+
+.finished-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: rgb(31, 187, 31);
+  text-align: center;
+}
+.white-text {
+  color: white;
 }
 
 </style>
