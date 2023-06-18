@@ -365,7 +365,7 @@ export default {
 
       // If showAll is false, filter the tickets to only show those with status 'In-Progress'
       if (!this.showAll) {
-        tickets = tickets.filter(ticket => this.displayStatus(ticket.status) === 'In-Progress');
+        tickets = tickets.filter(ticket => this.displayStatus(ticket.status) === 'In-Progress' || this.displayStatus(ticket.status) === 'To-Do');
       }
 
       // Apply the search filter, regardless of the value of showAll
