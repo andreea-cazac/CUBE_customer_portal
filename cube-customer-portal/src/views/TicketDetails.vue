@@ -137,7 +137,6 @@ import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
 import {useUserStore} from "@/stores/userStore";
-import {useTenantStore} from "@/stores/tenant";
 
 export default {
   setup() {
@@ -328,7 +327,7 @@ export default {
 .custom-snackbar {
   background-color: #43a047;
   color: #ffffff;
-}*/
+}
 
 .finished-message {
   display: flex;
