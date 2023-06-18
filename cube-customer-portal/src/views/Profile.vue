@@ -45,49 +45,69 @@
 
 <script>
 import axios from 'axios';
-
+import {useUserStore} from "@/stores/userStore";
+import {useActiveRelationStore} from "@/stores/activeRelation";
+import {computed, ref, onMounted} from "vue";
 
 export default {
-  data() {
-    return {
-      profile: {},
-      apiKey: 'AIzaSyApCMKI6OviHx9FB2DkxkOVz0NwIpzFo5E',
-    };
-  },
-  async created() {
-    try {
-      const responseRelations = await axios.get('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/1');
-      this.profile = responseRelations.data;
-      for (const address of this.profile.addresses) {
-        const formattedAddress = `${address.street} ${address.number}, ${address.city}, ${address.country.name}`;
-        const location = await this.getGeoInfo(formattedAddress);
-        if (location) {
-          // Here we add the geolocation information to the address object
-          address.geoLocation = location;
+  setup() {
+    const activeRelationStore = useActiveRelationStore();
+    const activeRelationStoreRef = ref(activeRelationStore);
+
+    const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
+    const relationId = computed(() => activeRelation.value.id);
+    const profile = ref({});
+    const apiKey = 'AIzaSyCb-VXv9duPI7zRwSm_nu-_KUbHUrnV23A';
+
+    onMounted(async () => {
+      try {
+        const responseRelations = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${relationId.value}`, {
+          headers: {
+            'Authorization': 'Bearer ' + useUserStore().token,
+            'Access-Control-Allow-Origin':  'http://localhost:5173'
+          }
+        });
+        profile.value = responseRelations.data;
+        console.log(responseRelations);
+        for (const address of profile.value.addresses) {
+          const formattedAddress = `${address.street} ${address.number}, ${address.city}, ${address.country.name}`;
+          const location = await getGeoInfo(formattedAddress);
+          if (location) {
+            // Here we add the geolocation information to the address object
+            address.geoLocation = location;
+          }
         }
+      } catch (error) {
+        console.error('Error occurred: ', error);
       }
-    } catch (error) {
-      console.error('Error occurred: ', error);
-    }
-  },
-  methods: {
-    async getGeoInfo(address) {
+    });
+
+    const getGeoInfo = async (address) => {
       try {
         const responseGoogleApi = await axios.get(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${this.apiKey}`
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${apiKey}`
         );
         if (responseGoogleApi.data.results[0]) {
           const location = responseGoogleApi.data.results[0].geometry.location;
           return location;
         } else {
-          console.log('No results for this address');
+          console.log('No results for this address: ', address);
         }
       } catch (error) {
-        console.error('Error occurred: ', error);
+        console.error('Error occurred getting geolocation for the address: ', address, error);
       }
-    },
+      // We add a delay to avoid the OVER_QUERY_LIMIT error
+      await new Promise(resolve => setTimeout(resolve, 50));
+    };
+    return {
+      relationId,
+      profile,
+      getGeoInfo,
+      apiKey
+    }
   },
 };
+
 </script>
 
   <style>
@@ -97,3 +117,4 @@ export default {
     }
 
   </style>
+
