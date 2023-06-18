@@ -7,7 +7,7 @@ export const useTenantStore = defineStore('tenant', {
         tenant:{
             cubeUrl: "",
             settings: {
-            primary_color: '',
+            primary_color: 'red',
             accent_color: "",
             logo: "",
             favicon: "",

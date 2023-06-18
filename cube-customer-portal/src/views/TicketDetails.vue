@@ -10,18 +10,25 @@
         <v-col cols="12" sm="4">
           <v-card class="pa-2" style="height: 100%;">
             <v-card-item>
-              <v-card-title class="text-color mb-5">{{ $t('ticket_number') }}: {{ ticket.code }}</v-card-title>
+              <v-card-title class="text-color mb-5">{{ ticket.title }}</v-card-title>
               <v-card-text>
-                <strong class="text-color">{{ $t('created') }}: {{ ticket.created_at }}</strong>
+                <strong class="text-color">{{ $t('ticket_number') }}: </strong>
+                 <strong class="font-weight-regular"> {{ ticket.code }}</strong>
+                <br><br>
+                <strong class="text-color">{{ $t('created') }}: </strong>
+                  <strong class="font-weight-regular"> {{ ticket.created_at }}</strong>
                 <br>
                 <br>
-                <strong class="text-color">{{ $t('type') }}: {{ ticket.type_label }}</strong>
+                <strong class="text-color" >{{ $t('type') }}: </strong>
+                <strong class="font-weight-regular">{{ ticket?.type?.label }}</strong>
                 <br>
                 <br>
-                <strong :class="priorityClass" class="text-color">{{ $t('priority') }}: {{ displayPriority(ticket.priority_index) }}</strong>
+                <strong class="text-color">{{ $t('priority') }}: </strong>
+                <strong :class="priorityClass" class="text-color">{{ displayPriority(ticket.priority_index) }}</strong>
                 <br>
                 <br>
-                <strong :class="statusClass" class="text-color">{{ $t('status') }}: {{ displayStatus(ticket.status) }}</strong>
+                <strong class="text-color">{{ $t('status') }}: </strong>
+                <strong :class="statusClass" class="text-color">{{ displayStatus(ticket.status_label) }}</strong>
               </v-card-text>
             </v-card-item>
           </v-card>
@@ -32,7 +39,7 @@
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('description') }}</v-card-title>
               <v-card-text>
-                <strong class="text-color">{{ ticket.description }}</strong>
+                <strong class="font-weight-regular" v-html="ticket.description"></strong>
                 <br>
               </v-card-text>
             </v-card-item>
@@ -132,18 +139,6 @@ import {computed, ref} from "vue";
 import {useUserStore} from "@/stores/userStore";
 
 export default {
-  data() {
-    return {
-      title: '',
-      description: '',
-      isFormValid: false,
-      attachment: null,
-      showSnackbar: false,
-      snackbarTimeout: 3000,
-      ticket: {},
-    };
-  },
-
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
@@ -156,6 +151,18 @@ export default {
       relationId,
       relationName
     }
+  },
+
+  data() {
+    return {
+      title: '',
+      description: '',
+      isFormValid: false,
+      attachment: null,
+      showSnackbar: false,
+      snackbarTimeout: 3000,
+      ticket: {},
+    };
   },
 
   async created() {
@@ -235,11 +242,11 @@ export default {
     },
     statusClass() {
       const ticket = this.ticket;
-      if (ticket.status === 'finished') {
+      if (ticket.status_label === 'finished') {
         return 'finished-status';
-      } else if (ticket.status === 'todo') {
+      } else if (ticket.status_label === 'todo') {
         return 'todo-status';
-      } else if (ticket.status === 'in_progress') {
+      } else if (ticket.status_label === 'in_progress') {
         return 'in-progress-status';
       } else {
         return '';
@@ -317,10 +324,10 @@ export default {
   border-radius: 4px;
 }
 
-/*.custom-snackbar {
+.custom-snackbar {
   background-color: #43a047;
   color: #ffffff;
-}*/
+}
 
 .finished-message {
   display: flex;
