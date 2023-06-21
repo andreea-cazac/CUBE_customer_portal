@@ -119,7 +119,7 @@
         <v-col cols="12" sm="8">
           <v-card class="pa-2" style="height: 100%;">
             <v-card-item>
-              <v-card-title class="text-color mb-5">{{ $t('information') }}</v-card-title>
+              <v-card-title class="text-color mb-5">{{ $t('Comments') }}</v-card-title>
               <v-card-text>
                 <div v-for="note in ticket.notes" :key="note.id">
                   <h3>{{ note.title }}</h3>
