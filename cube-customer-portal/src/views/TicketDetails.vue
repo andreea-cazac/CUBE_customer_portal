@@ -215,7 +215,7 @@ export default {
         for (let i = 0; i < this.attachment.length; i++) {
           formData.append('attachment', this.attachment[i]);
         }
-        const response = await axios.post(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/events`, formData, {
+        const response = await axios.post(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/attachments`, formData, {
           headers: {
             'Authorization': 'Bearer ' + useUserStore().token,
           },
