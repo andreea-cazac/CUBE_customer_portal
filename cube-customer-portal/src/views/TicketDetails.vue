@@ -213,6 +213,8 @@ export default {
         });
         this.ticket = response.data;
         this.fetchAttachments(); 
+        this.fetchComments();
+        console.log(this.ticket);
       } catch (error) {
         console.error('Error fetching ticket data:', error);
       }
@@ -231,6 +233,40 @@ export default {
         console.error('Error fetching attachments:', error);
       }
     },
+    async fetchComments(){
+        try{
+        const commentsResponse = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/events`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + useUserStore().token
+          },
+        });
+        this.ticket.events = commentsResponse.data;
+        console.log(this.ticket.events);
+      } catch (error) {
+        console.error('Error fetching ticket data:', error);
+      }
+    },
+    async postComment() {
+    try {
+      const response = await axios.post(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/events`, {
+        title: this.title,
+        body: this.description,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + useUserStore().token
+        },
+      });
+      if (response.status === 200) {
+        this.ticket.events.unshift(response.data);
+        this.clearFields();
+        await this.uploadAttachment();
+      }
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    }
+  },
     async uploadAttachment() {
       if (!this.attachment) return;
       try {
@@ -262,7 +298,7 @@ export default {
     async send() {
       this.showFormErrorAlert = false;
       if (this.isFormValid) {
-        await this.uploadAttachment();
+        await this.postComment();
         this.clearFields(); 
         
       } else {
