@@ -90,9 +90,6 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-snackbar v-model="showSnackbar" :timeout="snackbarTimeout" class="custom-snackbar" multi-line>
-        {{ $t('comment_added') }}
-      </v-snackbar>
       <!-- ALERTS -->
       <v-alert
         v-model="showSuccessAlert"
@@ -104,8 +101,8 @@
       <v-alert
         v-model="showUploadErrorAlert"
         type="warning"
-        title="Oppsi!"
-        text="Something went wrong while uploading the file please try again!"
+        title="Opps!"
+        text="It seems like you don't have permission to upload files!"
         class="my-10"
       ></v-alert>
       <v-alert
@@ -138,13 +135,21 @@
           <v-card class="pa-2" style="height: 100%;">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('attachments') }}</v-card-title>
-              <v-card-text>
-                <div v-for="attachment in ticket.attachments" :key="attachment.name">
-                  <a :href="attachment.url" target="_blank" rel="noopener noreferrer">
-                    <strong class="text-color">{{ attachment.name }}</strong>
-                  </a>
-                  <br>
-                </div>
+              <v-card-text class="d-flex flex-column">
+                <v-card v-for="attachment in ticket.attachments" :key="attachment.name" class="my-3 pa-5">
+                  <img :src="attachment.url" v-if="isImage(attachment.content_type)" class="w-100" />
+                  <v-icon size="x-large" class="mx-auto" v-if="!isImage(attachment.content_type)">mdi-file</v-icon>
+                  <v-card-text>
+                    <br>
+                    <b>Filename: </b>{{ attachment.display_name }}
+                    <br>
+                    <b>Date & Time: </b>{{ formatDate(attachment.datetime) }}
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn color="#080464" class="white-text" @click="openImage(attachment)">{{ $t('open') }}</v-btn>
+                    <v-btn color="#080464" class="white-text" @click="downloadFile(attachment)">{{ $t('download') }}</v-btn>
+                  </v-card-actions>
+                </v-card>
               </v-card-text>
             </v-card-item>
           </v-card>
@@ -160,6 +165,7 @@ import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
 import {useUserStore} from "@/stores/userStore";
+import moment from 'moment';
 
 export default {
   setup() {
@@ -184,7 +190,7 @@ export default {
       attachment: null,
       //sncackbar may be deleted later
       showSnackbar: false,
-      snackbarTimeout: 3000,
+      alertTimeout: 3000,
       showSuccessAlert: false,
       showFormErrorAlert: false,
       showUploadErrorAlert: false,
@@ -193,21 +199,38 @@ export default {
   },
 
   async created() {
-    try {
-      const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + useUserStore().token
-        },
-      });
-
-      this.ticket = response.data;
-      console.log(`${this.$route.params.id}`)
-    } catch (error) {
-      console.error('Error fetching ticket data:', error);
-    }
+    this.fetchTicketData();
   },
+
   methods: {
+    async fetchTicketData() {
+      try {
+        const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + useUserStore().token
+          },
+        });
+        this.ticket = response.data;
+        this.fetchAttachments(); 
+      } catch (error) {
+        console.error('Error fetching ticket data:', error);
+      }
+    },
+    async fetchAttachments() {
+      try {
+        const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/attachments`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + useUserStore().token
+          },
+        });
+        console.log(response);
+        this.ticket.attachments = response.data;
+      } catch (error) {
+        console.error('Error fetching attachments:', error);
+      }
+    },
     async uploadAttachment() {
       if (!this.attachment) return;
       try {
@@ -222,10 +245,16 @@ export default {
         });
         console.log(response);
         this.showSuccessAlert = true;
+        setTimeout(() => {
+          this.showSuccessAlert = false;
+        }, 3000);
       } catch (error) {
         console.error('Error uploading attachment:', error);
         //show an alert
         this.showUploadErrorAlert = true;
+        setTimeout(() => {
+          this.showUploadErrorAlert = false;
+        }, 3000);
       }
     },
     async send() {
@@ -235,7 +264,36 @@ export default {
         this.clearFields(); 
       } else {
         this.showFormErrorAlert = true;
+        setTimeout(() => {
+          this.showFormErrorAlert = false;
+        }, 3000);
       }
+    },
+    async downloadFile(attachment) {
+      try {
+        const response = await axios({
+          url: attachment.url,
+          method: 'GET',
+          responseType: 'blob', // important
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', attachment.name);
+        document.body.appendChild(link);
+        link.click();
+      } catch (error) {
+        console.error('Error downloading file:', error);
+      }
+    },
+    formatDate(date) {
+      return moment(date).format('DD/MM/YYYY HH:mm');
+    },
+    isImage(contentType) {
+      return contentType.startsWith('image/');
+    },
+    openImage(attachment) {
+      window.open(attachment.url, '_blank');
     },
     checkFormValidity() {
       this.isFormValid = this.title && this.description;
