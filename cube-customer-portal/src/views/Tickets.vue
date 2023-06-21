@@ -257,16 +257,12 @@ export default {
             .catch(error => {
                 console.error(error);
             });
-
-
-
-
       // Clear the ticket data
       this.ticket = {
         title: '',
         description: '',
       };
-
+      window.location.reload();
       this.dialog = false;
       this.showSnackbar = true;
       setTimeout(() => {
