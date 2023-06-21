@@ -247,7 +247,9 @@ export default {
         this.showSuccessAlert = true;
         setTimeout(() => {
           this.showSuccessAlert = false;
+          window.location.reload();
         }, 3000);
+      
       } catch (error) {
         console.error('Error uploading attachment:', error);
         //show an alert
@@ -262,6 +264,7 @@ export default {
       if (this.isFormValid) {
         await this.uploadAttachment();
         this.clearFields(); 
+        
       } else {
         this.showFormErrorAlert = true;
         setTimeout(() => {
