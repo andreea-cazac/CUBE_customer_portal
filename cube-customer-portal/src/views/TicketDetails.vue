@@ -93,6 +93,29 @@
       <v-snackbar v-model="showSnackbar" :timeout="snackbarTimeout" class="custom-snackbar" multi-line>
         {{ $t('comment_added') }}
       </v-snackbar>
+      <!-- ALERTS -->
+      <v-alert
+        v-model="showSuccessAlert"
+        type="success"
+        title="Success!"
+        text="Comment added successfully!"
+        class="my-10"
+      ></v-alert>
+      <v-alert
+        v-model="showUploadErrorAlert"
+        type="warning"
+        title="Oppsi!"
+        text="Something went wrong while uploading the file please try again!"
+        class="my-10"
+      ></v-alert>
+      <v-alert
+        v-model="showFormErrorAlert"
+        type="error"
+        title="Ooops!"
+        text="Plese check the form again and make sure it is completed!"
+        class="my-10"
+      ></v-alert>
+      <!-- ALERTS -->
       <v-row>
         <!-- Panel Information -->
         <v-col cols="12" sm="8">
@@ -159,8 +182,12 @@ export default {
       description: '',
       isFormValid: false,
       attachment: null,
+      //sncackbar may be deleted later
       showSnackbar: false,
       snackbarTimeout: 3000,
+      showSuccessAlert: false,
+      showFormErrorAlert: false,
+      showUploadErrorAlert: false,
       ticket: {},
     };
   },
@@ -181,14 +208,33 @@ export default {
     }
   },
   methods: {
-    attachFiles() {
-      // Implement your file attachment logic here
+    async uploadAttachment() {
+      if (!this.attachment) return;
+      try {
+        const formData = new FormData();
+        for (let i = 0; i < this.attachment.length; i++) {
+          formData.append('attachment', this.attachment[i]);
+        }
+        const response = await axios.post(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/events`, formData, {
+          headers: {
+            'Authorization': 'Bearer ' + useUserStore().token,
+          },
+        });
+        console.log(response);
+        this.showSuccessAlert = true;
+      } catch (error) {
+        console.error('Error uploading attachment:', error);
+        //show an alert
+        this.showUploadErrorAlert = true;
+      }
     },
-    send() {
+    async send() {
+      this.showFormErrorAlert = false;
       if (this.isFormValid) {
-        // Do something when the form is valid and the "Send" button is clicked
-        this.showSnackbar = true; // Display the snackbar
-        this.clearFields(); // Clear the input fields
+        await this.uploadAttachment();
+        this.clearFields(); 
+      } else {
+        this.showFormErrorAlert = true;
       }
     },
     checkFormValidity() {
@@ -198,65 +244,51 @@ export default {
       this.title = '';
       this.description = '';
       this.attachment = null;
-      this.isFormValid = false; // Reset the form validity
+      this.isFormValid = false; 
     },
     displayPriority(priorityIndex) {
-      if (priorityIndex === 0) {
-        return 'Low';
-      } else if (priorityIndex === 1) {
-        return 'Medium';
-      } else if (priorityIndex === 10) {
-        return 'High';
-      } else if (priorityIndex === 34) {
-        return 'TBD';
-      } else {
-        return priorityIndex;
-      }
+      const priorityMap = {
+        0: 'Low',
+        1: 'Medium',
+        10: 'High',
+        34: 'TBD'
+      };
+      return priorityMap[priorityIndex] || priorityIndex;
     },
     displayStatus(statusName) {
-      if (statusName === 'finished') {
-        return 'Finished';
-      } else if (statusName === 'todo') {
-        return 'To-Do';
-      } else if (statusName === 'in_progress') {
-        return 'In-Progress';
-      } else {
-        return statusName;
-      }
+      const statusMap = {
+        finished: 'Finished',
+        todo: 'To-Do',
+        in_progress: 'In-Progress'
+      };
+      return statusMap[statusName] || statusName;
     },
   },
   computed: {
     priorityClass() {
       const ticket = this.ticket;
-      if (ticket.priority_index === 0) {
-        return 'low-priority';
-      } else if (ticket.priority_index === 1) {
-        return 'medium-priority';
-      } else if (ticket.priority_index === 10) {
-        return 'high-priority';
-      } else if (ticket.priority_index === 34) {
-        return 'tbd-priority';
-      } else {
-        return '';
-      }
+      const priorityMap = {
+        0: 'low-priority',
+        1: 'medium-priority',
+        10: 'high-priority',
+        34: 'tbd-priority'
+      };
+      return priorityMap[ticket.priority_index] || '';
     },
+
     statusClass() {
       const ticket = this.ticket;
-      if (ticket.status_label === 'finished') {
-        return 'finished-status';
-      } else if (ticket.status_label === 'todo') {
-        return 'todo-status';
-      } else if (ticket.status_label === 'in_progress') {
-        return 'in-progress-status';
-      } else {
-        return '';
-      }
+      const statusMap = {
+        finished: 'finished-status',
+        todo: 'todo-status',
+        in_progress: 'in-progress-status'
+      };
+      return statusMap[ticket.status_label] || '';
     },
+
     isTicketFinished() {
       return this.ticket.status === 'finished';
     },
-
-
   },
 };
 </script>
