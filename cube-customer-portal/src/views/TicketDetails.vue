@@ -114,6 +114,7 @@
       ></v-alert>
       <!-- ALERTS -->
       <v-row>
+      
         <!-- Panel Information -->
         <v-col cols="12" sm="8">
           <v-card class="pa-2" style="height: 100%;">
@@ -126,6 +127,13 @@
                   <p v-html="note.body"></p>
                   <br>
                 </div>
+                <v-card v-for="event in ticket.events" :key="event.id" class="my-3 pa-5">
+                  <v-card-title>{{ event.title }}</v-card-title>
+                  <v-card-subtitle>{{ formatDate(event.created_at) }}, <i>by: {{ event.attributes[0].value }}, </i></v-card-subtitle>  
+                  <v-card-text>
+                    <p v-html="event.body"></p>
+                  </v-card-text>
+                </v-card>
               </v-card-text>
             </v-card-item>
           </v-card>
@@ -214,7 +222,6 @@ export default {
         this.ticket = response.data;
         this.fetchAttachments(); 
         this.fetchComments();
-        console.log(this.ticket);
       } catch (error) {
         console.error('Error fetching ticket data:', error);
       }
@@ -227,7 +234,6 @@ export default {
             'Authorization': 'Bearer ' + useUserStore().token
           },
         });
-        console.log(response);
         this.ticket.attachments = response.data;
       } catch (error) {
         console.error('Error fetching attachments:', error);
@@ -242,7 +248,6 @@ export default {
           },
         });
         this.ticket.events = commentsResponse.data;
-        console.log(this.ticket.events);
       } catch (error) {
         console.error('Error fetching ticket data:', error);
       }
@@ -260,8 +265,6 @@ export default {
       });
       if (response.status === 200) {
         this.ticket.events.unshift(response.data);
-        this.clearFields();
-        await this.uploadAttachment();
       }
     } catch (error) {
       console.error('Error posting comment:', error);
@@ -279,13 +282,6 @@ export default {
             'Authorization': 'Bearer ' + useUserStore().token,
           },
         });
-        console.log(response);
-        this.showSuccessAlert = true;
-        setTimeout(() => {
-          this.showSuccessAlert = false;
-          window.location.reload();
-        }, 3000);
-      
       } catch (error) {
         console.error('Error uploading attachment:', error);
         //show an alert
@@ -298,9 +294,14 @@ export default {
     async send() {
       this.showFormErrorAlert = false;
       if (this.isFormValid) {
+        this.showSuccessAlert = true;
         await this.postComment();
-        this.clearFields(); 
-        
+        await this.uploadAttachment();
+        setTimeout(() => {
+          this.showSuccessAlert = false;
+          this.clearFields(); 
+          window.location.reload();
+        }, 3000);
       } else {
         this.showFormErrorAlert = true;
         setTimeout(() => {
