@@ -3,9 +3,9 @@
     <v-row justify="center">
       <v-col cols="12" sm="10" md="8">
         <v-card color="red lighten-5" class="pa-6" outlined>
-          <v-card-title class="headline display-2">401 Unauthorized</v-card-title>
-          <v-card-text class="title">
-            Sorry, you are unauthorized for accessing this route!
+          <v-card-title class="text-h4">Oopps!</v-card-title>
+          <v-card-text class="text-body-1">
+            Sorry, seems like you have to login firstly!
             Please go to the
             <router-link to="/login">login page</router-link>
             and try to login.
