@@ -60,7 +60,7 @@
             </v-menu>
 
 
-            <v-btn color="b-solid-blue text-white" :key="logout" router :to="loginRoute">
+            <v-btn class="logoutButton" color="b-solid-blue text-white" :key="logout" router :to="loginRoute">
                 <span class="d-none d-sm-flex"  @click="logout()" >{{ $t('signOut') }}</span>
                 <v-icon>mdi-exit-to-app</v-icon>
             </v-btn>

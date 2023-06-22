@@ -15,6 +15,7 @@
                   <div class="button-group">
                     <v-btn
                         variant="outlined"
+                        id="google-login-btn"
                         class="loginButtons"
                         icon="mdi-google"
                         @click="loginGoogle"
@@ -24,6 +25,7 @@
 
                     <v-btn
                         variant="outlined"
+                        id="microsoft-login-btn"
                         class="loginButtons"
                         icon="mdi-microsoft-windows"
                         @click="loginMicrosoft"
