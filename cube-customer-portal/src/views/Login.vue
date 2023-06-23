@@ -53,9 +53,9 @@ export default {
       const errorMessage = ref("");
       const { logo, accent_color, primary_color } = extractDesignSettings(tenantStore);
       const logoUrl = computeLogoUrl(tenantStore);
-      
+
       onMounted(() => initializePage(tenantStore, googleUserManager, microsoftUserManager, user, router, userStore, activeRelationStore, userRelations, errorMessage));
-      
+
       return {
         loginGoogle: () => googleUserManager.signinRedirect(),
         loginMicrosoft: () => loginMicrosoftUser(microsoftUserManager, userStore, router, errorMessage),
@@ -67,7 +67,7 @@ export default {
         logo,
         errorMessage,
       };
-        
+
       function extractDesignSettings(tenantStore) {
           const logo = tenantStore.tenant.settings.logo;
           const accent_color = tenantStore.tenant.settings.accent_color;
@@ -106,7 +106,7 @@ export default {
 
       async function initializePage(tenantStore, googleUserManager, microsoftUserManager, user, router, userStore, activeRelationStore, userRelations, errorMessage ) {
         await getTenantDesign(tenantStore);
-        
+
         getUser(googleUserManager, microsoftUserManager, user);
 
         handleLoginRedirects(router, googleUserManager, userStore, activeRelationStore, userRelations, errorMessage);
