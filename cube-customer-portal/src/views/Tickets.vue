@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-row>
+  <div class="mb-9">
+    <v-row class="mb-4">
       <!-- Search bar -->
         <v-col cols="12" md="8">
             <v-text-field
@@ -42,6 +42,7 @@
             </v-col>
           </v-row>
         </v-card-title>
+
         <v-card-text>
           <v-container>
             <v-row>
@@ -57,6 +58,7 @@
             </v-row>
           </v-container>
         </v-card-text>
+
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="dialog = false">{{$t('cancel')}}</v-btn>
@@ -70,34 +72,35 @@
     </v-snackbar>
 
 
-    <v-table density="comfortable" style="table-layout: fixed; width: 100%;">
-      <thead>
+      <v-table density="comfortable" style="table-layout: fixed; width: 100%;" fixed-header="true">
+      <thead >
       <tr>
-        <th class="text-left">{{$t('ticket_number')}}</th>
-        <th class="text-left">{{$t('title')}}</th>
-        <th class="text-left">
+        <th class="text-left text-grey-darken-3" >{{$t('ticket_number')}}</th>
+        <th class="text-left text-grey-darken-3">{{$t('title')}}</th>
+        <th class="text-left text-grey-darken-3">
           <div class="header-wrapper" @click="sortDate">
             {{$t('date_time_created')}}
             <v-icon :class="sortColumn === 'date' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
-        <th class="text-left">
+        <th class="text-left text-grey-darken-3">
           <div class="header-wrapper" @click="sortPriority">
               {{$t('priority')}}
             <v-icon :class="sortColumn === 'priority' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
-        <th class="text-left">
+        <th class="text-left text-grey-darken-3">
           <div class="header-wrapper" @click="sortStatus">
               {{$t('status')}}
             <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
-        <th class="text-left">{{$t('type')}}</th>
+        <th class="text-left text-grey-darken-3">{{$t('type')}}</th>
       </tr>
       </thead>
+
       <tbody>
-      <tr v-for="item in filteredTickets" :key="item.code" @click="goToTicket(item)" class="clickable-row">
+      <tr v-for="item in pageTickets" :key="item.code" @click="goToTicket(item)" class="clickable-row">
         <td>{{ item.code }}</td>
         <td>{{ item.title }}</td>
         <td>{{ item.created_at }}</td>
@@ -119,18 +122,16 @@
             {{ displayStatus(item.status) }}
           </div>
         </td>
-        <td>{{ displayType(item.type_label) }}</td>
+        <td class="text-wrap">{{ displayType(item.type_label) }}</td>
       </tr>
       </tbody>
     </v-table>
     <router-view></router-view>
+
+  <v-pagination v-model="currentPage" :length="totalPages" rounded="circle" total-visible="10" size="default" color="primary"></v-pagination>
   </div>
 
-  <!--  <v-pagination
-        v-model="page"
-        :length="totalPages"
-        color="primary"
-    ></v-pagination>-->
+
 </template>
 
 <script>
@@ -177,8 +178,8 @@ export default {
         { text: 'Type', value: 'type_label', sortable: true },
       ],
       tickets: [],
-      itemsPerPage: 2,
-      page: 1,
+      itemsPerPage: 20,
+      currentPage: 1,
     };
   },
 
@@ -212,7 +213,7 @@ export default {
         title: '',
         description: '',
       };
-
+      window.location.reload();
       this.dialog = false;
       this.showSnackbar = true;
       setTimeout(() => {
@@ -325,12 +326,13 @@ export default {
       }
       return tickets;
     },
-    /*totalPages() {
+    totalPages() {
       return Math.ceil(this.filteredTickets.length / this.itemsPerPage);
-    },*/
+    },
     pageTickets() {
-      const start = (this.page - 1) * this.itemsPerPage;
+      const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
+      console.log(this.filteredTickets.slice(start, end));
       return this.filteredTickets.slice(start, end);
     },
     /*Based on the api (it displays 0, 1 or 2) it will display the name of the priority*/
