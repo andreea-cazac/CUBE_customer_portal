@@ -176,58 +176,7 @@ export default {
         { text: 'Status', value: 'status', sortable: true },
         { text: 'Type', value: 'type_label', sortable: true },
       ],
-      tickets: [
-        /*{
-          number: 'TCK-001',
-          title: 'First ticket',
-          date: '2023-05-31 12:00:00',
-          priority: 'Low',
-          status: 'In Progress',
-          type: 'Bug'
-        },
-        {
-          number: 'TCK-002',
-          title: 'Second ticket',
-          date: '2023-05-31 13:00:00',
-          priority: 'Medium',
-          status: 'In Progress',
-          type: 'Help'
-        },
-        {
-          number: 'TCK-003',
-          title: 'Second ticket',
-          date: '2023-05-31 13:00:00',
-          priority: 'High',
-          status: 'Done',
-          type: 'Help'
-        },
-        {
-          number: 'TCK-004',
-          title: 'Second ticket',
-          date: '2023-05-31 05:00:00',
-          priority: 'High',
-          status: 'In Progress',
-          type: 'Help'
-        },
-        {
-          number: 'TCK-005',
-          title: 'Second ticket',
-          date: '2023-03-25 13:00:00',
-          priority: 'Medium',
-          status: 'In Progress',
-          type: 'Help'
-        },
-        {
-          number: 'TCK-006',
-          title: 'Second ticket',
-          date: '2023-04-31 13:00:00',
-          priority: 'Medium',
-          status: 'Todo',
-          type: 'Help'
-        },*/
-
-        // ... add more items here
-      ],
+      tickets: [],
       itemsPerPage: 2,
       page: 1,
     };
@@ -257,9 +206,6 @@ export default {
             .catch(error => {
                 console.error(error);
             });
-
-
-
 
       // Clear the ticket data
       this.ticket = {
@@ -327,8 +273,6 @@ export default {
     checkFormValidity() {
       this.isFormValid = !!this.ticket.title && !!this.ticket.description;
     },
-
-
   },
 
     created() {
@@ -358,7 +302,6 @@ export default {
 
 
   computed: {
-
     /*To show only the open tickets*/
     filteredTickets() {
       let tickets = this.tickets;
@@ -380,7 +323,6 @@ export default {
             (this.displayStatus(ticket.status) && this.displayStatus(ticket.status).toLowerCase().includes(this.search.toLowerCase()))
         );
       }
-
       return tickets;
     },
     /*totalPages() {
@@ -479,19 +421,6 @@ export default {
 .custom-snackbar {
   /*background-color: #f39c12; !* Set your custom background color *!
   color: #fff; !* Set your custom text color *!*/
-}
-
-.v-data-table {
-  margin-top: 20px;  /* Adjust this value as needed */
-}
-
-.v-table {
-  margin-top: 20px;  /* Adjust this value as needed */
-}
-
-.table-fixed {
-  table-layout: fixed;
-  width: 100%;
 }
 
 .table-fixed td {
