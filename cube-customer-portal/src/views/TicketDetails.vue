@@ -8,12 +8,12 @@
     <v-container fluid>
       <v-row>
         <v-col cols="12" sm="4">
-          <v-card class="pa-2" style="height: 100%;">
+          <v-card class="pa-1" height="100%">
             <v-card-item>
-              <v-card-title class="text-color mb-5">{{ ticket.title }}</v-card-title>
-              <v-card-text>
-                <strong class="text-color">{{ $t('ticket_number') }}: </strong>
-                 <strong class="font-weight-regular"> {{ ticket.code }}</strong>
+              <v-card-title class="text-color mb-5 text-wrap">{{ $t('ticket_number') }}: {{ ticket.code }}</v-card-title>
+                <v-card-text>
+                <strong class="text-color">{{ $t('title') }}: </strong>
+                 <strong class="font-weight-regular"> {{ ticket.title }}</strong>
                 <br><br>
                 <strong class="text-color">{{ $t('created') }}: </strong>
                   <strong class="font-weight-regular"> {{ ticket.created_at }}</strong>
@@ -35,7 +35,7 @@
         </v-col>
         <!-- Panel Description -->
         <v-col cols="12" sm="4">
-          <v-card class="pa-2" style="height: 100%;">
+          <v-card class="pa-1 scrollable" height="470px">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('description') }}</v-card-title>
               <v-card-text>
@@ -47,7 +47,7 @@
         </v-col>
         <!-- Panel Add Comments -->
         <v-col cols="12" sm="4" v-if="!isTicketFinished">
-          <v-card class="pa-2" style="height: 100%;">
+          <v-card class="pa-1" height="100%">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('add_comments') }}</v-card-title>
             </v-card-item>
@@ -77,7 +77,7 @@
           </v-card>
         </v-col>
         <v-col cols="12" sm="4" v-else>
-          <v-card class="pa-2" style="height: 100%;">
+          <v-card class="pa-1" height="100%">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('add_comments') }}</v-card-title>
             </v-card-item>
@@ -96,7 +96,7 @@
       <v-row>
         <!-- Panel Information -->
         <v-col cols="12" sm="8">
-          <v-card class="pa-2" style="height: 100%;">
+          <v-card class="pa-1" height="100%">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('information') }}</v-card-title>
               <v-card-text>
@@ -112,7 +112,7 @@
         </v-col>
         <!-- Panel Attachments -->
         <v-col cols="12" sm="4">
-          <v-card class="pa-2" style="height: 100%;">
+          <v-card class="pa-2" height="100%">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('attachments') }}</v-card-title>
               <v-card-text>
@@ -255,8 +255,6 @@ export default {
     isTicketFinished() {
       return this.ticket.status === 'finished';
     },
-
-
   },
 };
 </script>
@@ -351,6 +349,10 @@ export default {
 }
 .white-text {
   color: white;
+}
+.scrollable{
+ flex-flow: column;
+  overflow-y: scroll;
 }
 
 </style>
