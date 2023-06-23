@@ -90,15 +90,36 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-snackbar v-model="showSnackbar" :timeout="snackbarTimeout" class="custom-snackbar" multi-line>
-        {{ $t('comment_added') }}
-      </v-snackbar>
+      <!-- ALERTS -->
+      <v-alert
+        v-model="showSuccessAlert"
+        type="success"
+        title="Success!"
+        text="Comment added successfully!"
+        class="my-10"
+      ></v-alert>
+      <v-alert
+        v-model="showUploadErrorAlert"
+        type="warning"
+        title="Opps!"
+        text="It seems like you don't have permission to upload files!"
+        class="my-10"
+      ></v-alert>
+      <v-alert
+        v-model="showFormErrorAlert"
+        type="error"
+        title="Ooops!"
+        text="Plese check the form again and make sure it is completed!"
+        class="my-10"
+      ></v-alert>
+      <!-- ALERTS -->
       <v-row>
+
         <!-- Panel Information -->
         <v-col cols="12" sm="8">
           <v-card class="pa-1" height="100%">
             <v-card-item>
-              <v-card-title class="text-color mb-5">{{ $t('information') }}</v-card-title>
+              <v-card-title class="text-color mb-5">{{ $t('Comments') }}</v-card-title>
               <v-card-text>
                 <div v-for="note in ticket.notes" :key="note.id">
                   <h3>{{ note.title }}</h3>
@@ -106,6 +127,13 @@
                   <p v-html="note.body"></p>
                   <br>
                 </div>
+                <v-card v-for="event in ticket.events" :key="event.id" class="my-3 pa-5">
+                  <v-card-title>{{ event.title }}</v-card-title>
+                  <v-card-subtitle>{{ formatDate(event.created_at) }}, <i>by: {{ event.attributes[0].value }}, </i></v-card-subtitle>
+                  <v-card-text>
+                    <p v-html="event.body"></p>
+                  </v-card-text>
+                </v-card>
               </v-card-text>
             </v-card-item>
           </v-card>
@@ -115,13 +143,21 @@
           <v-card class="pa-2" height="100%">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('attachments') }}</v-card-title>
-              <v-card-text>
-                <div v-for="attachment in ticket.attachments" :key="attachment.name">
-                  <a :href="attachment.url" target="_blank" rel="noopener noreferrer">
-                    <strong class="text-color">{{ attachment.name }}</strong>
-                  </a>
-                  <br>
-                </div>
+              <v-card-text class="d-flex flex-column">
+                <v-card v-for="attachment in ticket.attachments" :key="attachment.name" class="my-3 pa-5">
+                  <img :src="attachment.url" v-if="isImage(attachment.content_type)" class="w-100" />
+                  <v-icon size="x-large" class="mx-auto" v-if="!isImage(attachment.content_type)">mdi-file</v-icon>
+                  <v-card-text>
+                    <br>
+                    <b>Filename: </b>{{ attachment.display_name }}
+                    <br>
+                    <b>Date & Time: </b>{{ formatDate(attachment.datetime) }}
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn color="#080464" class="white-text" @click="openImage(attachment)">{{ $t('open') }}</v-btn>
+                    <v-btn color="#080464" class="white-text" @click="downloadFile(attachment)">{{ $t('download') }}</v-btn>
+                  </v-card-actions>
+                </v-card>
               </v-card-text>
             </v-card-item>
           </v-card>
@@ -136,20 +172,28 @@
 import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
+import {useTenantStore} from "@/stores/tenant";
 import {useUserStore} from "@/stores/userStore";
+import moment from 'moment';
 
 export default {
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
-
+    const tenantStore = useTenantStore();
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
 
+    //tenantDesign
+    const accent_color = tenantStore.tenant.settings.accent_color;
+    const primary_color = tenantStore.tenant.settings.primary_color;
+
     return {
       relationId,
-      relationName
+      relationName,
+      accent_color,
+      primary_color
     }
   },
 
@@ -159,37 +203,144 @@ export default {
       description: '',
       isFormValid: false,
       attachment: null,
+      //sncackbar may be deleted later
       showSnackbar: false,
-      snackbarTimeout: 3000,
+      alertTimeout: 3000,
+      showSuccessAlert: false,
+      showFormErrorAlert: false,
+      showUploadErrorAlert: false,
       ticket: {},
     };
   },
 
   async created() {
+    this.fetchTicketData();
+  },
+
+  methods: {
+    async fetchTicketData() {
+      try {
+        const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + useUserStore().token
+          },
+        });
+        this.ticket = response.data;
+        this.fetchAttachments();
+        this.fetchComments();
+      } catch (error) {
+        console.error('Error fetching ticket data:', error);
+      }
+    },
+    async fetchAttachments() {
+      try {
+        const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/attachments`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + useUserStore().token
+          },
+        });
+        this.ticket.attachments = response.data;
+      } catch (error) {
+        console.error('Error fetching attachments:', error);
+      }
+    },
+    async fetchComments(){
+        try{
+        const commentsResponse = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/events`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + useUserStore().token
+          },
+        });
+        this.ticket.events = commentsResponse.data;
+      } catch (error) {
+        console.error('Error fetching ticket data:', error);
+      }
+    },
+    async postComment() {
     try {
-      const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
+      const response = await axios.post(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/events`, {
+        title: this.title,
+        body: this.description,
+      }, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + useUserStore().token
         },
       });
-
-      this.ticket = response.data;
-      console.log(`${this.$route.params.id}`)
+      if (response.status === 200) {
+        this.ticket.events.unshift(response.data);
+      }
     } catch (error) {
-      console.error('Error fetching ticket data:', error);
+      console.error('Error posting comment:', error);
     }
   },
-  methods: {
-    attachFiles() {
-      // Implement your file attachment logic here
-    },
-    send() {
-      if (this.isFormValid) {
-        // Do something when the form is valid and the "Send" button is clicked
-        this.showSnackbar = true; // Display the snackbar
-        this.clearFields(); // Clear the input fields
+    async uploadAttachment() {
+      if (!this.attachment) return;
+      try {
+        const formData = new FormData();
+        for (let i = 0; i < this.attachment.length; i++) {
+          formData.append('attachment', this.attachment[i]);
+        }
+        const response = await axios.post(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/attachments`, formData, {
+          headers: {
+            'Authorization': 'Bearer ' + useUserStore().token,
+          },
+        });
+      } catch (error) {
+        console.error('Error uploading attachment:', error);
+        //show an alert
+        this.showUploadErrorAlert = true;
+        setTimeout(() => {
+          this.showUploadErrorAlert = false;
+        }, 3000);
       }
+    },
+    async send() {
+      this.showFormErrorAlert = false;
+      if (this.isFormValid) {
+        this.showSuccessAlert = true;
+        await this.postComment();
+        await this.uploadAttachment();
+        setTimeout(() => {
+          this.showSuccessAlert = false;
+          this.clearFields();
+          window.location.reload();
+        }, 3000);
+      } else {
+        this.showFormErrorAlert = true;
+        setTimeout(() => {
+          this.showFormErrorAlert = false;
+        }, 3000);
+      }
+    },
+    async downloadFile(attachment) {
+      try {
+        const response = await axios({
+          url: attachment.url,
+          method: 'GET',
+          responseType: 'blob', // important
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', attachment.name);
+        document.body.appendChild(link);
+        link.click();
+      } catch (error) {
+        console.error('Error downloading file:', error);
+      }
+    },
+    formatDate(date) {
+      return moment(date).format('DD/MM/YYYY HH:mm');
+    },
+    isImage(contentType) {
+      return contentType.startsWith('image/');
+    },
+    openImage(attachment) {
+      window.open(attachment.url, '_blank');
     },
     checkFormValidity() {
       this.isFormValid = this.title && this.description;
@@ -198,60 +349,48 @@ export default {
       this.title = '';
       this.description = '';
       this.attachment = null;
-      this.isFormValid = false; // Reset the form validity
+      this.isFormValid = false;
     },
     displayPriority(priorityIndex) {
-      if (priorityIndex === 0) {
-        return 'Low';
-      } else if (priorityIndex === 1) {
-        return 'Medium';
-      } else if (priorityIndex === 10) {
-        return 'High';
-      } else if (priorityIndex === 34) {
-        return 'TBD';
-      } else {
-        return priorityIndex;
-      }
+      const priorityMap = {
+        0: 'Low',
+        1: 'Medium',
+        10: 'High',
+        34: 'TBD'
+      };
+      return priorityMap[priorityIndex] || priorityIndex;
     },
     displayStatus(statusName) {
-      if (statusName === 'finished') {
-        return 'Finished';
-      } else if (statusName === 'todo') {
-        return 'To-Do';
-      } else if (statusName === 'in_progress') {
-        return 'In-Progress';
-      } else {
-        return statusName;
-      }
+      const statusMap = {
+        finished: 'Finished',
+        todo: 'To-Do',
+        in_progress: 'In-Progress'
+      };
+      return statusMap[statusName] || statusName;
     },
   },
   computed: {
     priorityClass() {
       const ticket = this.ticket;
-      if (ticket.priority_index === 0) {
-        return 'low-priority';
-      } else if (ticket.priority_index === 1) {
-        return 'medium-priority';
-      } else if (ticket.priority_index === 10) {
-        return 'high-priority';
-      } else if (ticket.priority_index === 34) {
-        return 'tbd-priority';
-      } else {
-        return '';
-      }
+      const priorityMap = {
+        0: 'low-priority',
+        1: 'medium-priority',
+        10: 'high-priority',
+        34: 'tbd-priority'
+      };
+      return priorityMap[ticket.priority_index] || '';
     },
+
     statusClass() {
       const ticket = this.ticket;
-      if (ticket.status_label === 'finished') {
-        return 'finished-status';
-      } else if (ticket.status_label === 'todo') {
-        return 'todo-status';
-      } else if (ticket.status_label === 'in_progress') {
-        return 'in-progress-status';
-      } else {
-        return '';
-      }
+      const statusMap = {
+        finished: 'finished-status',
+        todo: 'todo-status',
+        in_progress: 'in-progress-status'
+      };
+      return statusMap[ticket.status_label] || '';
     },
+
     isTicketFinished() {
       return this.ticket.status === 'finished';
     },
