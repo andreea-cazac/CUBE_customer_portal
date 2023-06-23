@@ -12,6 +12,7 @@
     "@azure/msal-browser": "^2.37.0",
     "@azure/msal-node": "^1.17.2",
     "@mdi/font": "5.9.55",
+    "@vueuse/core": "^10.2.0",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
     "moment": "^2.29.4",

@@ -1,39 +1,29 @@
 <template>
-    <v-app class="backgroundPage">
-        <v-container style="display: flex; justify-content: center; align-items: center; height: 100vh">
-            <div class="circle circle1"></div>
-            <div class="circle circle2"></div>
-            <div class="circle circle3"></div>
-            <div class="circle circle4"></div>
-            <div class="circle circle5"></div>
+    <v-app :style="{backgroundColor: primary_color}">
+      <v-container class="d-flex align-center justify-center fill-height">
+        <v-avatar class="circle" :style="getCircleStyle(200, { top: '-5%', left: '-5%' }, { fill: true, fillColor: accent_color})"></v-avatar>
+        <v-avatar class="circle" :style="getCircleStyle(150, { bottom: '20%', right: '10%' }, { fill: true, fillColor: accent_color})"></v-avatar>
+        <v-avatar class="circle" :style="getCircleStyle(300, { bottom: '10%', right: '60%' }, { fill: false, border: true, borderColor: accent_color})"></v-avatar>
+        <v-avatar class="circle" :style="getCircleStyle(300, { bottom: '-5%', right: '-5%' }, { fill: false, border: true, borderColor: accent_color })"></v-avatar>
+        <v-avatar class="circle" :style="getCircleStyle(100, { bottom: '70%', right: '40%' }, { fill: false, border: true, borderColor: accent_color })"></v-avatar>
 
-            <v-card class="loginCard"  rounded="lg" >
-              <v-img aspect-ratio="2.5" class="logoContainer"></v-img>
-                <v-card-title class="loginText mb-10">Log in with one of the providers:</v-card-title>
-                <p v-if="errorMessage" class="errorText">{{ errorMessage }}</p>
-                <v-card-actions class="justify-center">
-                  <div class="button-group">
-                    <v-btn
-                        variant="outlined"
-                        class="loginButtons"
-                        icon="mdi-google"
-                        @click="loginGoogle"
-                    >
-                      <v-icon size="x-large" icon="mdi-google"></v-icon>
-                    </v-btn>
+        <v-card rounded="lg" >
+          <v-img v-bind:src="logo" alt="logo"></v-img>
+          <v-card-title class="text-center" :style="{color: primary_color}">Log in with one of the providers:</v-card-title>
+          <p v-if="errorMessage" class="errorText ma-10 text-red-lighten-1">{{ errorMessage }}</p>
+          <v-card-actions class="justify-center">
+            <div>
+              <v-btn size="x-large" v-bind:color="primary_color" variant="outlined" icon="mdi-google" @click="loginGoogle">
+                <v-icon size="x-large" icon="mdi-google"></v-icon>
+              </v-btn>
 
-                    <v-btn
-                        variant="outlined"
-                        class="loginButtons"
-                        icon="mdi-microsoft-windows"
-                        @click="loginMicrosoft"
-                    >
-                      <v-icon size="x-large" icon="mdi-microsoft-windows"></v-icon>
-                    </v-btn>
-                  </div>
-                </v-card-actions>
-            </v-card>
-        </v-container>
+              <v-btn style="margin: 25px" size="x-large" v-bind:color="primary_color" variant="outlined" icon="mdi-microsoft-windows" @click="loginMicrosoft">
+                <v-icon size="x-large" icon="mdi-microsoft-windows"></v-icon>
+              </v-btn>
+            </div>
+          </v-card-actions>
+        </v-card>
+      </v-container>
     </v-app>
 </template>
 
@@ -44,282 +34,209 @@ import {useActiveRelationStore} from '../stores/activeRelation'
 import {useUserStore} from '../stores/userStore.js'
 import {useTenantStore} from '../stores/tenant';
 import {useUserRelationsStore} from "../stores/userRelationsStore";
+import {useFavicon} from "@vueuse/core";
+// import mixins from '@/stores/mixins';
 
 export default {
     name: 'LoginPage',
+    // mixins: [mixins],
     setup() {
-      try{
-        const googleUserManager = inject('googleUserManager');
-        const microsoftUserManager = inject('microsoftUserManager');
-        const user = ref(null);
-        const router = useRouter();
-        const userRelations = useUserRelationsStore();
-        const activeRelationStore = useActiveRelationStore();
-        const userStore = useUserStore(); // use Vuex store
-        const tenantStore = useTenantStore();
-        const errorMessage = ref("");
-        //const tenantStoreRef = ref(tenantStore);
-        //has to be decommented after we set a normal host
-        //const hostUrl = ref(window.location.href);
-        const tenantData = ref(null);
-      const logoUrl = computed(() => {
-        if (tenantStore.tenant.value && tenantStore.tenant.value.settings && tenantStore.tenant.value.settings.logo) {
-          return tenantStore.tenant.value.settings.logo;
-        }
-        return "";  // return an empty string or a placeholder image URL when logo is not yet fetched.
-      });
+      const tenantData = ref(null);
+      const googleUserManager = inject('googleUserManager');
+      const microsoftUserManager = inject('microsoftUserManager');
+      const user = ref(null);
+      const router = useRouter();
+      const userRelations = useUserRelationsStore();
+      const activeRelationStore = useActiveRelationStore();
+      const userStore = useUserStore();
+      const tenantStore = useTenantStore();
+      const errorMessage = ref("");
+      const { logo, accent_color, primary_color } = extractDesignSettings(tenantStore);
+      const logoUrl = computeLogoUrl(tenantStore);
 
+      onMounted(() => initializePage(tenantStore, googleUserManager, microsoftUserManager, user, router, userStore, activeRelationStore, userRelations, errorMessage));
 
+      return {
+        loginGoogle: () => googleUserManager.signinRedirect(),
+        loginMicrosoft: () => loginMicrosoftUser(microsoftUserManager, userStore, router, errorMessage),
+        logoUrl,
+        getCircleStyle: (size, position, options = {}) => getCircleStyle(size, position, accent_color, options),
+        user,
+        accent_color,
+        primary_color,
+        logo,
+        errorMessage,
+      };
 
-        googleUserManager.getUser().then(u => {
-            user.value = u;
-        });
+      function extractDesignSettings(tenantStore) {
+          const logo = tenantStore.tenant.settings.logo;
+          const accent_color = tenantStore.tenant.settings.accent_color;
+          const primary_color = tenantStore.tenant.settings.primary_color;
+          return { logo, accent_color, primary_color };
+      }
 
-        microsoftUserManager.getUser().then(u => {
-            user.value = u;
-        });
-
-        onMounted(async () => {
-          const handleResponse = async (response) => {
-              if (response.ok) {
-                  return response.json();
-              } else if (response.status === 401 || response.status === 422) {
-                  // redirect to error page
-                  errorMessage.value = "You are an unauthorized user for this Customer Portal";
-                  throw new Error('Unauthorized');
-              } else {
-                  console.error('Response failed');
-                  throw new Error('Response failed');
+      function computeLogoUrl(tenantStore) {
+          return computed(() => {
+              if (tenantStore.tenant.value && tenantStore.tenant.value.settings && tenantStore.tenant.value.settings.logo) {
+                  return tenantStore.tenant.value.settings.logo;
               }
-          }
-          //Retrieving tenant design
-          //console.log(window.location.href);
-          //has to be changed to: https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/${hostUrl.value} after setting up a normal host
-          const response = await fetch(`https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/mijn.solidpartners.nl`);
-          if (response.ok) {
-            tenantData.value = await response.json();
-            tenantStore.setTenant(tenantData);
+              return "";
+          });
+      }
 
-            // Update the CSS variables
-            if (tenantData.value) {
-                document.documentElement.style.setProperty('--primary-color', tenantData.value.settings.primary_color);
-                document.documentElement.style.setProperty('--accent-color', tenantData.value.settings.accent_color);
-                document.documentElement.style.setProperty('--background-image', `url(${tenantData.value.settings.backgroundImage})`);
-                document.documentElement.style.setProperty('--logo', `url(${tenantData.value.settings.logo})`);
-                document.documentElement.style.setProperty('--favicon', `url(${tenantData.value.settings.favicon})`);
-            }
+      function getCircleStyle(size, position, accent_color, options) {
+        const { fill = true, fillColor = accent_color, border = true, borderColor = accent_color } = options;
 
-          } else {
-            console.log("Tenant not figured out");
-          }
+        const style = {
+            width: `${size}px`,
+            height: `${size}px`,
+            ...position,
+        };
 
-            if (window.location.href.indexOf('code=') > -1 && window.location.href.indexOf('state=') > -1) {
-                if(window.location.href.indexOf('google') > -1) {
-                    googleUserManager.signinRedirectCallback().then(async loggedInUser => {
-                        user.value = loggedInUser; // If Google user logged in, set user to Google user
+        if (fill) {
+            style.background = fillColor;
+        }
 
-                        if (loggedInUser) {
-                            try {
+        if (border) {
+            style.border = `2px solid ${borderColor}`;
+        }
 
-                        // //our approach with the mock API
-                        //   const data = {
-                        //       ap: "google",
-                        //       token: loggedInUser.id_token,
-                        //       email: loggedInUser.profile.email
-                        //   };
-//
-                        //   const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
-                        //       method: 'POST',
-                        //       body: JSON.stringify(data)
-                        //   });
+        return style;
+      }
 
-                              //Frans approach, with the real test API
+      async function initializePage(tenantStore, googleUserManager, microsoftUserManager, user, router, userStore, activeRelationStore, userRelations, errorMessage ) {
+        await getTenantDesign(tenantStore);
 
-                              const data2 = {
-                                ap: "google",
-                                token: loggedInUser.access_token,
-                                email: loggedInUser.profile.email
-                              };
+        getUser(googleUserManager, microsoftUserManager, user);
 
-                              const response2 = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
-                                method: 'POST',
-                                headers: {
-                                  'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(data2)
-                              });
+        handleLoginRedirects(router, googleUserManager, userStore, activeRelationStore, userRelations, errorMessage);
+      }
 
-                              handleResponse(response2).then(responseData => {
-                                  if(responseData) {
-                                       // Step 1: Store relations in localStorage
-                                       const newRelations = responseData.relations.map(relation => ({
-                                          id: relation.id,
-                                          name: relation.name,
-                                          permissions: relation.permissions
-                                      }));
+      async function getTenantDesign(tenantStore) {
+        const response = await fetch(`https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/mijn.solidpartners.nl`);
+        tenantData.value = await handleResponse(response);
+        tenantStore.setTenant(tenantData.value);
+        useFavicon(computed(() => tenantStore.tenant.settings.favicon).value);
+      }
 
-  userStore.setToken(responseData.token);
-  activeRelationStore.setActiveRelation(newRelations[0]);
-  userRelations.setUserRelations(newRelations);
+      async function getUser(googleUserManager, microsoftUserManager, user) {
+        googleUserManager.getUser().then(u => user.value = u);
+        microsoftUserManager.getUser().then(u => user.value = u);
+      }
 
-                                      // check if token is not null or undefined
-                                      if (userStore.getToken) {
-                                          router.push('/account/dashboard');
-                                      }
-                                  }
-                              }).catch(err => {
-                                  console.error(err);
-                              });
-                            } catch (err) {
-                                console.error(err);
-                            }
-                        }
-                    }).catch(err => {
-                        console.error(err);
-                    });
-                }
-            }
+      function handleLoginRedirects(router, googleUserManager, userStore, activeRelationStore, userRelations, errorMessage) {
+        if (window.location.href.indexOf('code=') > -1 && window.location.href.indexOf('state=') > -1 && window.location.href.indexOf('google') > -1) {
+          googleUserManager.signinRedirectCallback().then(loggedInUser => handleGoogleLogin(loggedInUser, router, userStore, activeRelationStore, userRelations, errorMessage));
+        }
+      }
+
+      async function handleGoogleLogin(loggedInUser, router, userStore, activeRelationStore, userRelations, errorMessage) {
+        if (loggedInUser) {
+          const responseData = await performGoogleLogin(loggedInUser, errorMessage);
+          processLoginResponse(responseData, router, userStore, activeRelationStore, userRelations);
+        }
+      }
+
+      async function performGoogleLogin(loggedInUser, errorMessage) {
+        const googleData = getGoogleData(loggedInUser);
+        const tokenGoogle = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(googleData)
         });
 
+        return await handleResponse(tokenGoogle, errorMessage);
+      }
+
+      function getGoogleData(loggedInUser) {
         return {
-            loginGoogle: () => {
-                googleUserManager.signinRedirect();
-            },
-            loginMicrosoft: async () => {
-                try {
-                    const loggedInUser = await microsoftUserManager.signIn();
-                    user.value = loggedInUser; // If Microsoft user logged in, set user to Microsoft user
-                    const email = loggedInUser.idTokenClaims;
-
-                    if (loggedInUser) {
-
-                   //our approach with the mock API
-          //      const data = {
-          //          ap: "microsoft",
-          //          token: loggedInUser.idToken, // Access the idToken from the Microsoft user
-          //          email: email.preferred_username// Access the email from the Microsoft user
-          //      };
-          //      console.log(data);
-          //      const response = await fetch('https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/login', {
-          //          method: 'POST',
-          //          body: JSON.stringify(data)
-          //      });
-
-
-                   //Frans approach with the real test API
-                 const data = {
-                   ap: "microsoft",
-                   token: loggedInUser.accessToken, // Access the idToken from the Microsoft user
-                   email: email.preferred_username// Access the email from the Microsoft user
-                 };
-
-                 const response = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
-                   method: 'POST',
-                   body: JSON.stringify(data)
-                 });
-//
-                  handleResponse(response).then(responseData => {
-                      if(responseData) {
-                            userStore.setToken(responseData.token);
-
-                            //persist authentication tokens between sessions, so a user doesn't need to log in every time they open the portal in their browser.
-                          //  localStorage.setItem('authToken', responseData.token);
-
-                            // check if token is not null or undefined
-                            if (userStore.getToken) {
-                                router.push('/account/dashboard');
-                            }
-                      }
-                  }).catch(err => {
-                      console.error(err);
-                  });
-                    }
-                } catch (err) {
-                    console.error(err);
-                }
-            },
-          logoUrl,
-          user,
-          errorMessage
+          ap: "google",
+          token: loggedInUser.access_token,
+          email: loggedInUser.profile.email
         };
-    } catch (error) {
-    console.error('Error in setup:', error);
-    throw error; // Rethrow the error to ensure it's not silently suppressed
-  }
+      }
 
+      function processLoginResponse(responseData, router, userStore, activeRelationStore, userRelations) {
+        if(responseData) {
+          storeLoginData(responseData, userStore, activeRelationStore, userRelations);
+          navigateToDashboard(userStore, router);
+        }
+      }
+
+      function storeLoginData(responseData, userStore, activeRelationStore, userRelations) {
+        const newRelations = responseData.relations.map(relation => ({
+          id: relation.id,
+          name: relation.name,
+          permissions: relation.permissions
+        }));
+
+        userStore.setToken(responseData.token);
+        activeRelationStore.setActiveRelation(newRelations[0]);
+        userRelations.setUserRelations(newRelations);
+      }
+
+      function navigateToDashboard(userStore, router) {
+        if (userStore.getToken) {
+          router.push('/account/dashboard');
+        }
+      }
+
+      async function loginMicrosoftUser(microsoftUserManager, userStore, router, errorMessage) {
+        try {
+          const loggedInUser = await microsoftUserManager.signIn();
+          if (loggedInUser) {
+            const responseData = await performMicrosoftLogin(loggedInUser, errorMessage);
+            userStore.setToken(responseData.token);
+            navigateToDashboard(userStore, router);
+          }
+        } catch (err) {
+          errorMessage.value = "Something went wrong while logging in with Microsoft. Please try again later.";
+          console.error(err);
+        }
+      }
+
+      async function performMicrosoftLogin(loggedInUser, errorMessage) {
+        const microsoftData = getMicrosoftData(loggedInUser);
+
+        const tokenMicrosoft = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(microsoftData)
+        });
+
+        return await handleResponse(tokenMicrosoft, errorMessage);
+      }
+
+      function getMicrosoftData(loggedInUser) {
+        const email = loggedInUser.idTokenClaims;
+        return {
+          ap: "microsoft",
+          token: loggedInUser.accessToken,
+          email: email.preferred_username
+        };
+      }
+
+      async function handleResponse(response, errorMessage) {
+        if (response.ok) {
+          return response.json();
+        } else if (response.status === 401 ) {
+          errorMessage.value = "You are an unauthorized user for this Customer Portal";
+          throw new Error('Unauthorized');
+        } else {
+          console.error('Response failed');
+          throw new Error('Response failed');
+        }
+      }
     }
 };
 </script>
 
+
 <style scoped>
 .circle {
     position: absolute;
-    border-radius: 50%;
-}
 
-.circle1 {
-    width: 200px;
-    height: 200px;
-    background: var(--accent-color);
-    top: -5%;
-    left: -5%;
 }
-
-.circle2 {
-    width: 150px;
-    height: 150px;
-    background: var(--accent-color);
-    bottom: 20%;
-    right: 10%;
-}
-
-.circle3 {
-    width: 300px;
-    height: 300px;
-    border: 2px solid var(--accent-color);
-    bottom: 10%;
-    right: 60%;
-}
-
-.circle4 {
-  width: 300px;
-  height: 300px;
-  border: 2px solid var(--accent-color);
-  bottom: -5%;
-  right: -5%;
-}
-
-.circle5 {
-  width: 100px;
-  height: 100px;
-  border: 2px solid var(--accent-color);
-  bottom: 70%;
-  right: 40%;
-}
-
-
-.loginCard{
-  width: 600px;
-  height: 500px;
-  background-image: var(--background-image);
-  background-size: 700px 500px;
-}
-.backgroundPage {
-  background-color: var(--primary-color);
-  background-size: 1920px 980px;
-}
-
-.loginText{
-  color: var(--primary-color);
-  text-align: center;
-  font-size: x-large;
-}
-
- .button-group {
-   display: flex;
-   justify-content: space-between;
-   padding: 0;
- }
 
 .loginButtons{
   border-color: var(--primary-color);
@@ -328,26 +245,6 @@ export default {
   width: 80px; /* default width for larger screens */
   height: 80px; /* default height for larger screens */
   margin: 1.5rem; /* Increase the spacing around the buttons */
-}
-
-@media (max-width: 360px) {
-  .loginButtons{
-    width: 50px; /* smaller width for screens less than or equal to 360px wide */
-    height: 50px; /* smaller height for screens less than or equal to 360px wide */
-  }
-}
-
-.logoContainer {
-  background-image: var(--logo);
-  background-position: center;
-  height: 170px;
-}
-
-.errorText {
-  color: red;
-  text-align: center;
-  font-size: large;
-
 }
 
 

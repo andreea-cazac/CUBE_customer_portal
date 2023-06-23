@@ -114,7 +114,7 @@
       ></v-alert>
       <!-- ALERTS -->
       <v-row>
-      
+
         <!-- Panel Information -->
         <v-col cols="12" sm="8">
           <v-card class="pa-2" style="height: 100%;">
@@ -129,7 +129,7 @@
                 </div>
                 <v-card v-for="event in ticket.events" :key="event.id" class="my-3 pa-5">
                   <v-card-title>{{ event.title }}</v-card-title>
-                  <v-card-subtitle>{{ formatDate(event.created_at) }}, <i>by: {{ event.attributes[0].value }}, </i></v-card-subtitle>  
+                  <v-card-subtitle>{{ formatDate(event.created_at) }}, <i>by: {{ event.attributes[0].value }}, </i></v-card-subtitle>
                   <v-card-text>
                     <p v-html="event.body"></p>
                   </v-card-text>
@@ -172,6 +172,7 @@
 import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
+import {useTenantStore} from "@/stores/tenant";
 import {useUserStore} from "@/stores/userStore";
 import moment from 'moment';
 
@@ -179,14 +180,20 @@ export default {
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
-
+    const tenantStore = useTenantStore();
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
 
+    //tenantDesign
+    const accent_color = tenantStore.tenant.settings.accent_color;
+    const primary_color = tenantStore.tenant.settings.primary_color;
+
     return {
       relationId,
-      relationName
+      relationName,
+      accent_color,
+      primary_color
     }
   },
 
@@ -220,7 +227,7 @@ export default {
           },
         });
         this.ticket = response.data;
-        this.fetchAttachments(); 
+        this.fetchAttachments();
         this.fetchComments();
       } catch (error) {
         console.error('Error fetching ticket data:', error);
@@ -299,7 +306,7 @@ export default {
         await this.uploadAttachment();
         setTimeout(() => {
           this.showSuccessAlert = false;
-          this.clearFields(); 
+          this.clearFields();
           window.location.reload();
         }, 3000);
       } else {
@@ -342,7 +349,7 @@ export default {
       this.title = '';
       this.description = '';
       this.attachment = null;
-      this.isFormValid = false; 
+      this.isFormValid = false;
     },
     displayPriority(priorityIndex) {
       const priorityMap = {
