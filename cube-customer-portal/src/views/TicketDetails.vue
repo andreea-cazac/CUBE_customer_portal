@@ -172,6 +172,7 @@
 import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
+import {useTenantStore} from "@/stores/tenant";
 import {useUserStore} from "@/stores/userStore";
 import moment from 'moment';
 import {getAttachments, getComments, getTicketById, postAttachment, postComment} from "@/cube-api-calls";
@@ -180,14 +181,20 @@ export default {
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
-
+    const tenantStore = useTenantStore();
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
 
+    //tenantDesign
+    const accent_color = tenantStore.tenant.settings.accent_color;
+    const primary_color = tenantStore.tenant.settings.primary_color;
+
     return {
       relationId,
-      relationName
+      relationName,
+      accent_color,
+      primary_color
     }
   },
 
