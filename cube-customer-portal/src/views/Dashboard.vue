@@ -58,7 +58,6 @@
             </v-row>
           </v-card-title>
 
-
     <v-table class="">
       <thead class="">
       <tr>
@@ -76,7 +75,8 @@
         <td>{{ ticket.code }}</td>
         <td>{{ ticket.title }}</td>
         <td>{{ ticket.created_at }}</td>
-        <td><v-chip :class="{'Low': getPriority(ticket.priority_index) === 'Low', 'High': getPriority(ticket.priority_index) === 'High', 'Medium': getPriority(ticket.priority_index) === 'Medium'}"
+        <td><v-chip :class="{'Low': getPriority(ticket.priority_index) === 'Low', 'High': getPriority(ticket.priority_index) === 'High',
+        'Medium': getPriority(ticket.priority_index) === 'Medium', 'TBD': getPriority(ticket.priority_index) === 'TBD'}"
              class="status-badge text-white">{{ getPriority(ticket.priority_index) }}</v-chip></td>
         <td><v-chip :class="`${ticket.status} text-white status-badge`">{{ getStatus(ticket.status) }}</v-chip></td>
         <td>{{ ticket.type_label }}</td>
@@ -95,6 +95,7 @@ import axios from "axios";
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
 import {useTenantStore} from "@/stores/tenant";
+import {useUserStore} from "@/stores/userStore";
 
 export default {
   setup() {
@@ -127,7 +128,12 @@ export default {
   },
 
   created() {
-    axios.get(`https://apim-solidpartners-p.azure-api.net/cp-cube-mock/cp/relations/${this.relationId}/work_orders/`)
+    axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/`, {
+      headers: {
+        'Authorization': 'Bearer ' + useUserStore().token,
+        'Access-Control-Allow-Origin':  'http://localhost:5173'
+      }
+    })
         .then(response => {
           console.log(response.data);
           console.log(this.relationId);
@@ -150,7 +156,8 @@ export default {
       return function(priorityIndex) {
         return priorityIndex === 0 ? 'Low' : priorityIndex &&
         priorityIndex === 1 ? 'Medium' : priorityIndex &&
-        priorityIndex === 2 ? 'High' : priorityIndex;
+        priorityIndex === 10 ? 'High' : priorityIndex &&
+        priorityIndex === 34 ? 'TBD' : priorityIndex;
       }
     },
     getStatus() {
@@ -194,13 +201,13 @@ export default {
   border-left: 5px solid rgb(33, 144, 242);
 }
 .in_progress {
-  border-left: 5px solid orange
+  border-left: #ffc400;
 }
 .v-chip.finished {
   background: rgb(31, 187, 31)
 }
 .v-chip.in_progress {
-  background: orange
+  background: #ffc400;
 }
 .v-chip.todo {
   background: rgb(33, 144, 242);
@@ -214,4 +221,8 @@ export default {
 .Medium{
   background: orange;
 }
+.TBD{
+  background: #b7b7b7;
+}
+
 </style>
