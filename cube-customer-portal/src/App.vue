@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import './cube-api-calls.js'
 
 export default {
   name: 'App',
