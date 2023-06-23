@@ -76,10 +76,10 @@ import {computed, ref} from "vue";
 import {useUserRelationsStore} from "@/stores/userRelationsStore";
 import {useUserStore} from "@/stores/userStore";
 import {useTenantStore} from '../stores/tenant';
-import mixins from "@/stores/mixins";
+// import mixins from "@/stores/mixins";
 
 export default {
-  mixins: [mixins],
+//   mixins: [mixins],
     setup() {
         // relations for the dropdown
       const relationsStore = useUserRelationsStore();
