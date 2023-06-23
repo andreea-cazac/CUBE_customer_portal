@@ -114,7 +114,7 @@
       ></v-alert>
       <!-- ALERTS -->
       <v-row>
-      
+
         <!-- Panel Information -->
         <v-col cols="12" sm="8">
           <v-card class="pa-2" style="height: 100%;">
@@ -129,7 +129,7 @@
                 </div>
                 <v-card v-for="event in ticket.events" :key="event.id" class="my-3 pa-5">
                   <v-card-title>{{ event.title }}</v-card-title>
-                  <v-card-subtitle>{{ formatDate(event.created_at) }}, <i>by: {{ event.attributes[0].value }}, </i></v-card-subtitle>  
+                  <v-card-subtitle>{{ formatDate(event.created_at) }}, <i>by: {{ event.attributes[0].value }}, </i></v-card-subtitle>
                   <v-card-text>
                     <p v-html="event.body"></p>
                   </v-card-text>
@@ -174,6 +174,7 @@ import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
 import {useUserStore} from "@/stores/userStore";
 import moment from 'moment';
+import {getAttachments, getComments, getTicketById, postAttachment, postComment} from "@/cube-api-calls";
 
 export default {
   setup() {
@@ -213,14 +214,10 @@ export default {
   methods: {
     async fetchTicketData() {
       try {
-        const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + useUserStore().token
-          },
-        });
+        const response = await getTicketById(this.relationId, this.getTicketId, this.getToken)
         this.ticket = response.data;
-        this.fetchAttachments(); 
+
+        this.fetchAttachments();
         this.fetchComments();
       } catch (error) {
         console.error('Error fetching ticket data:', error);
@@ -228,25 +225,16 @@ export default {
     },
     async fetchAttachments() {
       try {
-        const response = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/attachments`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + useUserStore().token
-          },
-        });
+        const response = await getAttachments(this.relationId, this.getTicketId, this.getToken)
         this.ticket.attachments = response.data;
+
       } catch (error) {
         console.error('Error fetching attachments:', error);
       }
     },
     async fetchComments(){
         try{
-        const commentsResponse = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/events`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + useUserStore().token
-          },
-        });
+        const commentsResponse =  await getComments(this.relationId, this.getTicketId, this.getToken)
         this.ticket.events = commentsResponse.data;
       } catch (error) {
         console.error('Error fetching ticket data:', error);
@@ -254,15 +242,13 @@ export default {
     },
     async postComment() {
     try {
-      const response = await axios.post(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/events`, {
+      const data = {
         title: this.title,
-        body: this.description,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + useUserStore().token
-        },
-      });
+        body: this.description
+      }
+
+      const response = await postComment(this.relationId, this.getTicketId, data, this.getToken);
+
       if (response.status === 200) {
         this.ticket.events.unshift(response.data);
       }
@@ -277,11 +263,8 @@ export default {
         for (let i = 0; i < this.attachment.length; i++) {
           formData.append('attachment', this.attachment[i]);
         }
-        const response = await axios.post(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/${this.$route.params.id}/attachments`, formData, {
-          headers: {
-            'Authorization': 'Bearer ' + useUserStore().token,
-          },
-        });
+        await postAttachment(this.relationId, this.getTicketId, formData, this.getToken)
+
       } catch (error) {
         console.error('Error uploading attachment:', error);
         //show an alert
@@ -299,7 +282,7 @@ export default {
         await this.uploadAttachment();
         setTimeout(() => {
           this.showSuccessAlert = false;
-          this.clearFields(); 
+          this.clearFields();
           window.location.reload();
         }, 3000);
       } else {
@@ -342,7 +325,7 @@ export default {
       this.title = '';
       this.description = '';
       this.attachment = null;
-      this.isFormValid = false; 
+      this.isFormValid = false;
     },
     displayPriority(priorityIndex) {
       const priorityMap = {
@@ -387,6 +370,15 @@ export default {
     isTicketFinished() {
       return this.ticket.status === 'finished';
     },
+
+    getToken(){
+      return useUserStore().token
+    },
+
+    getTicketId(){
+      return this.$route.params.id
+    }
+
   },
 };
 </script>

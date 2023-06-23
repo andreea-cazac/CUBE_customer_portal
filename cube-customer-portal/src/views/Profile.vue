@@ -47,28 +47,27 @@
 import axios from 'axios';
 import {useUserStore} from "@/stores/userStore";
 import {useActiveRelationStore} from "@/stores/activeRelation";
-import {computed, ref, onMounted} from "vue";
+import {computed, onMounted, ref} from "vue";
+import {getProfileInfo} from "@/cube-api-calls";
 
 export default {
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
+    const userStore = useUserStore();
+    const userStoreRef = ref(userStore);
+
 
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
-    const relationId = computed(() => activeRelation.value.id);
+    const token = computed(() => userStoreRef.value.getToken);
     const profile = ref({});
     const apiKey = 'AIzaSyCb-VXv9duPI7zRwSm_nu-_KUbHUrnV23A';
 
     onMounted(async () => {
       try {
-        const responseRelations = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${relationId.value}`, {
-          headers: {
-            'Authorization': 'Bearer ' + useUserStore().token,
-            'Access-Control-Allow-Origin':  'http://localhost:5173'
-          }
-        });
-        profile.value = responseRelations.data;
-        console.log(responseRelations);
+        const response = await getProfileInfo(activeRelation.value.id, token.value);
+        profile.value = response.data;
+
         for (const address of profile.value.addresses) {
           const formattedAddress = `${address.street} ${address.number}, ${address.city}, ${address.country.name}`;
           const location = await getGeoInfo(formattedAddress);
@@ -100,7 +99,6 @@ export default {
       await new Promise(resolve => setTimeout(resolve, 50));
     };
     return {
-      relationId,
       profile,
       getGeoInfo,
       apiKey
