@@ -14,21 +14,20 @@
                         v-for="link in permittedPages"
                         :key="link.text"
                         router
-                        :to="link.route"
-                >
+                        :to="link.route">
                     <v-list-item-action class="active">
-                        <v-icon color="black" class="mx-3">{{ link.icon }}</v-icon>
-                        <v-list-item-title color="black">{{ $t(link.textKey) }}</v-list-item-title>
+                        <v-icon color="grey-darken-3" class="mx-3">{{ link.icon }}</v-icon>
+                        <v-list-item-title color="grey-darken-3">{{ $t(link.textKey) }}</v-list-item-title>
                     </v-list-item-action>
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
 
         <v-toolbar v-bind:color="primary_color">
-            <v-app-bar-nav-icon class="text-white" @click="drawer = !drawer">
+            <v-app-bar-nav-icon :class="`${colorCalculation(primary_color)}`" @click="drawer = !drawer">
             </v-app-bar-nav-icon>
 
-            <v-toolbar-title class="text-white">
+            <v-toolbar-title :class="`${colorCalculation(primary_color)}`">
                 <span class="font-weight-light">{{ $t('welcomeMessage') }}</span>
             </v-toolbar-title>
 
@@ -36,8 +35,8 @@
 
             <v-menu location="bottom">
                 <template v-slot:activator="{ props }">
-                    <v-btn variant="flat" v-bind:color="primary_color" class="text-white" size="small" v-bind="props" >
-                        <span v-if="activeRelation" class="d-none d-sm-flex ma-3">{{ activeRelation.name }}</span>
+                    <v-btn variant="flat" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`" size="small" v-bind="props" >
+                        <span v-if="activeRelation" class="d-none d-sm-flex ma-2">{{ activeRelation.name }}</span>
                         <v-icon class="ma-1">mdi-account-switch-outline</v-icon>
                     </v-btn>
                 </template>
@@ -49,8 +48,8 @@
 
             <v-menu location="bottom">
                 <template v-slot:activator="{ props }">
-                    <v-btn variant="flat" v-bind:color="primary_color" class="text-white" size="small" v-bind="props" >
-                        <span class=" d-none d-sm-flex ma-3">{{ $t('active_language') }} </span>
+                    <v-btn variant="flat" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`" size="small" v-bind="props" >
+                        <span class=" d-none d-sm-flex ma-2">{{ $t('active_language') }} </span>
                         <v-icon class="ma-1">mdi-translate</v-icon>
                     </v-btn>
                 </template>
@@ -61,7 +60,7 @@
             </v-menu>
 
 
-            <v-btn v-bind:color="primary_color" class="text-white" :key="logout" router :to="loginRoute">
+            <v-btn v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`" :key="logout" router :to="loginRoute">
                 <span class="d-none d-sm-flex"  @click="logout()" >{{ $t('signOut') }}</span>
                 <v-icon>mdi-exit-to-app</v-icon>
             </v-btn>
@@ -150,7 +149,18 @@ export default {
     methods: {
         changeLanguage(lang) {
             this.$i18n.locale = lang;
-        }
+        },
+      colorCalculation(theColor) {
+        var colorText = "text-white";
+        const color=theColor.substring(1);
+        var R = parseInt(color.substring(0,2),16);
+        var G = parseInt(color.substring(2,4),16);
+        var B = parseInt(color.substring(4,6),16);
+        var aColor = Math.sqrt(R * R * .241 + G * G * .691 + B * B * .068);
+
+        colorText = aColor < 160 ? "text-white" : "text-grey-darken-3";
+        return colorText;
+      }
     }
 
 };

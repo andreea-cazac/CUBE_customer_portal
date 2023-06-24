@@ -4,14 +4,14 @@
         <v-row class="mb-2">
           <v-col cols="12" md="4">
             <v-card class="text-center bg-grey-lighten-3" border>
-              <v-card-item :style="{ 'background-color': primary_color, color: 'white' }">
-                <div class="text-h5 mt-5 font-weight-light">{{$t('tickets')}}: {{ tickets.length }}</div>
+              <v-card-item :style="{ 'background-color': primary_color }">
+                <div :class="`text-h5 mt-5 font-weight-light ${colorCalculation(primary_color)}`">{{$t('tickets')}}: {{ tickets.length }}</div>
               </v-card-item>
               <v-card-actions :style="{ 'background-color': primary_color }" class="justify-center px-6 py-3">
                 <router-link to="/account/tickets">
-                    <v-btn :style="{ 'background-color': primary_color, color: 'white' }">
-                        <span>{{$t('see_all_tickets')}}</span>
-                        <v-icon end size="large">mdi-menu-right-outline</v-icon>
+                    <v-btn :style="{ 'background-color': primary_color}">
+                        <span :class="`${colorCalculation(primary_color)}`">{{$t('see_all_tickets')}}</span>
+                        <v-icon end size="large" :class="`${colorCalculation(primary_color)}`">mdi-menu-right-outline</v-icon>
                     </v-btn>
                 </router-link>
               </v-card-actions>
@@ -41,15 +41,15 @@
           <v-card-title class="w-100" :style="{ 'background-color': accent_color }">
             <v-row>
               <v-card-item class="ma-1">
-                <v-icon color="white">mdi-comment-multiple-outline</v-icon>
-                <span class="font-weight-regular text-white">{{ $t('recent_tickets') }}</span>
+                <v-icon :class="`${colorCalculation(accent_color)}`">mdi-comment-multiple-outline</v-icon>
+                <span :class="`font-weight-regular text-white ${colorCalculation(accent_color)}`">{{ $t('recent_tickets') }}</span>
               </v-card-item>
 
               <v-spacer></v-spacer>
 
               <v-card-actions class="">
                 <router-link to="/account/tickets">
-                  <v-btn class="text-white" :style="{ 'background-color': accent_color }">
+                  <v-btn :class="`${colorCalculation(accent_color)}`" :style="{ 'background-color': accent_color }">
                     <span> {{ $t('show_all') }}</span>
                     <v-icon end size="small">mdi-arrow-right</v-icon>
                   </v-btn>
@@ -149,6 +149,17 @@ export default {
     goToTicket(ticket) {
       // this.$router.push(`/account/tickets/${ticket}`);
       this.$router.push({ name: 'ticketDetails', params: { id: `${ticket.id}`} });
+    },
+    colorCalculation(theColor) {
+      var colorText = "text-white";
+      const color=theColor.substring(1);
+      var R = parseInt(color.substring(0,2),16);
+      var G = parseInt(color.substring(2,4),16);
+      var B = parseInt(color.substring(4,6),16);
+      var aColor = Math.sqrt(R * R * .241 + G * G * .691 + B * B * .068);
+
+      colorText = aColor < 160 ? "text-white" : "text-grey-darken-3";
+      return colorText;
     }
   },
   computed: {
