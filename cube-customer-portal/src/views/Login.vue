@@ -34,6 +34,7 @@ import {useActiveRelationStore} from '../stores/activeRelation'
 import {useUserStore} from '../stores/userStore.js'
 import {useTenantStore} from '../stores/tenant';
 import {useUserRelationsStore} from "../stores/userRelationsStore";
+import {setTimer} from "../account-details-deletion"
 import {useFavicon} from "@vueuse/core";
 // import mixins from '@/stores/mixins';
 
@@ -173,6 +174,8 @@ export default {
         userStore.setToken(responseData.token);
         activeRelationStore.setActiveRelation(newRelations[0]);
         userRelations.setUserRelations(newRelations);
+        setTimer(); // memorize when the data was fetched
+
       }
 
       function navigateToDashboard(userStore, router) {
