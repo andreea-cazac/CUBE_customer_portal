@@ -71,7 +71,7 @@
                 ></v-file-input>
               </div>
               <div class="text-right">
-                <v-btn color="#080464" class="white-text" @click="send" :disabled="!isFormValid">{{ $t('send') }}</v-btn>
+                <v-btn :color="`${primary_color}`" :class="`${colorCalculation(primary_color)}`" @click="send" :disabled="!isFormValid">{{ $t('send') }}</v-btn>
               </div>
             </v-card-text>
           </v-card>
@@ -291,12 +291,12 @@ export default {
           this.showSuccessAlert = false;
           this.clearFields();
           window.location.reload();
-        }, 3000);
+        }, 2000);
       } else {
         this.showFormErrorAlert = true;
         setTimeout(() => {
           this.showFormErrorAlert = false;
-        }, 3000);
+        }, 2000);
       }
     },
     async downloadFile(attachment) {
@@ -351,6 +351,17 @@ export default {
       };
       return statusMap[statusName] || statusName;
     },
+    colorCalculation(theColor) {
+      var colorText = "text-white";
+      const color=theColor.substring(1);
+      var R = parseInt(color.substring(0,2),16);
+      var G = parseInt(color.substring(2,4),16);
+      var B = parseInt(color.substring(4,6),16);
+      var aColor = Math.sqrt(R * R * .241 + G * G * .691 + B * B * .068);
+
+      colorText = aColor < 160 ? "text-white" : "text-grey-darken-3";
+      return colorText;
+    }
   },
   computed: {
     priorityClass() {
@@ -447,7 +458,7 @@ export default {
 }
 
 .in-progress-status {
-  background-color: #2196f3;
+  background-color: #ffc400;;
   color: #ffffff;
   padding: 5px 10px;
   border-radius: 4px;
