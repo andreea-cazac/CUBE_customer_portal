@@ -1,4 +1,5 @@
 import axios from 'axios';
+import router from "@/router";
 
 const baseUrl = 'https://cube-testing.solidpartners.nl/cp';
 
@@ -15,6 +16,7 @@ async function postItem(url, body) {
 }
 
 async function postAccountItem(url, body, token) {
+
     try {
         const response = await axios.post(`${baseUrl}${url}`, body, {
             headers: {
@@ -23,13 +25,13 @@ async function postAccountItem(url, body, token) {
         });
         return response;
     } catch (error) {
+        await router.push('/401');
         throw new Error(error);
+
     }
 }
 
 export async function getAccountItems(url, token) {
-    console.log(`${baseUrl}${url}`);
-    console.log(token);
     try {
         const response = await axios.get(`${baseUrl}${url}`, {
             headers: {

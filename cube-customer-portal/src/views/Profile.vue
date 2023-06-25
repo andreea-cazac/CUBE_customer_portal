@@ -54,6 +54,8 @@ import {useUserStore} from "@/stores/userStore";
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, onMounted, ref} from "vue";
 import {getProfileInfo} from "@/cube-api-calls";
+import router from "@/router";
+import {removeAccountData} from "@/account-details-deletion";
 
 export default {
   setup() {
@@ -89,6 +91,8 @@ export default {
         }
       } catch (error) {
         console.error('Error occurred: ', error);
+        removeAccountData()
+        await router.push('/401');
       }
     });
 

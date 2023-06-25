@@ -31,7 +31,7 @@
         <v-card-title>
           <v-row>
             <v-col cols="10">
-              <span class="headline">{{$t('createNewTicket')}}</span>
+              <span class="headline">{{ $t('createNewTicket') }}</span>
             </v-col>
             <v-col cols="2" class="text-right">
               <v-btn icon @click="dialog = false">
@@ -47,10 +47,12 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="ticket.title" label="Ticket Title" required @input="checkFormValidity"></v-text-field>
+                <v-text-field v-model="ticket.title" label="Ticket Title" required
+                              @input="checkFormValidity"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-textarea v-model="ticket.description" label="Ticket Description" required @input="checkFormValidity"></v-textarea>
+                <v-textarea v-model="ticket.description" label="Ticket Description" required
+                            @input="checkFormValidity"></v-textarea>
               </v-col>
               <v-col cols="12">
                 <v-file-input label="Upload Attachment"></v-file-input>
@@ -61,8 +63,9 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn :color="`${primary_color}`" text @click="dialog = false">{{$t('cancel')}}</v-btn>
-          <v-btn :color="`${primary_color}`" text @click="createTicket" :disabled="!isFormValid">{{$t('create')}}</v-btn>
+          <v-btn :color="`${primary_color}`" text @click="dialog = false">{{ $t('cancel') }}</v-btn>
+          <v-btn :color="`${primary_color}`" text @click="createTicket" :disabled="!isFormValid">{{ $t('create') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -72,30 +75,35 @@
     </v-snackbar>
 
 
-      <v-table density="comfortable" style="table-layout: fixed; width: 100%;" fixed-header="true">
-      <thead >
+    <v-table density="comfortable" style="table-layout: fixed; width: 100%;" fixed-header="true">
+      <thead>
       <tr>
-        <th class="text-left text-grey-darken-3" >{{$t('ticket_number')}}</th>
-        <th class="text-left text-grey-darken-3">{{$t('title')}}</th>
+        <th class="text-left text-grey-darken-3">{{ $t('ticket_number') }}</th>
+        <th class="text-left text-grey-darken-3">{{ $t('title') }}</th>
         <th class="text-left text-grey-darken-3">
           <div class="header-wrapper" @click="sortDate">
-            {{$t('date_time_created')}}
-            <v-icon :class="sortColumn === 'date' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
+            {{ $t('date_time_created') }}
+            <v-icon :class="sortColumn === 'date' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up
+            </v-icon>
           </div>
         </th>
         <th class="text-left text-grey-darken-3">
           <div class="header-wrapper" @click="sortPriority">
-              {{$t('priority')}}
-            <v-icon :class="sortColumn === 'priority' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
+            {{ $t('priority') }}
+            <v-icon :class="sortColumn === 'priority' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">
+              mdi-chevron-up
+            </v-icon>
           </div>
         </th>
         <th class="text-left text-grey-darken-3">
           <div class="header-wrapper" @click="sortStatus">
-              {{$t('status')}}
-            <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
+            {{ $t('status') }}
+            <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">
+              mdi-chevron-up
+            </v-icon>
           </div>
         </th>
-        <th class="text-left text-grey-darken-3">{{$t('type')}}</th>
+        <th class="text-left text-grey-darken-3">{{ $t('type') }}</th>
       </tr>
       </thead>
 
@@ -128,7 +136,8 @@
     </v-table>
     <router-view></router-view>
 
-  <v-pagination v-model="currentPage" :length="totalPages" rounded="circle" total-visible="10" size="default" :color="`${primary_color}`"></v-pagination>
+    <v-pagination v-model="currentPage" :length="totalPages" rounded="circle" total-visible="10" size="default"
+                  :color="`${primary_color}`"></v-pagination>
   </div>
 
 
@@ -141,6 +150,8 @@ import {computed, ref} from "vue";
 import {getTickets, postTicket} from "@/cube-api-calls";
 import {useTenantStore} from "@/stores/tenant";
 import {calculateTextColor} from "@/text-color";
+import router from "@/router";
+import {removeAccountData} from "@/account-details-deletion";
 
 export default {
   setup() {
@@ -175,17 +186,17 @@ export default {
       isFormValid: false,
       showSnackbar: false, // Controls visibility of the snackbar
       snackbarTimeout: 3000, // Duration (in milliseconds) to display the snackbar
-      ticket:{
-        title:'',
-        description:''
+      ticket: {
+        title: '',
+        description: ''
       },
       headers: [
-        { text: 'Ticket Number', value: 'code', sortable: true },
-        { text: 'Title', value: 'title', sortable: true },
-        { text: 'Date/time created', value: 'created_at', sortable: true },
-        { text: 'Priority', value: 'priority_index', sortable: true },
-        { text: 'Status', value: 'status', sortable: true },
-        { text: 'Type', value: 'type_label', sortable: true },
+        {text: 'Ticket Number', value: 'code', sortable: true},
+        {text: 'Title', value: 'title', sortable: true},
+        {text: 'Date/time created', value: 'created_at', sortable: true},
+        {text: 'Priority', value: 'priority_index', sortable: true},
+        {text: 'Status', value: 'status', sortable: true},
+        {text: 'Type', value: 'type_label', sortable: true},
       ],
       tickets: [],
       itemsPerPage: 20,
@@ -196,15 +207,15 @@ export default {
   methods: {
     goToTicket(ticket) {
       // this.$router.push(`/account/tickets/${ticket}`);
-      this.$router.push({ name: 'ticketDetails', params: { id: `${ticket.id}`} });
+      this.$router.push({name: 'ticketDetails', params: {id: `${ticket.id}`}});
     },
     createTicket() {
-        const id = useActiveRelationStore().activeRelation.id;
-        let bearerToken = useUserStore().token;
-        let postData = {
-            title : this.ticket.title,
-            description: this.ticket.description
-        };
+      const id = useActiveRelationStore().activeRelation.id;
+      let bearerToken = useUserStore().token;
+      let postData = {
+        title: this.ticket.title,
+        description: this.ticket.description
+      };
       postTicket(id, postData, bearerToken);
 
       // Clear the ticket data
@@ -277,12 +288,20 @@ export default {
       return calculateTextColor(theColor);
     }
   },
-    async created() {
-        // Fetch data from the API when the component is created
-        let bearerToken = useUserStore().token;
+  async created() {
+    // Fetch data from the API when the component is created
+    let bearerToken = useUserStore().token;
 
+    try {
       const response = await getTickets(this.relationId, bearerToken);
       this.tickets = response.data;
+
+    } catch (error) {
+      removeAccountData()
+      await router.push('/401');
+      throw new Error(error)
+    }
+
 
     this.checkFormValidity();
   },
@@ -324,7 +343,7 @@ export default {
     },
     /*Based on the api (it displays 0, 1 or 2) it will display the name of the priority*/
     displayPriority() {
-      return function(priorityIndex) {
+      return function (priorityIndex) {
         return priorityIndex === 0 ? 'Low' : priorityIndex &&
         priorityIndex === 1 ? 'Medium' : priorityIndex &&
         priorityIndex === 10 ? 'High' : priorityIndex &&
@@ -332,14 +351,14 @@ export default {
       }
     },
     displayStatus() {
-      return function(statusName) {
+      return function (statusName) {
         return statusName === "finished" ? 'Finished' : statusName &&
         statusName === "todo" ? 'To-Do' : statusName &&
         statusName === "in_progress" ? 'In-Progress' : statusName;
       }
     },
     displayType() {
-      return function(type) {
+      return function (type) {
         return type === null || type === '' ? '[UNDEFINED]' : type;
       }
     },
@@ -369,38 +388,38 @@ export default {
 }
 
 .bcg-green {
-  background-color: rgb(31, 187, 31);  /* You can adjust the color as per your preference */
-  color: white;  /* Set the text color so it contrasts with the background */
+  background-color: rgb(31, 187, 31); /* You can adjust the color as per your preference */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .bcg-blue {
-  background-color: #2196f3;  /* You can adjust the color as per your preference */
-  color: white;  /* Set the text color so it contrasts with the background */
+  background-color: #2196f3; /* You can adjust the color as per your preference */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .bcg-orange-light {
-  background-color: #ffc400;  /* You can adjust the color as per your preference */
-  color: white;  /* Set the text color so it contrasts with the background */
+  background-color: #ffc400; /* You can adjust the color as per your preference */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .bcg-orange {
-  background-color: #ffab00;  /* You can adjust the color as per your preference */
-  color: white;  /* Set the text color so it contrasts with the background */
+  background-color: #ffab00; /* You can adjust the color as per your preference */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .bcg-red {
   background-color: red;
-  color: white;  /* Set the text color so it contrasts with the background */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
- .bcg-grey {
+.bcg-grey {
   background: #b7b7b7;
-  color: white;  /* Set the text color so it contrasts with the background */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .bcg-dark-green {
-  background-color: green;  /* You can adjust the color as per your preference */
-  color: white;  /* Set the text color so it contrasts with the background */
+  background-color: green; /* You can adjust the color as per your preference */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .rotate180 {
@@ -413,11 +432,11 @@ export default {
 }
 
 .v-data-table {
-  margin-top: 20px;  /* Adjust this value as needed */
+  margin-top: 20px; /* Adjust this value as needed */
 }
 
 .v-table {
-  margin-top: 20px;  /* Adjust this value as needed */
+  margin-top: 20px; /* Adjust this value as needed */
 }
 
 .table-fixed {
@@ -426,8 +445,8 @@ export default {
 }
 
 .table-fixed td {
-  white-space: normal;  /* Allows text to wrap to next line */
-  overflow: hidden;    /* Hides content that still doesn't fit */
-  text-overflow: ellipsis;  /* Adds an ellipsis (...) when content is hidden */
+  white-space: normal; /* Allows text to wrap to next line */
+  overflow: hidden; /* Hides content that still doesn't fit */
+  text-overflow: ellipsis; /* Adds an ellipsis (...) when content is hidden */
 }
 </style>
