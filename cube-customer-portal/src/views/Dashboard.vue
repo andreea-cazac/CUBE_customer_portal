@@ -91,11 +91,11 @@
 
 
 <script>
-import axios from "axios";
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {computed, ref} from "vue";
 import {useTenantStore} from "@/stores/tenant";
 import {useUserStore} from "@/stores/userStore";
+import {getTickets} from "@/cube-api-calls";
 
 export default {
   setup() {
@@ -127,22 +127,9 @@ export default {
     };
   },
 
-  created() {
-    axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/`, {
-      headers: {
-        'Authorization': 'Bearer ' + useUserStore().token,
-        'Access-Control-Allow-Origin':  'http://localhost:5173'
-      }
-    })
-        .then(response => {
-          console.log(response.data);
-          console.log(this.relationId);
-          console.log(this.relationName);
-          this.tickets = response.data;
-        })
-        .catch(error => {
-          console.error(error);
-        });
+  async created() {
+    const response = await getTickets(this.relationId, useUserStore().token);
+    this.tickets = response.data;
   },
 
   methods: {

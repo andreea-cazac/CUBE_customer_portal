@@ -135,10 +135,10 @@
 </template>
 
 <script>
-import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {useUserStore} from "@/stores/userStore";
 import {computed, ref} from "vue";
+import {getTickets, postTicket} from "@/cube-api-calls";
 import {useTenantStore} from "@/stores/tenant";
 
 export default {
@@ -199,23 +199,12 @@ export default {
     },
     createTicket() {
         const id = useActiveRelationStore().activeRelation.id;
-        let url = `https://cube-testing.solidpartners.nl/cp/relations/${id}/work_orders`;
         let bearerToken = useUserStore().token;
         let postData = {
             title : this.ticket.title,
             description: this.ticket.description
         };
-        axios.post(url, postData, {
-            headers: {
-                'Authorization': 'Bearer ' + bearerToken
-            }
-        })
-            .then(response => {
-                console.log(response.data);
-            })
-            .catch(error => {
-                console.error(error);
-            });
+      postTicket(id, postData, bearerToken);
 
       // Clear the ticket data
       this.ticket = {
@@ -295,31 +284,19 @@ export default {
       return colorText;
     }
   },
-    created() {
+    async created() {
         // Fetch data from the API when the component is created
-        let url = `https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/`;
         let bearerToken = useUserStore().token;
 
-        axios.get(url, {
-            headers: {
-                'Authorization': 'Bearer ' + bearerToken
-            }
-        })
-            .then(response => {
-                // Log the data returned from the API
-                console.log(response.data);
-                console.log(this.relationName);
-                // Assign the response data to your tickets data property
-                this.tickets = response.data;
-            })
-            .catch(error => {
-                // Handle error here
-                console.error(error);
-            });
+      const response = await getTickets(this.relationId, bearerToken);
+      this.tickets = response.data;
 
     this.checkFormValidity();
   },
+
+
   computed: {
+
     /*To show only the open tickets*/
     filteredTickets() {
       let tickets = this.tickets;
