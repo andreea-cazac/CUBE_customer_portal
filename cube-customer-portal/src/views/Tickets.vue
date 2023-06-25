@@ -13,12 +13,12 @@
       </v-col>
       <!-- Show all button -->
       <v-col cols="6" md="2" class="text-md-right text-center">
-        <v-btn @click="showAll = !showAll" v-bind:color="primary_color" class="text-white">
+        <v-btn @click="showAll = !showAll" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`">
           {{ showAll ? $t('showOpenTickets') : $t('showAll') }}
         </v-btn>
       </v-col>
       <!-- Create ticket button -->
-      <v-col cols="6" md="2" class="text-md-right text-center text-white">
+      <v-col cols="6" md="2" :class="`text-md-right text-center ${colorCalculation(accent_color)}`">
         <v-btn @click="dialog = true" v-bind:color="accent_color">
           {{ $t('createTicket') }}
         </v-btn>
@@ -61,8 +61,8 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">{{$t('cancel')}}</v-btn>
-          <v-btn color="blue darken-1" text @click="createTicket" :disabled="!isFormValid">{{$t('create')}}</v-btn>
+          <v-btn :color="`${primary_color}`" text @click="dialog = false">{{$t('cancel')}}</v-btn>
+          <v-btn :color="`${primary_color}`" text @click="createTicket" :disabled="!isFormValid">{{$t('create')}}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -128,7 +128,7 @@
     </v-table>
     <router-view></router-view>
 
-  <v-pagination v-model="currentPage" :length="totalPages" rounded="circle" total-visible="10" size="default" color="primary"></v-pagination>
+  <v-pagination v-model="currentPage" :length="totalPages" rounded="circle" total-visible="10" size="default" :color="`${primary_color}`"></v-pagination>
   </div>
 
 
@@ -272,19 +272,27 @@ export default {
     checkFormValidity() {
       this.isFormValid = !!this.ticket.title && !!this.ticket.description;
     },
+    colorCalculation(theColor) {
+      var colorText = "text-white";
+      const color=theColor.substring(1);
+      var R = parseInt(color.substring(0,2),16);
+      var G = parseInt(color.substring(2,4),16);
+      var B = parseInt(color.substring(4,6),16);
+      var aColor = Math.sqrt(R * R * .241 + G * G * .691 + B * B * .068);
 
-
+      colorText = aColor < 160 ? "text-white" : "text-grey-darken-3";
+      return colorText;
+    }
   },
-
     async created() {
-      // Fetch data from the API when the component is created
-      let bearerToken = useUserStore().token;
+        // Fetch data from the API when the component is created
+        let bearerToken = useUserStore().token;
 
       const response = await getTickets(this.relationId, bearerToken);
       this.tickets = response.data;
 
-      this.checkFormValidity();
-    },
+    this.checkFormValidity();
+  },
 
 
   computed: {
