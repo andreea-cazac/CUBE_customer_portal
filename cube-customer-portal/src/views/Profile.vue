@@ -91,8 +91,6 @@ export default {
         }
       } catch (error) {
         console.error('Error occurred: ', error);
-        removeAccountData()
-        await router.push('/401');
       }
     });
 

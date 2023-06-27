@@ -297,8 +297,6 @@ export default {
       this.tickets = response.data;
 
     } catch (error) {
-      removeAccountData()
-      await router.push('/401');
       throw new Error(error)
     }
 
