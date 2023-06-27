@@ -10,8 +10,6 @@ import TicketDetails from "../views/TicketDetails.vue";
 import Dashboard from "../views/Dashboard.vue"
 import Unauthorized from "../views/Unauthorized.vue"
 
-import {clearAfterTime} from "@/account-details-deletion";
-
 const routes = [
   {
     path: '/',
@@ -87,8 +85,6 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // if the decided time has passed, remove the account data from localStore
-  clearAfterTime()
   // check if the route requires authentication and user is not logged in
   if (to.matched.some(record => record.meta.requiresAuth) && !localStorage.getItem('token'))
   {

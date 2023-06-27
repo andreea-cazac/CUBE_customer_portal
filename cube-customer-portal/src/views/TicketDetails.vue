@@ -240,8 +240,6 @@ export default {
         await this.fetchAttachments();
         await this.fetchComments();
       } catch (error) {
-        removeAccountData()
-        await router.push('/401');
         console.error('Error fetching ticket data:', error);
       }
     },
@@ -250,8 +248,6 @@ export default {
         const response = await getAttachments(this.relationId, this.getTicketId, this.getToken)
         this.ticket.attachments = response.data;
       } catch (error) {
-        removeAccountData()
-        await router.push('/401');
         console.error('Error fetching attachments:', error);
       }
     },
@@ -261,8 +257,6 @@ export default {
         this.ticket.events = commentsResponse.data;
         console.log(this.ticket.events)
       } catch (error) {
-        removeAccountData()
-        await router.push('/401');
         console.error('Error fetching ticket data:', error);
       }
     },
