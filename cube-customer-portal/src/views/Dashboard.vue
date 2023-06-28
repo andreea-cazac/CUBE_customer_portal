@@ -100,9 +100,9 @@
 
 
 <script>
-import {useActiveRelationStore} from "@/stores/activeRelation";
+import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {computed, ref} from "vue";
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
 import {useUserStore} from "@/stores/userStore";
 import {getTickets} from "@/cube-api-calls";
 import {calculateTextColor} from "@/text-color";
@@ -135,7 +135,8 @@ export default {
   },
   data() {
     return {
-      tickets: []
+      tickets: [],
+      sortDirection: 'desc'
     };
   },
 
@@ -155,6 +156,18 @@ export default {
     },
     colorCalculation(theColor) {
       return calculateTextColor(theColor);
+    },
+    sortByDate(a, b) {
+      const dateA = new Date(a.created_at);
+      const dateB = new Date(b.created_at);
+
+      if (dateA < dateB) {
+        return this.sortDirection === 'asc' ? -1 : 1;
+      }
+      if (dateA > dateB) {
+        return this.sortDirection === 'asc' ? 1 : -1;
+      }
+      return 0;
     }
   },
   computed: {
@@ -174,8 +187,10 @@ export default {
       }
     },
     ticketData() {
-      return this.tickets.slice(0, 4);
-    }
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      const newTickets = this.tickets.sort(this.sortByDate);
+      return newTickets.slice(0, 4);
+    },
   }
 };
 </script>
