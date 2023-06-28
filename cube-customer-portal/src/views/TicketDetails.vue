@@ -70,7 +70,7 @@
                 <v-file-input
                     v-model="attachment"
                     multiple
-                    label="Attach files"
+                    label= "Attach files"
                     prepend-icon="mdi-paperclip"
                 ></v-file-input>
               </div>

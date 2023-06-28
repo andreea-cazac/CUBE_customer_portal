@@ -81,9 +81,9 @@
         <th class="text-left text-grey-darken-3">{{ $t('ticket_number') }}</th>
         <th class="text-left text-grey-darken-3">{{ $t('title') }}</th>
         <th class="text-left text-grey-darken-3">
-          <div class="header-wrapper" @click="sortDate">
+          <div class="header-wrapper text-truncate" @click="sortDate">
             {{ $t('date_time_created') }}
-            <v-icon :class="sortColumn === 'date' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up
+            <v-icon  :class="sortColumn === 'date' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up
             </v-icon>
           </div>
         </th>
@@ -182,7 +182,7 @@ export default {
       showAll: false,
       dialog: false,
       sortColumn: '',
-      sortDirection: '',
+      sortDirection: 'asc',
       isFormValid: false,
       showSnackbar: false, // Controls visibility of the snackbar
       snackbarTimeout: 3000, // Duration (in milliseconds) to display the snackbar
@@ -201,6 +201,7 @@ export default {
       tickets: [],
       itemsPerPage: 20,
       currentPage: 1,
+      newT: []
     };
   },
 
@@ -233,17 +234,17 @@ export default {
     sortPriority() {
       this.sortColumn = 'priority';
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-      this.filteredTickets.sort(this.sortByPriority);
+      this.tickets.sort(this.sortByPriority);
     },
     sortStatus() {
       this.sortColumn = 'status';
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-      this.filteredTickets.sort(this.sortByStatus);
+      this.tickets.sort(this.sortByStatus);
     },
     sortDate() {
       this.sortColumn = 'date';
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-      this.filteredTickets.sort(this.sortByDate);
+      this.tickets.sort(this.sortByDate);
     },
     sortByPriority(a, b) {
       const priorityOrder = [0, 1, 10, 34];
@@ -304,9 +305,7 @@ export default {
     this.checkFormValidity();
   },
 
-
   computed: {
-
     /*To show only the open tickets*/
     filteredTickets() {
       let tickets = this.tickets;
@@ -336,8 +335,10 @@ export default {
     pageTickets() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
-      console.log(this.filteredTickets.slice(start, end));
-      return this.filteredTickets.slice(start, end);
+
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      const newTickets = this.filteredTickets.sort(this.sortByDate);
+      return newTickets.slice(start, end);
     },
     /*Based on the api (it displays 0, 1 or 2) it will display the name of the priority*/
     displayPriority() {
