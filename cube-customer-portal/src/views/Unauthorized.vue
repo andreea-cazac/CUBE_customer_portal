@@ -7,7 +7,7 @@
           <v-card-text class="text-body-1">
             Sorry, seems like you have to login firstly!
             Please go to the
-            <router-link to="/login">login page</router-link>
+            <router-link to="/">login page</router-link>
             and try to login.
           </v-card-text>
         </v-card>

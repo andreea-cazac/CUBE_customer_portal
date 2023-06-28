@@ -1,4 +1,4 @@
-import {useTenantStore} from '../stores/tenant';
+import {useTenantStore} from './tenantStore';
 import {computed} from 'vue';
 export default {
     beforeMount() {

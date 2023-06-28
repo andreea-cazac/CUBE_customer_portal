@@ -1,12 +1,9 @@
 <template>
   <v-container fluid>
     <!-- header -->
-    <v-row class="mb-5 pa-5" :style="{ color: primary_color }">
+    <v-row class="mb-5 pa-5 text-grey-darken-3">
       <v-col>
         <h1>{{$t('profile')}}</h1>
-      </v-col>
-      <v-col>
-        <h5 class="float-right">{{$t('my_tenant')}} / {{$t('profile')}}</h5>
       </v-col>
     </v-row>
 
@@ -15,9 +12,9 @@
       <v-col id="contactInfo" cols="12" sm="6">
         <v-card class="pa-2">
           <v-card-item>
-            <v-card-title :style="{ color: primary_color }" class="mb-5">{{$t('organization_information')}}</v-card-title>
+            <v-card-title class="text-grey-darken-3 mb-5">{{$t('organization_information')}}</v-card-title>
             <v-card-text v-for="detail in profile.contact_details" :key="detail.id">
-              <strong :style="{ color: primary_color }">{{$t(detail.label)}}</strong>
+              <strong class="text-grey-darken-3">{{$t(detail.label)}}</strong>
               <br>
               <a v-if="detail.type === 'website'" :href="`https://${detail.value}`">{{ detail.value }}</a>
               <span v-else>{{ detail.value }}</span>
@@ -47,11 +44,11 @@
 
 <script>
 import axios from 'axios';
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
 
 
 import {useUserStore} from "@/stores/userStore";
-import {useActiveRelationStore} from "@/stores/activeRelation";
+import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {computed, onMounted, ref} from "vue";
 import {getProfileInfo} from "@/cube-api-calls";
 import router from "@/router";
@@ -64,7 +61,6 @@ export default {
     const userStore = useUserStore();
     const userStoreRef = ref(userStore);
 
-
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const token = computed(() => userStoreRef.value.getToken);
     const profile = ref({});
@@ -75,11 +71,11 @@ export default {
     const accent_color = tenantStore.tenant.settings.accent_color;
     const primary_color = tenantStore.tenant.settings.primary_color;
 
-
     onMounted(async () => {
       try {
         const response = await getProfileInfo(activeRelation.value.id, token.value);
         profile.value = response.data;
+        console.log(response.data);
 
         for (const address of profile.value.addresses) {
           const formattedAddress = `${address.street} ${address.number}, ${address.city}, ${address.country.name}`;
@@ -120,14 +116,11 @@ export default {
     }
   },
 };
-
 </script>
 
-  <style>
-
-    .text-color{
-        color: #0061ba;
-    }
-
-  </style>
+<style>
+.text-color{
+  color: #0061ba;
+}
+</style>
 

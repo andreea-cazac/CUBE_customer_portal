@@ -40,6 +40,10 @@ export default {
     information: 'Informatie',
     attachments: 'Bijlagen',
     recent_tickets: '  Recente tickets',
-    show_all: 'Toon alles'
+    show_all: 'Toon alles',
+    description_title: 'Omschrijving',
+    ticket_title: 'Titel',
+    upload_attachment: 'Upload bijlages',
+    attach_files: 'Upload bijlages'
     // other Dutch translations...
 }
