@@ -40,6 +40,10 @@ export default {
     information:'Information',
     attachments: 'Attachments',
     recent_tickets: '  Recent tickets',
-    show_all: 'Show all'
+    show_all: 'Show all',
+    description_title: 'Ticket description',
+    ticket_title: 'Ticket title',
+    upload_attachment: 'Upload attachment',
+    attach_files: 'Attach files'
     // other English translations...
 }
