@@ -3,7 +3,7 @@
       <v-container fluid>
         <v-row class="mb-2">
           <v-col cols="12" md="4">
-            <v-card class="text-center bg-grey-lighten-3" border>
+            <v-card id="ticketsContainer" class="text-center bg-grey-lighten-3" border>
               <v-card-item class="b-solid-blue text-white">
                 <div class="text-h5 mt-5 font-weight-light">{{$t('tickets')}}: {{ tickets.length }}</div>
               </v-card-item>
@@ -37,7 +37,7 @@
 <!--          </v-col>-->
         </v-row>
 
-  <v-card class="b-solid-blue-darken-2" max-width="900px" min-width="">
+  <v-card id="recentTickets" class="b-solid-blue-darken-2" max-width="900px" min-width="">
     <v-card-title class="w-100 b-solid-blue-darken-2">
       <v-row>
         <v-card-item class="ma-1">

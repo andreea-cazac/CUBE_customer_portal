@@ -19,14 +19,14 @@
         </v-col>
       <!-- Create ticket button -->
         <v-col cols="6" md="2" class="text-md-right text-center">
-            <v-btn @click="dialog = true">
+            <v-btn id="createTicketButton" @click="dialog = true">
                 {{ $t('createTicket') }}
             </v-btn>
         </v-col>
     </v-row>
 
 
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-dialog id="createTicketForm" v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title>
           <v-row>
@@ -70,25 +70,25 @@
     </v-snackbar>
 
 
-    <v-table density="comfortable" style="table-layout: fixed; width: 100%;">
+    <v-table id="ticketTable" density="comfortable" style="table-layout: fixed; width: 100%;">
       <thead>
       <tr>
         <th class="text-left">{{$t('ticket_number')}}</th>
         <th class="text-left">{{$t('title')}}</th>
         <th class="text-left">
-          <div class="header-wrapper" @click="sortDate">
+          <div class="header-wrapper" @click="sortDate" data-cy="sortDate">
             {{$t('date_time_created')}}
             <v-icon :class="sortColumn === 'date' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
         <th class="text-left">
-          <div class="header-wrapper" @click="sortPriority">
+          <div class="header-wrapper" @click="sortPriority" data-cy="sortPriority">
               {{$t('priority')}}
             <v-icon :class="sortColumn === 'priority' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
         </th>
         <th class="text-left">
-          <div class="header-wrapper" @click="sortStatus">
+          <div class="header-wrapper" @click="sortStatus" data-cy="sortStatus">
               {{$t('status')}}
             <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
           </div>
