@@ -1,37 +1,37 @@
 <template>
-  <div>
-    <v-row>
+  <div class="mb-9">
+    <v-row class="mb-4">
       <!-- Search bar -->
-        <v-col cols="12" md="8">
-            <v-text-field
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    :label="$t('search')"
-                    single-line
-                    hide-details
-            ></v-text-field>
-        </v-col>
+      <v-col cols="12" md="8">
+        <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            :label="$t('search')"
+            single-line
+            hide-details
+        ></v-text-field>
+      </v-col>
       <!-- Show all button -->
-        <v-col cols="6" md="2" class="text-md-right text-center">
-            <v-btn @click="showAll = !showAll">
-                {{ showAll ? $t('showOpenTickets') : $t('showAll') }}
-            </v-btn>
-        </v-col>
+      <v-col cols="6" md="2" class="text-md-right text-center">
+        <v-btn @click="showAll = !showAll" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`">
+          {{ showAll ? $t('showOpenTickets') : $t('showAll') }}
+        </v-btn>
+      </v-col>
       <!-- Create ticket button -->
-        <v-col cols="6" md="2" class="text-md-right text-center">
-            <v-btn id="createTicketButton" @click="dialog = true">
-                {{ $t('createTicket') }}
-            </v-btn>
-        </v-col>
+      <v-col cols="6" md="2" :class="`text-md-right text-center ${colorCalculation(accent_color)}`">
+        <v-btn @click="dialog = true" v-bind:color="accent_color">
+          {{ $t('createTicket') }}
+        </v-btn>
+      </v-col>
     </v-row>
 
 
-    <v-dialog id="createTicketForm" v-model="dialog" max-width="500px">
+    <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title>
           <v-row>
             <v-col cols="10">
-              <span class="headline">{{$t('createNewTicket')}}</span>
+              <span class="headline">{{ $t('createNewTicket') }}</span>
             </v-col>
             <v-col cols="2" class="text-right">
               <v-btn icon @click="dialog = false">
@@ -42,14 +42,17 @@
             </v-col>
           </v-row>
         </v-card-title>
+
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="ticket.title" label="Ticket Title" required @input="checkFormValidity"></v-text-field>
+                <v-text-field v-model="ticket.title" label="Ticket Title" required
+                              @input="checkFormValidity"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-textarea v-model="ticket.description" label="Ticket Description" required @input="checkFormValidity"></v-textarea>
+                <v-textarea v-model="ticket.description" label="Ticket Description" required
+                            @input="checkFormValidity"></v-textarea>
               </v-col>
               <v-col cols="12">
                 <v-file-input label="Upload Attachment"></v-file-input>
@@ -57,10 +60,12 @@
             </v-row>
           </v-container>
         </v-card-text>
+
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">{{$t('cancel')}}</v-btn>
-          <v-btn color="blue darken-1" text @click="createTicket" :disabled="!isFormValid">{{$t('create')}}</v-btn>
+          <v-btn :color="`${primary_color}`" text @click="dialog = false">{{ $t('cancel') }}</v-btn>
+          <v-btn :color="`${primary_color}`" text @click="createTicket" :disabled="!isFormValid">{{ $t('create') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -70,34 +75,40 @@
     </v-snackbar>
 
 
-    <v-table id="ticketTable" density="comfortable" style="table-layout: fixed; width: 100%;">
+    <v-table density="comfortable" style="table-layout: fixed; width: 100%;" fixed-header="true">
       <thead>
       <tr>
-        <th class="text-left">{{$t('ticket_number')}}</th>
-        <th class="text-left">{{$t('title')}}</th>
-        <th class="text-left">
-          <div class="header-wrapper" @click="sortDate" data-cy="sortDate">
-            {{$t('date_time_created')}}
-            <v-icon :class="sortColumn === 'date' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
+        <th class="text-left text-grey-darken-3">{{ $t('ticket_number') }}</th>
+        <th class="text-left text-grey-darken-3">{{ $t('title') }}</th>
+        <th class="text-left text-grey-darken-3">
+          <div class="header-wrapper" @click="sortDate">
+            {{ $t('date_time_created') }}
+            <v-icon :class="sortColumn === 'date' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up
+            </v-icon>
           </div>
         </th>
-        <th class="text-left">
-          <div class="header-wrapper" @click="sortPriority" data-cy="sortPriority">
-              {{$t('priority')}}
-            <v-icon :class="sortColumn === 'priority' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
+        <th class="text-left text-grey-darken-3">
+          <div class="header-wrapper" @click="sortPriority">
+            {{ $t('priority') }}
+            <v-icon :class="sortColumn === 'priority' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">
+              mdi-chevron-up
+            </v-icon>
           </div>
         </th>
-        <th class="text-left">
-          <div class="header-wrapper" @click="sortStatus" data-cy="sortStatus">
-              {{$t('status')}}
-            <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">mdi-chevron-up</v-icon>
+        <th class="text-left text-grey-darken-3">
+          <div class="header-wrapper" @click="sortStatus">
+            {{ $t('status') }}
+            <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">
+              mdi-chevron-up
+            </v-icon>
           </div>
         </th>
-        <th class="text-left">{{$t('type')}}</th>
+        <th class="text-left text-grey-darken-3">{{ $t('type') }}</th>
       </tr>
       </thead>
+
       <tbody>
-      <tr v-for="item in filteredTickets" :key="item.code" @click="goToTicket(item)" class="clickable-row">
+      <tr v-for="item in pageTickets" :key="item.code" @click="goToTicket(item)" class="clickable-row">
         <td>{{ item.code }}</td>
         <td>{{ item.title }}</td>
         <td>{{ item.created_at }}</td>
@@ -119,38 +130,49 @@
             {{ displayStatus(item.status) }}
           </div>
         </td>
-        <td>{{ displayType(item.type_label) }}</td>
+        <td class="text-wrap">{{ displayType(item.type_label) }}</td>
       </tr>
       </tbody>
     </v-table>
     <router-view></router-view>
+
+    <v-pagination v-model="currentPage" :length="totalPages" rounded="circle" total-visible="10" size="default"
+                  :color="`${primary_color}`"></v-pagination>
   </div>
 
-  <!--  <v-pagination
-        v-model="page"
-        :length="totalPages"
-        color="primary"
-    ></v-pagination>-->
+
 </template>
 
 <script>
-import axios from 'axios';
 import {useActiveRelationStore} from "@/stores/activeRelation";
 import {useUserStore} from "@/stores/userStore";
 import {computed, ref} from "vue";
+import {getTickets, postTicket} from "@/cube-api-calls";
+import {useTenantStore} from "@/stores/tenant";
+import {calculateTextColor} from "@/text-color";
+import router from "@/router";
+import {removeAccountData} from "@/account-details-deletion";
 
 export default {
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
-
+    const tenantStore = useTenantStore();
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const relationId = computed(() => activeRelation.value.id);
     const relationName = computed(() => activeRelation.value.name);
 
+    //tenantDesign
+    const logo = tenantStore.tenant.settings.logo;
+    const accent_color = tenantStore.tenant.settings.accent_color;
+    const primary_color = tenantStore.tenant.settings.primary_color;
+
     return {
       relationId,
-      relationName
+      relationName,
+      accent_color,
+      primary_color,
+      logo
     }
   },
 
@@ -164,109 +186,44 @@ export default {
       isFormValid: false,
       showSnackbar: false, // Controls visibility of the snackbar
       snackbarTimeout: 3000, // Duration (in milliseconds) to display the snackbar
-      ticket:{
-        title:'',
-        description:''
+      ticket: {
+        title: '',
+        description: ''
       },
       headers: [
-        { text: 'Ticket Number', value: 'code', sortable: true },
-        { text: 'Title', value: 'title', sortable: true },
-        { text: 'Date/time created', value: 'created_at', sortable: true },
-        { text: 'Priority', value: 'priority_index', sortable: true },
-        { text: 'Status', value: 'status', sortable: true },
-        { text: 'Type', value: 'type_label', sortable: true },
+        {text: 'Ticket Number', value: 'code', sortable: true},
+        {text: 'Title', value: 'title', sortable: true},
+        {text: 'Date/time created', value: 'created_at', sortable: true},
+        {text: 'Priority', value: 'priority_index', sortable: true},
+        {text: 'Status', value: 'status', sortable: true},
+        {text: 'Type', value: 'type_label', sortable: true},
       ],
-      tickets: [
-        /*{
-          number: 'TCK-001',
-          title: 'First ticket',
-          date: '2023-05-31 12:00:00',
-          priority: 'Low',
-          status: 'In Progress',
-          type: 'Bug'
-        },
-        {
-          number: 'TCK-002',
-          title: 'Second ticket',
-          date: '2023-05-31 13:00:00',
-          priority: 'Medium',
-          status: 'In Progress',
-          type: 'Help'
-        },
-        {
-          number: 'TCK-003',
-          title: 'Second ticket',
-          date: '2023-05-31 13:00:00',
-          priority: 'High',
-          status: 'Done',
-          type: 'Help'
-        },
-        {
-          number: 'TCK-004',
-          title: 'Second ticket',
-          date: '2023-05-31 05:00:00',
-          priority: 'High',
-          status: 'In Progress',
-          type: 'Help'
-        },
-        {
-          number: 'TCK-005',
-          title: 'Second ticket',
-          date: '2023-03-25 13:00:00',
-          priority: 'Medium',
-          status: 'In Progress',
-          type: 'Help'
-        },
-        {
-          number: 'TCK-006',
-          title: 'Second ticket',
-          date: '2023-04-31 13:00:00',
-          priority: 'Medium',
-          status: 'Todo',
-          type: 'Help'
-        },*/
-
-        // ... add more items here
-      ],
-      itemsPerPage: 2,
-      page: 1,
+      tickets: [],
+      itemsPerPage: 20,
+      currentPage: 1,
     };
   },
 
   methods: {
     goToTicket(ticket) {
       // this.$router.push(`/account/tickets/${ticket}`);
-      this.$router.push({ name: 'ticketDetails', params: { id: `${ticket.id}`} });
+      this.$router.push({name: 'ticketDetails', params: {id: `${ticket.id}`}});
     },
     createTicket() {
-        const id = useActiveRelationStore().activeRelation.id;
-        let url = `https://cube-testing.solidpartners.nl/cp/relations/${id}/work_orders`;
-        let bearerToken = useUserStore().token;
-        let postData = {
-            title : this.ticket.title,
-            description: this.ticket.description
-        };
-        axios.post(url, postData, {
-            headers: {
-                'Authorization': 'Bearer ' + bearerToken
-            }
-        })
-            .then(response => {
-                console.log(response.data);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-
-
-
+      const id = useActiveRelationStore().activeRelation.id;
+      let bearerToken = useUserStore().token;
+      let postData = {
+        title: this.ticket.title,
+        description: this.ticket.description
+      };
+      postTicket(id, postData, bearerToken);
 
       // Clear the ticket data
       this.ticket = {
         title: '',
         description: '',
       };
-
+      window.location.reload();
       this.dialog = false;
       this.showSnackbar = true;
       setTimeout(() => {
@@ -327,31 +284,22 @@ export default {
     checkFormValidity() {
       this.isFormValid = !!this.ticket.title && !!this.ticket.description;
     },
-
-
+    colorCalculation(theColor) {
+      return calculateTextColor(theColor);
+    }
   },
+  async created() {
+    // Fetch data from the API when the component is created
+    let bearerToken = useUserStore().token;
 
-    created() {
-        // Fetch data from the API when the component is created
-        let url = `https://cube-testing.solidpartners.nl/cp/relations/${this.relationId}/work_orders/`;
-        let bearerToken = useUserStore().token;
+    try {
+      const response = await getTickets(this.relationId, bearerToken);
+      this.tickets = response.data;
 
-        axios.get(url, {
-            headers: {
-                'Authorization': 'Bearer ' + bearerToken
-            }
-        })
-            .then(response => {
-                // Log the data returned from the API
-                console.log(response.data);
-                console.log(this.relationName);
-                // Assign the response data to your tickets data property
-                this.tickets = response.data;
-            })
-            .catch(error => {
-                // Handle error here
-                console.error(error);
-            });
+    } catch (error) {
+      throw new Error(error)
+    }
+
 
     this.checkFormValidity();
   },
@@ -380,20 +328,20 @@ export default {
             (this.displayStatus(ticket.status) && this.displayStatus(ticket.status).toLowerCase().includes(this.search.toLowerCase()))
         );
       }
-
       return tickets;
     },
-    /*totalPages() {
+    totalPages() {
       return Math.ceil(this.filteredTickets.length / this.itemsPerPage);
-    },*/
+    },
     pageTickets() {
-      const start = (this.page - 1) * this.itemsPerPage;
+      const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
+      console.log(this.filteredTickets.slice(start, end));
       return this.filteredTickets.slice(start, end);
     },
     /*Based on the api (it displays 0, 1 or 2) it will display the name of the priority*/
     displayPriority() {
-      return function(priorityIndex) {
+      return function (priorityIndex) {
         return priorityIndex === 0 ? 'Low' : priorityIndex &&
         priorityIndex === 1 ? 'Medium' : priorityIndex &&
         priorityIndex === 10 ? 'High' : priorityIndex &&
@@ -401,14 +349,14 @@ export default {
       }
     },
     displayStatus() {
-      return function(statusName) {
+      return function (statusName) {
         return statusName === "finished" ? 'Finished' : statusName &&
         statusName === "todo" ? 'To-Do' : statusName &&
         statusName === "in_progress" ? 'In-Progress' : statusName;
       }
     },
     displayType() {
-      return function(type) {
+      return function (type) {
         return type === null || type === '' ? '[UNDEFINED]' : type;
       }
     },
@@ -438,38 +386,38 @@ export default {
 }
 
 .bcg-green {
-  background-color: rgb(31, 187, 31);  /* You can adjust the color as per your preference */
-  color: white;  /* Set the text color so it contrasts with the background */
+  background-color: rgb(31, 187, 31); /* You can adjust the color as per your preference */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .bcg-blue {
-  background-color: #2196f3;  /* You can adjust the color as per your preference */
-  color: white;  /* Set the text color so it contrasts with the background */
+  background-color: #2196f3; /* You can adjust the color as per your preference */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .bcg-orange-light {
-  background-color: #ffc400;  /* You can adjust the color as per your preference */
-  color: white;  /* Set the text color so it contrasts with the background */
+  background-color: #ffc400; /* You can adjust the color as per your preference */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .bcg-orange {
-  background-color: #ffab00;  /* You can adjust the color as per your preference */
-  color: white;  /* Set the text color so it contrasts with the background */
+  background-color: #ffab00; /* You can adjust the color as per your preference */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .bcg-red {
   background-color: red;
-  color: white;  /* Set the text color so it contrasts with the background */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
- .bcg-grey {
+.bcg-grey {
   background: #b7b7b7;
-  color: white;  /* Set the text color so it contrasts with the background */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .bcg-dark-green {
-  background-color: green;  /* You can adjust the color as per your preference */
-  color: white;  /* Set the text color so it contrasts with the background */
+  background-color: green; /* You can adjust the color as per your preference */
+  color: white; /* Set the text color so it contrasts with the background */
 }
 
 .rotate180 {
@@ -482,11 +430,11 @@ export default {
 }
 
 .v-data-table {
-  margin-top: 20px;  /* Adjust this value as needed */
+  margin-top: 20px; /* Adjust this value as needed */
 }
 
 .v-table {
-  margin-top: 20px;  /* Adjust this value as needed */
+  margin-top: 20px; /* Adjust this value as needed */
 }
 
 .table-fixed {
@@ -495,8 +443,8 @@ export default {
 }
 
 .table-fixed td {
-  white-space: normal;  /* Allows text to wrap to next line */
-  overflow: hidden;    /* Hides content that still doesn't fit */
-  text-overflow: ellipsis;  /* Adds an ellipsis (...) when content is hidden */
+  white-space: normal; /* Allows text to wrap to next line */
+  overflow: hidden; /* Hides content that still doesn't fit */
+  text-overflow: ellipsis; /* Adds an ellipsis (...) when content is hidden */
 }
 </style>

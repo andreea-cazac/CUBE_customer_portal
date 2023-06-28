@@ -1,74 +1,86 @@
 <template>
   <v-container fluid>
     <!-- header -->
-      <v-row class="mb-5 pa-5 text-color">
-          <v-col>
-              <h1>{{$t('profile')}}</h1>
-          </v-col>
-          <v-col>
-              <h5 class="float-right">{{$t('my_tenant')}} / {{$t('profile')}}</h5>
-          </v-col>
-      </v-row>
+    <v-row class="mb-5 pa-5" :style="{ color: primary_color }">
+      <v-col>
+        <h1>{{$t('profile')}}</h1>
+      </v-col>
+      <v-col>
+        <h5 class="float-right">{{$t('my_tenant')}} / {{$t('profile')}}</h5>
+      </v-col>
+    </v-row>
 
     <v-row>
       <!-- contact info -->
-        <v-col id="contactInfo" cols="12" sm="6">
-            <v-card class="pa-2">
-                <v-card-item>
-                    <v-card-title class="text-color mb-5">{{$t('organization_information')}}</v-card-title>
-                    <v-card-text v-for="detail in profile.contact_details" :key="detail.id">
-                        <strong class="text-color">{{$t(detail.label)}}</strong>
-                        <br>
-                        <a v-if="detail.type === 'website'" :href="`https://${detail.value}`">{{ detail.value }}</a>
-                        <span v-else>{{ detail.value }}</span>
-                    </v-card-text>
-                </v-card-item>
-            </v-card>
-        </v-col>
+      <v-col cols="12" sm="6">
+        <v-card class="pa-2">
+          <v-card-item>
+            <v-card-title :style="{ color: primary_color }" class="mb-5">{{$t('organization_information')}}</v-card-title>
+            <v-card-text v-for="detail in profile.contact_details" :key="detail.id">
+              <strong :style="{ color: primary_color }">{{$t(detail.label)}}</strong>
+              <br>
+              <a v-if="detail.type === 'website'" :href="`https://${detail.value}`">{{ detail.value }}</a>
+              <span v-else>{{ detail.value }}</span>
+            </v-card-text>
+          </v-card-item>
+        </v-card>
+      </v-col>
+
 
       <!-- google maps -->
-        <v-col cols="12" sm="6">
-            <v-row>
-                <v-card class="mb-5 w-100" v-for="address in profile.addresses" :key="address.id">
-                    <v-card-title>
-                        {{ address.street }} {{ address.number }}
-                        <br>
-                        {{ address.zipcode }}, {{ address.city }}, {{ $t(address.country.name) }}
-                    </v-card-title>
-                    <iframe v-if="address.geoLocation" :src="`https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${address.geoLocation.lat},${address.geoLocation.lng}`" width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                </v-card>
-            </v-row>
-        </v-col>
+      <v-col cols="12" sm="6">
+        <v-row>
+          <v-card class="mb-5 w-100" v-for="address in profile.addresses" :key="address.id">
+            <v-card-title>
+              {{ address.street }} {{ address.number }}
+              <br>
+              {{ address.zipcode }}, {{ address.city }}, {{ $t(address.country.name) }}
+            </v-card-title>
+            <iframe v-if="address.geoLocation" :src="`https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${address.geoLocation.lat},${address.geoLocation.lng}`" width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+          </v-card>
+        </v-row>
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
+
 <script>
 import axios from 'axios';
+import {useTenantStore} from "@/stores/tenant";
+
+
 import {useUserStore} from "@/stores/userStore";
 import {useActiveRelationStore} from "@/stores/activeRelation";
-import {computed, ref, onMounted} from "vue";
+import {computed, onMounted, ref} from "vue";
+import {getProfileInfo} from "@/cube-api-calls";
+import router from "@/router";
+import {removeAccountData} from "@/account-details-deletion";
 
 export default {
   setup() {
     const activeRelationStore = useActiveRelationStore();
     const activeRelationStoreRef = ref(activeRelationStore);
+    const userStore = useUserStore();
+    const userStoreRef = ref(userStore);
+
 
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
-    const relationId = computed(() => activeRelation.value.id);
+    const token = computed(() => userStoreRef.value.getToken);
     const profile = ref({});
     const apiKey = 'AIzaSyCb-VXv9duPI7zRwSm_nu-_KUbHUrnV23A';
 
+    const tenantStore = useTenantStore();
+
+    const accent_color = tenantStore.tenant.settings.accent_color;
+    const primary_color = tenantStore.tenant.settings.primary_color;
+
+
     onMounted(async () => {
       try {
-        const responseRelations = await axios.get(`https://cube-testing.solidpartners.nl/cp/relations/${relationId.value}`, {
-          headers: {
-            'Authorization': 'Bearer ' + useUserStore().token,
-            'Access-Control-Allow-Origin':  'http://localhost:5173'
-          }
-        });
-        profile.value = responseRelations.data;
-        console.log(responseRelations);
+        const response = await getProfileInfo(activeRelation.value.id, token.value);
+        profile.value = response.data;
+
         for (const address of profile.value.addresses) {
           const formattedAddress = `${address.street} ${address.number}, ${address.city}, ${address.country.name}`;
           const location = await getGeoInfo(formattedAddress);
@@ -100,10 +112,11 @@ export default {
       await new Promise(resolve => setTimeout(resolve, 50));
     };
     return {
-      relationId,
       profile,
       getGeoInfo,
-      apiKey
+      apiKey,
+      accent_color,
+      primary_color
     }
   },
 };
