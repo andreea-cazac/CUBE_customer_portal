@@ -100,9 +100,9 @@
 
 
 <script>
-import {useActiveRelationStore} from "@/stores/activeRelation";
+import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {computed, ref} from "vue";
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
 import {useUserStore} from "@/stores/userStore";
 import {getTickets} from "@/cube-api-calls";
 import {calculateTextColor} from "@/text-color";

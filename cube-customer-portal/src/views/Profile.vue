@@ -44,11 +44,11 @@
 
 <script>
 import axios from 'axios';
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
 
 
 import {useUserStore} from "@/stores/userStore";
-import {useActiveRelationStore} from "@/stores/activeRelation";
+import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {computed, onMounted, ref} from "vue";
 import {getProfileInfo} from "@/cube-api-calls";
 import router from "@/router";

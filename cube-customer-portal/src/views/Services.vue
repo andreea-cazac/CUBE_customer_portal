@@ -24,7 +24,7 @@
 
 <script>
 import {useUserStore} from "@/stores/userStore";
-import {useActiveRelationStore} from "@/stores/activeRelation";
+import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {computed, ref} from "vue";
 
 export default {
