@@ -116,7 +116,7 @@ export default {
         },
         {icon: "mdi-account-group", textKey: "team", route: "/account/teams", permission: "customer:team:show"}
       ],
-      loginRoute: "/login"
+      loginRoute: "/"
     };
   },
   methods: {
