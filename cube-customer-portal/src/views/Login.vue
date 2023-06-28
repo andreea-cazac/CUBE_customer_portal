@@ -2,9 +2,9 @@
   <div>
   <div v-if="isLoading" class="loading-overlay">
     <v-progress-circular indeterminate v-bind:color="primary_color"></v-progress-circular>
-    <p>Processing your data...</p>
+    <p> Processing your data...</p>
   </div>
-    <v-app :style="{backgroundColor: primary_color}">
+    <v-app :style="{backgroundColor: primary_color}" v-if="!isLoading">
       <v-container class="d-flex align-center justify-center fill-height">
         <v-avatar class="circle" :style="getCircleStyle(200, { top: '-5%', left: '-5%' }, { fill: true, fillColor: accent_color})"></v-avatar>
         <v-avatar class="circle" :style="getCircleStyle(150, { bottom: '20%', right: '10%' }, { fill: true, fillColor: accent_color})"></v-avatar>
