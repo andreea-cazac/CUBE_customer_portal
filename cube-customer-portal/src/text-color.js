@@ -6,6 +6,6 @@ export function calculateTextColor(theColor) {
     var B = parseInt(color.substring(4,6),16);
     var aColor = Math.sqrt(R * R * .241 + G * G * .691 + B * B * .068);
 
-    colorText = aColor < 160 ? "text-white" : "text-grey-darken-3";
+    colorText = aColor < 180 ? "text-white" : "text-grey-darken-3";
     return colorText;
 }
