@@ -1,4 +1,9 @@
 <template>
+  <div>
+  <div v-if="isLoading" class="loading-overlay">
+    <v-progress-circular indeterminate v-bind:color="primary_color"></v-progress-circular>
+    <p>Processing your data...</p>
+  </div>
     <v-app :style="{backgroundColor: primary_color}">
       <v-container class="d-flex align-center justify-center fill-height">
         <v-avatar class="circle" :style="getCircleStyle(200, { top: '-5%', left: '-5%' }, { fill: true, fillColor: accent_color})"></v-avatar>
@@ -7,7 +12,7 @@
         <v-avatar class="circle" :style="getCircleStyle(300, { bottom: '-5%', right: '-5%' }, { fill: false, border: true, borderColor: accent_color })"></v-avatar>
         <v-avatar class="circle" :style="getCircleStyle(100, { bottom: '70%', right: '40%' }, { fill: false, border: true, borderColor: accent_color })"></v-avatar>
 
-        <v-card rounded="lg" >
+        <v-card rounded="lg" class="pa-6">
           <v-img v-bind:src="logo" alt="logo"></v-img>
           <v-card-title class="text-center" :style="{color: primary_color}">Log in with one of the providers:</v-card-title>
           <p v-if="errorMessage" class="errorText ma-10 text-red-lighten-1">{{ errorMessage }}</p>
@@ -22,9 +27,11 @@
               </v-btn>
             </div>
           </v-card-actions>
+
         </v-card>
       </v-container>
     </v-app>
+  </div>
 </template>
 
 <script>
@@ -34,7 +41,6 @@ import {useActiveRelationStore} from '../stores/activeRelationStore'
 import {useUserStore} from '../stores/userStore.js'
 import {useTenantStore} from '../stores/tenantStore';
 import {useUserRelationsStore} from "../stores/userRelationsStore";
-import {setTimer} from "../account-details-deletion"
 import {useFavicon} from "@vueuse/core";
 // import mixins from '@/stores/mixins';
 
@@ -52,21 +58,32 @@ export default {
       const userStore = useUserStore();
       const tenantStore = useTenantStore();
       const errorMessage = ref("");
-      const { logo, accent_color, primary_color } = extractDesignSettings(tenantStore);
-      const logoUrl = computeLogoUrl(tenantStore);
+      const isLoading = ref(false);
+      const designSettings = computed(() => {
+        if(tenantStore.tenant && tenantStore.tenant.settings) {
+          const logo = tenantStore.tenant.settings.logo;
+          const accent_color = tenantStore.tenant.settings.accent_color;
+          const primary_color = tenantStore.tenant.settings.primary_color;
+          return { logo, accent_color, primary_color };
+        } else {
+          return { logo: "", accent_color: "", primary_color: "" };
+        }
+      });
+
+      const { logo, accent_color, primary_color } = designSettings.value;
 
       onMounted(() => initializePage(tenantStore, googleUserManager, microsoftUserManager, user, router, userStore, activeRelationStore, userRelations, errorMessage));
 
       return {
         loginGoogle: () => googleUserManager.signinRedirect(),
         loginMicrosoft: () => loginMicrosoftUser(microsoftUserManager, userStore, router, errorMessage),
-        logoUrl,
         getCircleStyle: (size, position, options = {}) => getCircleStyle(size, position, accent_color, options),
         user,
         accent_color,
         primary_color,
         logo,
         errorMessage,
+        isLoading,
       };
 
       function extractDesignSettings(tenantStore) {
@@ -114,7 +131,7 @@ export default {
       }
 
       async function getTenantDesign(tenantStore) {
-        const response = await fetch(`https://apim-solidpartners-p.azure-api.net/cp-tenant-mock/getTenant/mijn.solidpartners.nl`);
+        const response = await fetch(`https://cube-testing.solidpartners.nl/cp/getTenant/localhost`);
         tenantData.value = await handleResponse(response);
         tenantStore.setTenant(tenantData.value);
         useFavicon(computed(() => tenantStore.tenant.settings.favicon).value);
@@ -127,6 +144,7 @@ export default {
 
       function handleLoginRedirects(router, googleUserManager, userStore, activeRelationStore, userRelations, errorMessage) {
         if (window.location.href.indexOf('code=') > -1 && window.location.href.indexOf('state=') > -1 && window.location.href.indexOf('google') > -1) {
+          isLoading.value = true;
           googleUserManager.signinRedirectCallback().then(loggedInUser => handleGoogleLogin(loggedInUser, router, userStore, activeRelationStore, userRelations, errorMessage));
         }
       }
@@ -174,17 +192,17 @@ export default {
         userStore.setToken(responseData.token);
         activeRelationStore.setActiveRelation(newRelations[0]);
         userRelations.setUserRelations(newRelations);
-        setTimer(); // memorize when the data was fetched
-
       }
 
       function navigateToDashboard(userStore, router) {
         if (userStore.getToken) {
           router.push('/account/dashboard');
+          isLoading.value = false;
         }
       }
 
       async function loginMicrosoftUser(microsoftUserManager, userStore, router, errorMessage) {
+        isLoading.value = true;
         try {
           const loggedInUser = await microsoftUserManager.signIn();
           if (loggedInUser) {
@@ -241,15 +259,13 @@ export default {
 
 }
 
-.loginButtons{
-  border-color: var(--primary-color);
-  border-radius: 50%;
-  border-width: 0.15rem;
-  width: 80px; /* default width for larger screens */
-  height: 80px; /* default height for larger screens */
-  margin: 1.5rem; /* Increase the spacing around the buttons */
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
 }
-
 
 </style>
 

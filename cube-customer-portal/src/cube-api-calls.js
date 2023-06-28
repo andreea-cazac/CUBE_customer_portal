@@ -1,5 +1,6 @@
 import axios from 'axios';
 import router from "@/router";
+import {removeAccountData} from "@/account-details-deletion";
 
 const baseUrl = 'https://cube-testing.solidpartners.nl/cp';
 
@@ -25,9 +26,12 @@ async function postAccountItem(url, body, token) {
         });
         return response;
     } catch (error) {
-        await router.push('/401');
+        if(error.response.status===401){ //if unauthorized, direct to 401 page
+            console.log("unauthorized");
+            removeAccountData()
+            await router.push('/401');
+        }
         throw new Error(error);
-
     }
 }
 
@@ -38,8 +42,17 @@ export async function getAccountItems(url, token) {
                 'Authorization': 'Bearer ' + token
             }
         });
+        console.log(response.status);
+        if(response.status===200){
+            console.log("yay");
+        }
         return response;
     } catch (error) {
+        if(error.response.status===401){ //if unauthorized, direct to 401 page
+            console.log("unauthorized");
+            removeAccountData()
+            await router.push('/401');
+        }
         throw new Error(error);
     }
 }

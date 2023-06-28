@@ -135,7 +135,7 @@
                 </div>
                 <v-card v-for="event in ticket.events" :key="event.id" class="my-3 pa-5">
                   <v-card-title>{{ event.title }}</v-card-title>
-                  <v-card-subtitle>{{ formatDate(event.created_at) }}, <i>by: {{ event.attributes[0].value }}, </i>
+                  <v-card-subtitle>{{ formatDate(event.created_at) }}, <i>by: {{ returnSender(event) }}, </i>
                   </v-card-subtitle>
                   <v-card-text>
                     <p v-html="event.body"></p>
@@ -237,11 +237,9 @@ export default {
         const response = await getTicketById(this.relationId, this.getTicketId, this.getToken)
         this.ticket = response.data;
 
-        this.fetchAttachments();
-        this.fetchComments();
+        await this.fetchAttachments();
+        await this.fetchComments();
       } catch (error) {
-        removeAccountData()
-        await router.push('/401');
         console.error('Error fetching ticket data:', error);
       }
     },
@@ -250,8 +248,6 @@ export default {
         const response = await getAttachments(this.relationId, this.getTicketId, this.getToken)
         this.ticket.attachments = response.data;
       } catch (error) {
-        removeAccountData()
-        await router.push('/401');
         console.error('Error fetching attachments:', error);
       }
     },
@@ -259,9 +255,8 @@ export default {
       try {
         const commentsResponse = await getComments(this.relationId, this.getTicketId, this.getToken)
         this.ticket.events = commentsResponse.data;
+        console.log(this.ticket.events)
       } catch (error) {
-        removeAccountData()
-        await router.push('/401');
         console.error('Error fetching ticket data:', error);
       }
     },
@@ -333,6 +328,12 @@ export default {
       } catch (error) {
         console.error('Error downloading file:', error);
       }
+    },
+    returnSender(event){
+      if(event.attributes.length===0){
+        return "unknown"
+      }
+      else return event.attributes[0].value
     },
     formatDate(date) {
       return moment(date).format('DD/MM/YYYY HH:mm');
