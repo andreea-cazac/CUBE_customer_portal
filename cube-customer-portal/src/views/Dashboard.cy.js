@@ -17,12 +17,14 @@ const i18n = createI18n({
 
 const pinia = createPinia();
 describe('<Dashboard />', () => {
+
   it('Dashboard must contain user’s amount of tickets, and recent tickets. ', () => {
     mount(Dashboard, {
       global: {
         plugins: [pinia, i18n],
       },
     });
+
     cy.get('#recentTickets').should('exist');
     cy.get('#ticketsContainer').should('exist');
   });

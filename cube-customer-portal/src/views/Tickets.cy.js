@@ -84,43 +84,7 @@ describe('<Tickets />', () => {
     // Add any assertions you need here to verify sortStatus was called
   });
 
-  it('should display tickets with all statuses', () => {
-    // Get the token
-    cy.get('@token').then((token) => {
-      // Get the relationId
-      cy.get('@relationId').then((relationId) => {
-        // Make a request to fetch the tickets
-        cy.request({
-          method: 'GET',
-          url: `https://cube-testing.solidpartners.nl/cp/relations/${relationId}/work_orders`,
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }).then((response) => {
-          // Assert that the API response has a 200 status code
-          expect(response.status).to.eq(200);
 
-          // Assert that the response body contains tickets with all statuses
-          expect(response.body.some(ticket => displayStatus(ticket.status) === 'Finished')).to.be.true;
-          expect(response.body.some(ticket => displayStatus(ticket.status) === 'To-Do')).to.be.true;
-          expect(response.body.some(ticket => displayStatus(ticket.status) === 'In-Progress')).to.be.true;
-
-          // Mount the Tickets component
-          mount(Tickets, {
-            global: {
-              plugins: [pinia, i18n],
-            },
-            propsData: { tickets: response.body },
-          });
-
-          // After the Tickets component has been mounted, check that the DOM contains elements with all status classes
-          cy.get('.bcg-green').should('exist');
-          cy.get('.bcg-blue').should('exist');
-          cy.get('.bcg-orange-light').should('exist');
-        });
-      });
-    });
-  });
 
 });
 

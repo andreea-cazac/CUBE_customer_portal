@@ -4,7 +4,7 @@ Cypress.Commands.add('login', () => {
         url: 'https://cube-testing.solidpartners.nl/cp/login',
         body: {
             "ap": "google",   // change the token according to you
-            "token" :"ya29.a0AWY7CklvbGDhZUfYfq0QKsDPZiZjOzPAKxNyTQC5WryX0zUOM9Wa5GYuIVhO_gTq1jUpd_0w1IO5B0sJ69w0vCxX6xPXsL-qFJfw-wwJDQvk6YHHrSlqKs4vRCQnWhbj8j4L_yyk8rKrNWWq-QKd3YhoDTXrRAaCgYKAdYSARASFQG1tDrp9hpb0lM1juvyXYFB1lXxbQ0165" ,
+            "token" :"ya29.a0AWY7CknENwc6so8TcO7aCu2-1__bIgI_hPuqXQKO_todFI-2CN5wAgWoSTQi31cg_hA81yZUuVqW5JRk680uskL3f-Fa-lhi4862VJx1g4yF-HyK10jmL7hYev7FkXKDX4SKSI0lfomQzz1X3Qel74jRNHUslQaCgYKAZkSARASFQG1tDrpQoIFEUTYckJ8DWyAVaboIA0165" ,
             "email" : "alexblajievschi07@gmail.com"
         }
     })
