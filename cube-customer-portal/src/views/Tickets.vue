@@ -47,15 +47,15 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="ticket.title" label="Ticket Title" required
+                <v-text-field v-model="ticket.title" v-bind:label="$t('ticket_title')" required
                               @input="checkFormValidity"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-textarea v-model="ticket.description" label="Ticket Description" required
+                <v-textarea v-model="ticket.description" v-bind:label="$t('description_title')" required
                             @input="checkFormValidity"></v-textarea>
               </v-col>
               <v-col cols="12">
-                <v-file-input label="Upload Attachment"></v-file-input>
+                <v-file-input v-bind:label="$t('upload_attachment')"></v-file-input>
               </v-col>
             </v-row>
           </v-container>
@@ -144,11 +144,11 @@
 </template>
 
 <script>
-import {useActiveRelationStore} from "@/stores/activeRelation";
+import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {useUserStore} from "@/stores/userStore";
 import {computed, ref} from "vue";
 import {getTickets, postTicket} from "@/cube-api-calls";
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
 import {calculateTextColor} from "@/text-color";
 import router from "@/router";
 import {removeAccountData} from "@/account-details-deletion";

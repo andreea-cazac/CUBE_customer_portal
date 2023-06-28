@@ -74,11 +74,11 @@
 
 <script>
 
-import {useActiveRelationStore} from '@/stores/activeRelation.js';
+import {useActiveRelationStore} from '@/stores/activeRelationStore.js';
 import {ref} from "vue";
 import {useUserRelationsStore} from "@/stores/userRelationsStore";
 import {useUserStore} from "@/stores/userStore";
-import {useTenantStore} from '../stores/tenant';
+import {useTenantStore} from '../stores/tenantStore';
 import {calculateTextColor} from "@/text-color";
 // import mixins from "@/stores/mixins";
 

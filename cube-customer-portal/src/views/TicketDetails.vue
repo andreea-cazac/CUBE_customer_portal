@@ -70,7 +70,7 @@
                 <v-file-input
                     v-model="attachment"
                     multiple
-                    label= "Attach files"
+                    v-bind:label="$t('attach_files')"
                     prepend-icon="mdi-paperclip"
                 ></v-file-input>
               </div>
@@ -180,9 +180,9 @@
 
 <script>
 import axios from 'axios';
-import {useActiveRelationStore} from "@/stores/activeRelation";
+import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {computed, ref} from "vue";
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
 import {useUserStore} from "@/stores/userStore";
 import moment from 'moment';
 import {getAttachments, getComments, getTicketById, postAttachment, postComment} from "@/cube-api-calls";

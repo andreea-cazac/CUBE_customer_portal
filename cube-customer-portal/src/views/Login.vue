@@ -37,9 +37,9 @@
 <script>
 import {ref, inject, onMounted, computed} from 'vue';
 import {useRouter} from "vue-router";
-import {useActiveRelationStore} from '../stores/activeRelation'
+import {useActiveRelationStore} from '../stores/activeRelationStore'
 import {useUserStore} from '../stores/userStore.js'
-import {useTenantStore} from '../stores/tenant';
+import {useTenantStore} from '../stores/tenantStore';
 import {useUserRelationsStore} from "../stores/userRelationsStore";
 import {useFavicon} from "@vueuse/core";
 // import mixins from '@/stores/mixins';
