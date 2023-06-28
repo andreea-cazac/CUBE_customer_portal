@@ -18,11 +18,11 @@
           <p v-if="errorMessage" class="errorText ma-10 text-red-lighten-1">{{ errorMessage }}</p>
           <v-card-actions class="justify-center">
             <div>
-              <v-btn size="x-large" v-bind:color="primary_color" variant="outlined" icon="mdi-google" @click="loginGoogle">
+              <v-btn id="google-login-btn" size="x-large" v-bind:color="primary_color" variant="outlined" icon="mdi-google" @click="loginGoogle">
                 <v-icon size="x-large" icon="mdi-google"></v-icon>
               </v-btn>
 
-              <v-btn style="margin: 25px" size="x-large" v-bind:color="primary_color" variant="outlined" icon="mdi-microsoft-windows" @click="loginMicrosoft">
+              <v-btn id="microsoft-login-btn" style="margin: 25px" size="x-large" v-bind:color="primary_color" variant="outlined" icon="mdi-microsoft-windows" @click="loginMicrosoft">
                 <v-icon size="x-large" icon="mdi-microsoft-windows"></v-icon>
               </v-btn>
             </div>
@@ -168,6 +168,7 @@ export default {
       }
 
       function getGoogleData(loggedInUser) {
+        console.log(loggedInUser.access_token);
         return {
           ap: "google",
           token: loggedInUser.access_token,
@@ -241,9 +242,11 @@ export default {
         if (response.ok) {
           return response.json();
         } else if (response.status === 401 ) {
+          isLoading.value = false;
           errorMessage.value = "You are an unauthorized user for this Customer Portal";
           throw new Error('Unauthorized');
         } else {
+          isLoading.value = false;
           console.error('Response failed');
           throw new Error('Response failed');
         }
