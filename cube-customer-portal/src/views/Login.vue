@@ -142,6 +142,7 @@ export default {
                                 token: loggedInUser.access_token,
                                 email: loggedInUser.profile.email
                               };
+                              console.log("bob " + loggedInUser.access_token);
 
                               const response2 = await fetch('https://cube-testing.solidpartners.nl/cp/login', {
                                 method: 'POST',
