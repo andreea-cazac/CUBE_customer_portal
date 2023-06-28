@@ -12,7 +12,7 @@
 
     <v-row>
       <!-- contact info -->
-      <v-col cols="12" sm="6">
+      <v-col id="contactInfo" cols="12" sm="6">
         <v-card class="pa-2">
           <v-card-item>
             <v-card-title :style="{ color: primary_color }" class="mb-5">{{$t('organization_information')}}</v-card-title>

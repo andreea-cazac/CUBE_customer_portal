@@ -4,6 +4,7 @@ import en from "@/stores/en";
 import nl from "@/stores/nl";
 import {createPinia} from "pinia";
 import {mount} from "@cypress/vue";
+import {useTenantStore} from "@/stores/tenant";
 
 const i18n = createI18n({
   locale: 'en', // set locale
@@ -15,6 +16,17 @@ const i18n = createI18n({
 });
 
 const pinia = createPinia();
+const tenantStore = useTenantStore(pinia);  // pass the pinia instance
+
+// mock the store's state
+tenantStore.setTenant({
+  settings: {
+    logo: 'testLogo.png',
+    favicon: 'favicon.png',
+    accent_color: 'blue',
+    primary_color: 'red'
+  }
+});
 describe('<Profile />', () => {
   beforeEach(() => {
     cy.login()

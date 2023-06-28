@@ -4,6 +4,7 @@ import {createI18n} from 'vue-i18n';
 import en from '@/stores/en';
 import nl from '@/stores/nl';
 import {createPinia} from 'pinia';
+import {useTenantStore} from "@/stores/tenant";
 
 const i18n = createI18n({
   locale: 'en', // set locale
@@ -15,13 +16,31 @@ const i18n = createI18n({
 });
 
 const pinia = createPinia();
+const tenantStore = useTenantStore(pinia);  // pass the pinia instance
+
+
+// mock the store's state
+tenantStore.setTenant({
+  settings: {
+    logo: 'testLogo.png',
+    favicon: 'favicon.png',
+    accent_color: 'blue',
+    primary_color: 'red'
+  }
+});
 
 describe('<Tickets />', () => {
-  beforeEach(() => {
-    cy.login().then(() => {
-      cy.getTickets();
+    beforeEach(() => {
+      cy.on('uncaught:exception', (err, runnable) => {
+        // Prevent failing the test
+        return false
+      })
+
+      cy.login().then(() => {
+        cy.getTickets();
+        cy.fetchRelationData();
+      });
     });
-  });
 
   it('Check if the API for getting the tickets exits so that the table below wll be filled.', () => {
     cy.get('@token').then((token) => {

@@ -3,7 +3,7 @@
     <v-container fluid>
       <v-row class="mb-2">
         <v-col cols="12" md="4">
-          <v-card class="text-center bg-grey-lighten-3" border>
+          <v-card id="ticketsContainer" class="text-center bg-grey-lighten-3" border>
             <v-card-item :style="{ 'background-color': primary_color }">
               <div :class="`text-h5 mt-5 font-weight-light ${colorCalculation(primary_color)}`">{{ $t('tickets') }}:
                 {{ tickets.length }}
@@ -39,7 +39,7 @@
         <!--          </v-col>-->
       </v-row>
 
-      <v-card :style="{ 'background-color': accent_color }" max-width="900px" min-width="">
+      <v-card id="recentTickets" :style="{ 'background-color': accent_color }" max-width="900px" min-width="">
         <v-card-title class="w-100" :style="{ 'background-color': accent_color }">
           <v-row>
             <v-card-item class="ma-1">

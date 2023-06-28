@@ -4,6 +4,7 @@ import { mount } from '@cypress/vue'
 import en from "@/stores/en";
 import nl from "@/stores/nl";
 import {createPinia} from "pinia";
+import {useTenantStore} from "@/stores/tenant";
 
 
 const i18n = createI18n({
@@ -16,6 +17,18 @@ const i18n = createI18n({
 });
 
 const pinia = createPinia();
+
+const tenantStore = useTenantStore(pinia);  // pass the pinia instance
+
+// mock the store's state
+tenantStore.setTenant({
+  settings: {
+    logo: 'testLogo.png',
+    favicon: 'favicon.png',
+    accent_color: 'blue',
+    primary_color: 'red'
+  }
+});
 describe('<Dashboard />', () => {
 
   it('Dashboard must contain user’s amount of tickets, and recent tickets. ', () => {

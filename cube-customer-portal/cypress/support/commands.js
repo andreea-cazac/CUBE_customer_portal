@@ -4,12 +4,13 @@ Cypress.Commands.add('login', () => {
         url: 'https://cube-testing.solidpartners.nl/cp/login',
         body: {
             "ap": "google",   // change the token according to you
-            "token" :"ya29.a0AWY7CknENwc6so8TcO7aCu2-1__bIgI_hPuqXQKO_todFI-2CN5wAgWoSTQi31cg_hA81yZUuVqW5JRk680uskL3f-Fa-lhi4862VJx1g4yF-HyK10jmL7hYev7FkXKDX4SKSI0lfomQzz1X3Qel74jRNHUslQaCgYKAZkSARASFQG1tDrpQoIFEUTYckJ8DWyAVaboIA0165" ,
-            "email" : "alexblajievschi07@gmail.com"
+            "token" :"ya29.a0AWY7Ckmls9t4HlWBtIzEvbzkCFVeEJtdjN61uzn26egPimhrr4H_B-luDF2TTO2H3M7IBDu2-D2lxQGNcrLLABzEHeYDHBr8yvrHSJ6nwt1xJJ0t1czzt-DKhbO3tuKOh01rlm5dqd0obtohiVBgdsm-fgPTaCgYKAXUSARMSFQG1tDrpi8m1QBNkDcOsAKn9ZVwuUA0163" ,
+            "email" : "andreeacayac@gmail.com"
         }
     })
         .its('body')
         .then((body) => {
+            // save token in Cypress alias
             cy.wrap(body.token).as('token');
             cy.wrap(body.relations[0].id).as('relationId');
         });
