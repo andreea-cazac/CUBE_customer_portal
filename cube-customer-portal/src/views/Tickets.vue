@@ -4,6 +4,7 @@
       <!-- Search bar -->
       <v-col cols="12" md="8">
         <v-text-field
+            id = "searchBar"
             v-model="search"
             append-icon="mdi-magnify"
             :label="$t('search')"
@@ -13,7 +14,7 @@
       </v-col>
       <!-- Show all button -->
       <v-col cols="6" md="2" class="text-md-right text-center">
-        <v-btn @click="showAll = !showAll" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`">
+        <v-btn id="showAllButton" @click="showAll = !showAll" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`">
           {{ showAll ? $t('showOpenTickets') : $t('showAll') }}
         </v-btn>
       </v-col>
@@ -97,7 +98,7 @@
         <th class="text-left text-grey-darken-3">
           <div class="header-wrapper" @click="sortStatus" data-cy="sortStatus">
             {{ $t('status') }}
-            <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">
+            <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''" >
               mdi-chevron-up
             </v-icon>
           </div>
@@ -121,10 +122,10 @@
           </div>
         </td>
         <td>
-          <div :class="{'bcg-green': displayStatus(item.status) === 'Finished',
+          <div data-cy="ticket-status" :class="{'bcg-green': displayStatus(item.status) === 'Finished',
           'bcg-blue': displayStatus(item.status) === 'To-Do',
           'bcg-orange-light': displayStatus(item.status) === 'In-Progress'}"
-               class="status-badge">
+               class="status-badge" >
             {{ displayStatus(item.status) }}
           </div>
         </td>
