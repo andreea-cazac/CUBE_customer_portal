@@ -51,8 +51,6 @@ import {useUserStore} from "@/stores/userStore";
 import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {computed, onMounted, ref} from "vue";
 import {getProfileInfo} from "@/cube-api-calls";
-import router from "@/router";
-import {removeAccountData} from "@/account-details-deletion";
 
 export default {
   setup() {
@@ -123,4 +121,3 @@ export default {
   color: #0061ba;
 }
 </style>
-

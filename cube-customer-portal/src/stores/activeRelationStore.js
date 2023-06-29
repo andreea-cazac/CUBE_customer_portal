@@ -19,7 +19,6 @@ export const useActiveRelationStore = defineStore('activeRelationStore', {
         removeActiveRelation() {
             this.activeRelation = {};
             localStorage.removeItem("activeRelation");
-
         }
     }
 })
