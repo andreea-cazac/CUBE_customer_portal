@@ -3,7 +3,6 @@ import Account from '../views/Account.vue'
 import Login from '../views/Login.vue'
 import Tickets from '../views/Tickets.vue'
 import Invoices from '../views/Invoices.vue'
-import Teams from '../views/Teams.vue'
 import Services from '../views/Services.vue'
 import Profile from "../views/Profile.vue"
 import TicketDetails from "../views/TicketDetails.vue";
@@ -41,12 +40,6 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
-        path: 'teams',
-        name: 'teams',
-        component: Teams,
-        meta: { requiresAuth: true }
-      },
-      {
         path: 'invoices',
         name: 'invoices',
         component: Invoices,
@@ -64,7 +57,6 @@ const routes = [
         component: Dashboard,
         meta: { requiresAuth: true }
       }
-
     ]
   },
   {

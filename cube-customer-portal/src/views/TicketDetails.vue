@@ -10,9 +10,7 @@
         <v-col cols="12" sm="4">
           <v-card class="pa-1" height="100%">
             <v-card-item>
-              <v-card-title class="text-color mb-5 text-wrap">{{ $t('ticket_number') }}: {{
-                  ticket.code
-                }}
+              <v-card-title class="text-color mb-5 text-wrap">{{ $t('ticket_number') }}: {{ ticket.code }}
               </v-card-title>
               <v-card-text>
                 <strong class="text-color">{{ $t('title') }}: </strong>
@@ -162,9 +160,7 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-btn color="#080464" class="white-text" @click="openImage(attachment)">{{ $t('open') }}</v-btn>
-                    <v-btn color="#080464" class="white-text" @click="downloadFile(attachment)">{{
-                        $t('download')
-                      }}
+                    <v-btn color="#080464" class="white-text" @click="downloadFile(attachment)">{{ $t('download') }}
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -187,8 +183,6 @@ import {useUserStore} from "@/stores/userStore";
 import moment from 'moment';
 import {getAttachments, getComments, getTicketById, postAttachment, postComment} from "@/cube-api-calls";
 import {calculateTextColor} from "@/text-color";
-import router from "@/router";
-import {removeAccountData} from "@/account-details-deletion";
 
 export default {
   setup() {
@@ -217,9 +211,9 @@ export default {
       description: '',
       isFormValid: false,
       attachment: null,
-      //sncackbar may be deleted later
+      //snackbar may be deleted later
       showSnackbar: false,
-      alertTimeout: 3000,
+      alertTimeout: 700,
       showSuccessAlert: false,
       showFormErrorAlert: false,
       showUploadErrorAlert: false,

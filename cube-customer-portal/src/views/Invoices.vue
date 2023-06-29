@@ -1,9 +1,6 @@
 <template>
-  <div class="invoices">
-    <h3>{{$t('invoices_page')}}}</h3>
-  </div>
-</template>
+  <h3>Invoices</h3></template>
 
 <script>
-export default{}
+export default {}
 </script>

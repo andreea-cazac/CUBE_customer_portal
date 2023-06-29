@@ -2,9 +2,9 @@
   <div>
   <div v-if="isLoading" class="loading-overlay">
     <v-progress-circular indeterminate v-bind:color="primary_color"></v-progress-circular>
-    <p>Processing your data...</p>
+    <p> Processing your data...</p>
   </div>
-    <v-app :style="{backgroundColor: primary_color}">
+    <v-app :style="{backgroundColor: primary_color}" v-if="!isLoading">
       <v-container class="d-flex align-center justify-center fill-height">
         <v-avatar class="circle" :style="getCircleStyle(200, { top: '-5%', left: '-5%' }, { fill: true, fillColor: accent_color})"></v-avatar>
         <v-avatar class="circle" :style="getCircleStyle(150, { bottom: '20%', right: '10%' }, { fill: true, fillColor: accent_color})"></v-avatar>
@@ -15,7 +15,7 @@
         <v-card rounded="lg" class="pa-6">
           <v-img v-bind:src="logo" alt="logo"></v-img>
           <v-card-title class="text-center" :style="{color: primary_color}">Log in with one of the providers:</v-card-title>
-          <p v-if="errorMessage" class="errorText ma-10 text-red-lighten-1">{{ errorMessage }}</p>
+          <p v-if="errorMessage" class="errorText text-center text-red-lighten-1">{{ errorMessage }}</p>
           <v-card-actions class="justify-center">
             <div>
               <v-btn id="google-login-btn" size="x-large" v-bind:color="primary_color" variant="outlined" icon="mdi-google" @click="loginGoogle">
@@ -104,7 +104,6 @@ export default {
 
       function getCircleStyle(size, position, accent_color, options) {
         const { fill = true, fillColor = accent_color, border = true, borderColor = accent_color } = options;
-
         const style = {
             width: `${size}px`,
             height: `${size}px`,
@@ -114,19 +113,15 @@ export default {
         if (fill) {
             style.background = fillColor;
         }
-
         if (border) {
             style.border = `2px solid ${borderColor}`;
         }
-
         return style;
       }
 
       async function initializePage(tenantStore, googleUserManager, microsoftUserManager, user, router, userStore, activeRelationStore, userRelations, errorMessage ) {
         await getTenantDesign(tenantStore);
-
         getUser(googleUserManager, microsoftUserManager, user);
-
         handleLoginRedirects(router, googleUserManager, userStore, activeRelationStore, userRelations, errorMessage);
       }
 
@@ -259,9 +254,7 @@ export default {
 <style scoped>
 .circle {
     position: absolute;
-
 }
-
 .loading-overlay {
   display: flex;
   justify-content: center;
@@ -269,7 +262,4 @@ export default {
   width: 100vw;
   height: 100vh;
 }
-
 </style>
-
-
