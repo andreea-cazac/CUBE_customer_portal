@@ -1,5 +1,4 @@
 <template>
-
   <nav>
     <v-navigation-drawer v-model="drawer" color="white">
       <v-row no-gutters>
@@ -7,7 +6,6 @@
           <v-img v-bind:src="logo" alt="logo"></v-img>
         </v-col>
       </v-row>
-
 
       <v-list v-if="permittedPages" v-bind:color="primary_color">
         <v-list-item
@@ -136,7 +134,6 @@ export default {
       this.relationsStore.removeUserRelations();
       this.userStore.removeToken();
     },
-
   },
   computed: {
     permittedPages() {
@@ -165,9 +162,7 @@ export default {
     primary_color() {
       return this.tenantStore.tenant.settings.primary_color
     }
-
   }
-
 };
 
 </script>

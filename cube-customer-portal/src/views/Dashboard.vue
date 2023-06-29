@@ -11,7 +11,7 @@
             </v-card-item>
             <v-card-actions :style="{ 'background-color': primary_color }" class="justify-center px-6 py-3">
               <router-link to="/account/tickets">
-                <v-btn :style="{ 'background-color': primary_color}">
+                <v-btn :style="{ 'background-color': primary_color}" :class="`${colorCalculation(primary_color)}`">
                   <span :class="`${colorCalculation(primary_color)}`">{{ $t('see_all_tickets') }}</span>
                   <v-icon end size="large" :class="`${colorCalculation(primary_color)}`">mdi-menu-right-outline</v-icon>
                 </v-btn>
@@ -19,24 +19,6 @@
             </v-card-actions>
           </v-card>
         </v-col>
-
-        <!--          <v-col cols="12" sm="6" md="5" lg="4">-->
-        <!--            <v-card class="text-center ma-1 bg-grey-lighten-3" border>-->
-        <!--              <v-card-item>-->
-        <!--                <div>-->
-        <!--                  <div class="text-h5 mt-5 font-weight-light">Invoices: 5</div>-->
-        <!--                </div>-->
-        <!--              </v-card-item>-->
-        <!--              <v-card-actions class="justify-center px-6 py-3">-->
-        <!--                <router-link to="/account/invoices">-->
-        <!--                <v-btn class="bg-grey-lighten-1">-->
-        <!--                  <span class="text-white" >See all invoices</span>-->
-        <!--                  <v-icon end size="large" color="white">mdi-menu-right-outline</v-icon>-->
-        <!--                </v-btn>-->
-        <!--                </router-link>-->
-        <!--              </v-card-actions>-->
-        <!--            </v-card>-->
-        <!--          </v-col>-->
       </v-row>
 
       <v-card :style="{ 'background-color': accent_color }" max-width="900px" min-width="">
@@ -44,9 +26,7 @@
           <v-row>
             <v-card-item class="ma-1">
               <v-icon :class="`${colorCalculation(accent_color)}`">mdi-comment-multiple-outline</v-icon>
-              <span :class="`font-weight-regular text-white ${colorCalculation(accent_color)}`">{{
-                  $t('recent_tickets')
-                }}</span>
+              <span :class="`font-weight-regular text-white ${colorCalculation(accent_color)}`">{{$t('recent_tickets') }}</span>
             </v-card-item>
 
             <v-spacer></v-spacer>
@@ -106,8 +86,6 @@ import {useTenantStore} from "@/stores/tenantStore";
 import {useUserStore} from "@/stores/userStore";
 import {getTickets} from "@/cube-api-calls";
 import {calculateTextColor} from "@/text-color";
-import router from "@/router";
-import {removeAccountData} from "@/account-details-deletion";
 
 export default {
   setup() {
@@ -151,7 +129,6 @@ export default {
 
   methods: {
     goToTicket(ticket) {
-      // this.$router.push(`/account/tickets/${ticket}`);
       this.$router.push({name: 'ticketDetails', params: {id: `${ticket.id}`}});
     },
     colorCalculation(theColor) {
@@ -197,11 +174,6 @@ export default {
 
 
 <style>
-.v-list {
-  width: 700px;
-  overflow-x: auto;
-}
-
 .clickable {
   cursor: pointer;
 }
@@ -221,41 +193,31 @@ export default {
 .finished {
   border-left: 5px solid rgb(31, 187, 31);
 }
-
 .todo {
   border-left: 5px solid rgb(33, 144, 242);
 }
-
 .in_progress {
   border-left: #ffc400;
 }
-
 .v-chip.finished {
   background: rgb(31, 187, 31)
 }
-
 .v-chip.in_progress {
   background: #ffc400;
 }
-
 .v-chip.todo {
   background: rgb(33, 144, 242);
 }
-
 .Low {
   background: green;
 }
-
 .High {
   background: red;
 }
-
 .Medium {
   background: orange;
 }
-
 .TBD {
   background: #b7b7b7;
 }
-
 </style>

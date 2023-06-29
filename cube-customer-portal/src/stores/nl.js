@@ -1,5 +1,5 @@
 export default {
-    welcomeMessage: 'Welkom, Klantnaam',
+    welcomeMessage: 'Welkom',
     active_language: 'ACTIEVE TAAL',
     dashboard: 'Dashboard',
     profile: 'Profiel',
