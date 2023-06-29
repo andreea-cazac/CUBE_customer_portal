@@ -9,7 +9,7 @@
 
     <v-row>
       <!-- contact info -->
-      <v-col cols="12" sm="6">
+      <v-col id="contactInfo" cols="12" sm="6">
         <v-card class="pa-2">
           <v-card-item>
             <v-card-title class="text-grey-darken-3 mb-5">{{$t('organization_information')}}</v-card-title>
