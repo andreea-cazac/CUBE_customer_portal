@@ -98,7 +98,7 @@
         <th class="text-left text-grey-darken-3">
           <div class="header-wrapper" @click="sortStatus" data-cy="sortStatus">
             {{ $t('status') }}
-            <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''" >
+            <v-icon :class="sortColumn === 'status' ? (sortDirection === 'asc' ? 'rotate180' : '') : ''">
               mdi-chevron-up
             </v-icon>
           </div>
@@ -122,10 +122,10 @@
           </div>
         </td>
         <td>
-          <div data-cy="ticket-status" :class="{'bcg-green': displayStatus(item.status) === 'Finished',
+          <div :class="{'bcg-green': displayStatus(item.status) === 'Finished',
           'bcg-blue': displayStatus(item.status) === 'To-Do',
           'bcg-orange-light': displayStatus(item.status) === 'In-Progress'}"
-               class="status-badge" >
+               class="status-badge">
             {{ displayStatus(item.status) }}
           </div>
         </td>
