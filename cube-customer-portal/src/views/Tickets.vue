@@ -19,7 +19,7 @@
       </v-col>
       <!-- Create ticket button -->
       <v-col cols="6" md="2" :class="`text-md-right text-center ${colorCalculation(accent_color)}`">
-        <v-btn id="createTicketButton" @click="dialog = true" v-bind:color="accent_color">
+        <v-btn v-if="canCreateTicket" id="createTicketButton" @click="dialog = true" v-bind:color="accent_color">
           {{ $t('createTicket') }}
         </v-btn>
       </v-col>
@@ -167,6 +167,7 @@ export default {
       relationId,
       relationName,
       accent_color,
+      activeRelation,
       primary_color,
       logo
     }
@@ -355,6 +356,10 @@ export default {
         return type === null || type === '' ? '[UNDEFINED]' : type;
       }
     },
+    canCreateTicket(){
+      console.log((this.activeRelation && this.activeRelation.permissions && this.activeRelation.permissions.includes("customer:ticket:write")));
+      return (this.activeRelation && this.activeRelation.permissions && this.activeRelation.permissions.includes("customer:ticket:write"));
+    }
   },
 };
 </script>
