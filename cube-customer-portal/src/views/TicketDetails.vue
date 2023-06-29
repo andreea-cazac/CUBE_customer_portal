@@ -47,7 +47,7 @@
           </v-card>
         </v-col>
         <!-- Panel Add Comments -->
-        <v-col cols="12" sm="4" v-if="!isTicketFinished">
+        <v-col id="panelAddComments" cols="12" sm="4" v-if="!isTicketFinished">
           <v-card class="pa-1" height="100%">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('add_comments') }}</v-card-title>
@@ -64,7 +64,7 @@
                 <v-textarea id="description" v-model="description" rows="3" auto-grow="false" :required="true"
                             @input="checkFormValidity"></v-textarea>
               </div>
-              <div>
+              <div id="attachmentsFileInput">
                 <v-file-input
                     v-model="attachment"
                     multiple
@@ -144,7 +144,7 @@
           </v-card>
         </v-col>
         <!-- Panel Attachments -->
-        <v-col cols="12" sm="4">
+        <v-col id="panelAttachments" cols="12" sm="4">
           <v-card class="pa-2" height="100%">
             <v-card-item>
               <v-card-title class="text-color mb-5">{{ $t('attachments') }}</v-card-title>

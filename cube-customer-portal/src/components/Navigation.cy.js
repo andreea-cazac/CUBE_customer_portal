@@ -4,7 +4,7 @@ import { createPinia } from 'pinia'  // Make sure to import createPinia
 import Navigation from './Navigation.vue'
 import en from "../stores/en"
 import nl from "../stores/nl"
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
 
 const i18n = createI18n({
   locale: 'en', // set locale
@@ -51,7 +51,30 @@ describe('<Navigation />', () => {
       }
     });
 
+    cy.get('#logoutButton').should('exist');
     // Simulate the logout action
     cy.get('#logoutButton').click();
+  });
+
+
+  it('User must be able to switch between active relations. ', () => {
+    mount(Navigation, {
+      global: {
+        plugins: [i18n, pinia]  // use the pinia instance
+      }
+    });
+
+    cy.get('#activeRelation').should('exist');
+  });
+
+
+  it('User must be able to switch the language in the customer portal from Dutch to English and viceversa. ', () => {
+    mount(Navigation, {
+      global: {
+        plugins: [i18n, pinia]  // use the pinia instance
+      }
+    });
+
+    cy.get('#activeLanguage').should('exist');
   });
 })

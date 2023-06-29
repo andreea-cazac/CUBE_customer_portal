@@ -4,7 +4,7 @@ import { mount } from '@cypress/vue'
 import en from "@/stores/en";
 import nl from "@/stores/nl";
 import {createPinia} from "pinia";
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
 
 
 const i18n = createI18n({

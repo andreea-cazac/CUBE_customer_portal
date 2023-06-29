@@ -3,9 +3,9 @@ Cypress.Commands.add('login', () => {
         method: 'POST',
         url: 'https://cube-testing.solidpartners.nl/cp/login',
         body: {
-            "ap": "google",   // change the token according to you
-            "token" :"ya29.a0AWY7Ckmls9t4HlWBtIzEvbzkCFVeEJtdjN61uzn26egPimhrr4H_B-luDF2TTO2H3M7IBDu2-D2lxQGNcrLLABzEHeYDHBr8yvrHSJ6nwt1xJJ0t1czzt-DKhbO3tuKOh01rlm5dqd0obtohiVBgdsm-fgPTaCgYKAXUSARMSFQG1tDrpi8m1QBNkDcOsAKn9ZVwuUA0163" ,
-            "email" : "andreeacayac@gmail.com"
+            "ap": "google",   // change the token and email according to you
+            "token" :"ya29.a0AbVbY6OLuEfirnmdV8HobNXWqiPCzQDoQc5rTKZZMkLe1-V0Ly1Erhd1smZPkqn73oGQWkQUgghYa4lQKJRckelzgfvQI4MxYxspi6g5ndzqAeRN7dpw2IwSjZRmdbRT7llWwEUeuhvbj9ml_LgO1zjoF1SL9QaCgYKAdoSARASFQFWKvPl_yHwaXyyQvhq8WLRksQNsQ0165" ,
+            "email" : "alexblajievschi07@gmail.com"
         }
     })
         .its('body')
