@@ -55,7 +55,6 @@
                             @input="checkFormValidity"></v-textarea>
               </v-col>
               <v-col cols="12">
-                <v-file-input v-bind:label="$t('upload_attachment')"></v-file-input>
               </v-col>
             </v-row>
           </v-container>
@@ -117,7 +116,6 @@
                'bcg-red': displayPriority(item.priority_index) === 'High',
                'bcg-grey': displayPriority(item.priority_index) === 'TBD',
                'bcg-orange': displayPriority(item.priority_index) === 'Medium'}"
-
                class="status-badge">
             {{ displayPriority(item.priority_index) }}
           </div>
@@ -150,8 +148,6 @@ import {computed, ref} from "vue";
 import {getTickets, postTicket} from "@/cube-api-calls";
 import {useTenantStore} from "@/stores/tenantStore";
 import {calculateTextColor} from "@/text-color";
-import router from "@/router";
-import {removeAccountData} from "@/account-details-deletion";
 
 export default {
   setup() {
@@ -207,7 +203,6 @@ export default {
 
   methods: {
     goToTicket(ticket) {
-      // this.$router.push(`/account/tickets/${ticket}`);
       this.$router.push({name: 'ticketDetails', params: {id: `${ticket.id}`}});
     },
     createTicket() {
@@ -301,7 +296,7 @@ export default {
       throw new Error(error)
     }
 
-
+    this.tickets.sort(this.sortByDate);
     this.checkFormValidity();
   },
 
@@ -337,8 +332,7 @@ export default {
       const end = start + this.itemsPerPage;
 
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-      const newTickets = this.filteredTickets.sort(this.sortByDate);
-      return newTickets.slice(start, end);
+      return this.filteredTickets.slice(start, end);
     },
     /*Based on the api (it displays 0, 1 or 2) it will display the name of the priority*/
     displayPriority() {

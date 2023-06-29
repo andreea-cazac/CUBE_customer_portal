@@ -57,11 +57,6 @@ export async function getAccountItems(url, token) {
     }
 }
 
-// Login
-export async function login(body) { //not used, might not work
-    return await postItem("/login", body)
-}
-
 // Profile
 export async function getProfileInfo(relationId, token) {
     return getAccountItems(`/relations/${relationId}`, token);
@@ -100,5 +95,3 @@ export async function postComment(relationId, ticketId, body, token){
     const url = `/relations/${relationId}/work_orders/${ticketId}/events`
     await postAccountItem(url, body, token)
 }
-
-

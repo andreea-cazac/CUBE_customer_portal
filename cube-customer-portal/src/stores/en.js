@@ -1,5 +1,5 @@
 export default {
-    welcomeMessage: 'Welcome, Client Name',
+    welcomeMessage: 'Welcome',
     active_language: 'ACTIVE LANGUAGE',
     dashboard: 'Dashboard',
     profile: 'Profile',
