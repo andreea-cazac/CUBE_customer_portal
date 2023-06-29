@@ -4,7 +4,9 @@ import {createI18n} from 'vue-i18n';
 import en from '@/stores/en';
 import nl from '@/stores/nl';
 import {createPinia} from 'pinia';
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
+import {shallowMount} from "@vue/test-utils";
+import { expect } from "chai";
 
 const i18n = createI18n({
   locale: 'en', // set locale
@@ -17,7 +19,6 @@ const i18n = createI18n({
 
 const pinia = createPinia();
 const tenantStore = useTenantStore(pinia);  // pass the pinia instance
-
 
 // mock the store's state
 tenantStore.setTenant({
@@ -82,6 +83,7 @@ describe('<Tickets />', () => {
     cy.get('#createTicketForm') // Update the selector to target the v-table element with the specific id
         .should('exist');
   });
+
   it('The system must provide the functionality to filter and sort tickets based on creation time, status and priority.  ', () => {
     mount(Tickets, {
       global: {
@@ -103,6 +105,96 @@ describe('<Tickets />', () => {
     // Add any assertions you need here to verify sortStatus was called
   });
 
+  it("searches for 'incident' type tickets when Enter key is pressed", () => {
+    // Mount the component
+    const wrapper = shallowMount(Tickets, {
+      global: {
+        plugins: [pinia, i18n]
+      }
+    });
+
+    // Simulate typing in the search bar
+    wrapper.setData({ search: "incident" });
+    // Trigger the keydown event with Enter key on the search bar
+    const searchBar = wrapper.find("#searchBar");
+    searchBar.trigger("keydown.enter");
+    // Assert that the searching functionality is triggered when user searches for tickets with type = incident
+    expect(wrapper.vm.search).to.equal("incident");
+    // Retrieve the filtered tickets from the component instance
+    const filteredTickets = wrapper.vm.tickets;
+    // Assert that all filtered tickets have the type 'rfi'
+    const hasOnlyRFITickets = filteredTickets.every(ticket => ticket.type_label.toLowerCase() === 'incident');
+    expect(hasOnlyRFITickets).to.be.true;
+  });
+
+  it("searches for tickets with number starting with '2022' when Enter key is pressed", () => {
+    // Mount the component
+    const wrapper = shallowMount(Tickets, {
+      global: {
+        plugins: [pinia, i18n]
+      }
+    });
+
+    // Simulate typing in the search bar
+    wrapper.setData({ search: "2022" });
+
+    // Trigger the keydown event with Enter key on the search bar
+    const searchBar = wrapper.find("#searchBar");
+    searchBar.trigger("keydown.enter");
+
+    // Assert that the searching functionality is triggered when searching for tickets with number starting with '2022'
+    expect(wrapper.vm.search).to.equal("2022");
+
+    // Retrieve the filtered tickets from the component instance
+    const filteredTickets = wrapper.vm.tickets;
+
+    // Assert that all filtered tickets have a number starting with '2022'
+    const hasTicketsWithNumberStartingWith2022 = filteredTickets.every(ticket => ticket.code && ticket.code.toString().startsWith("2022"));
+    expect(hasTicketsWithNumberStartingWith2022).to.be.true;
+  });
+
+  it("searches for tickets with title containing 'test' when Enter key is pressed", () => {
+    // Mount the component
+    const wrapper = shallowMount(Tickets, {
+      global: {
+        plugins: [pinia, i18n]
+      }
+    });
+
+    // Simulate typing in the search bar
+    wrapper.setData({ search: "test" });
+
+    // Trigger the keydown event with Enter key on the search bar
+    const searchBar = wrapper.find("#searchBar");
+    searchBar.trigger("keydown.enter");
+
+    // Assert that the searching functionality is triggered when searching for tickets with title containing 'test'
+    expect(wrapper.vm.search).to.equal("test");
+
+    // Retrieve the filtered tickets from the component instance
+    const filteredTickets = wrapper.vm.tickets;
+
+    // Assert that all filtered tickets have a title containing 'test'
+    const hasTicketsWithTitleContainingTest = filteredTickets.every(ticket => ticket.title && ticket.title.toLowerCase().includes("test"));
+    expect(hasTicketsWithTitleContainingTest).to.be.true;
+  });
+
+  it('displays all tickets when Show All button is clicked', () => {
+    mount(Tickets, {
+      global: {
+        plugins: [pinia, i18n],
+      },
+    });
+    // Click the Show All button
+    cy.get('#showAllButton').click()
+
+    // Check all possible statuses are shown
+    const possibleStatuses = ['Finished', 'To-Do', 'In-Progress']
+
+    possibleStatuses.forEach(status => {
+      cy.get('[data-cy=ticket-status]').contains(status)
+    })
+  })
 
 
 });
