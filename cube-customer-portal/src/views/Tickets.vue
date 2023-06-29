@@ -144,10 +144,11 @@
 <script>
 import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {useUserStore} from "@/stores/userStore";
-import {computed, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {getTickets, postTicket} from "@/cube-api-calls";
 import {useTenantStore} from "@/stores/tenantStore";
 import {calculateTextColor} from "@/text-color";
+import {useFavicon} from "@vueuse/core";
 
 export default {
   setup() {
@@ -162,13 +163,17 @@ export default {
     const logo = tenantStore.tenant.settings.logo;
     const accent_color = tenantStore.tenant.settings.accent_color;
     const primary_color = tenantStore.tenant.settings.primary_color;
+    const favicon = tenantStore.tenant.settings.favicon;
+
+    onMounted(() => useFavicon(computed(() => tenantStore.tenant.settings.favicon).value));
 
     return {
       relationId,
       relationName,
       accent_color,
       primary_color,
-      logo
+      logo,
+      favicon
     }
   },
 

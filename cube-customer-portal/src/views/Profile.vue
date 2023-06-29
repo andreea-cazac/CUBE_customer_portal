@@ -51,6 +51,7 @@ import {useUserStore} from "@/stores/userStore";
 import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {computed, onMounted, ref} from "vue";
 import {getProfileInfo} from "@/cube-api-calls";
+import {useFavicon} from "@vueuse/core";
 
 export default {
   setup() {
@@ -65,15 +66,15 @@ export default {
     const apiKey = 'AIzaSyCb-VXv9duPI7zRwSm_nu-_KUbHUrnV23A';
 
     const tenantStore = useTenantStore();
-
     const accent_color = tenantStore.tenant.settings.accent_color;
     const primary_color = tenantStore.tenant.settings.primary_color;
+    const favicon = tenantStore.tenant.settings.favicon;
 
     onMounted(async () => {
       try {
         const response = await getProfileInfo(activeRelation.value.id, token.value);
         profile.value = response.data;
-        console.log(response.data);
+        useFavicon(computed(() => tenantStore.tenant.settings.favicon).value);
 
         for (const address of profile.value.addresses) {
           const formattedAddress = `${address.street} ${address.number}, ${address.city}, ${address.country.name}`;
@@ -91,7 +92,7 @@ export default {
     const getGeoInfo = async (address) => {
       try {
         const responseGoogleApi = await axios.get(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${apiKey}`
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${apiKey}`
         );
         if (responseGoogleApi.data.results[0]) {
           const location = responseGoogleApi.data.results[0].geometry.location;
@@ -110,7 +111,8 @@ export default {
       getGeoInfo,
       apiKey,
       accent_color,
-      primary_color
+      primary_color,
+      favicon
     }
   },
 };
@@ -121,3 +123,4 @@ export default {
   color: #0061ba;
 }
 </style>
+
