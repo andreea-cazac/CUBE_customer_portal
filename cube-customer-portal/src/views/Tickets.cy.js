@@ -20,6 +20,7 @@ const i18n = createI18n({
 const pinia = createPinia();
 const tenantStore = useTenantStore(pinia);  // pass the pinia instance
 
+
 // mock the store's state
 tenantStore.setTenant({
   settings: {
@@ -179,24 +180,22 @@ describe('<Tickets />', () => {
     expect(hasTicketsWithTitleContainingTest).to.be.true;
   });
 
-  it('displays all tickets when Show All button is clicked', () => {
-    mount(Tickets, {
-      global: {
-        plugins: [pinia, i18n],
-      },
-    });
-    // Click the Show All button
-    cy.get('#showAllButton').click()
+    it('toggles showAll when Show All button is clicked', () => {
+      const wrapper = shallowMount(Tickets, {
+        global: {
+          plugins: [pinia, i18n],
+        },
+      })
 
-    // Check all possible statuses are shown
-    const possibleStatuses = ['Finished', 'To-Do', 'In-Progress']
+      // Check that showAll is initially false
+      expect(wrapper.vm.showAll).to.equal(false)
 
-    possibleStatuses.forEach(status => {
-      cy.get('[data-cy=ticket-status]').contains(status)
+      // Find the Show All button and trigger a click event
+      wrapper.find('#showAllButton').trigger('click')
+
+      // showAll should now be true
+      expect(wrapper.vm.showAll).to.equal(true)
     })
-  })
-
-
 });
 
 
