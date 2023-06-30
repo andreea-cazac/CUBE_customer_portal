@@ -80,11 +80,19 @@ describe('<Tickets />', () => {
         plugins: [pinia, i18n],
       },
     });
-    cy.get('#createTicketButton') // Update the selector to target the v-table element with the specific id
-        .should('exist');
     cy.get('#createTicketForm') // Update the selector to target the v-table element with the specific id
         .should('exist');
   });
+  it('User must be able to navigate matching the permission of the user.', () => {
+    mount(Tickets, {
+      global: {
+        plugins: [pinia, i18n],
+      },
+    });
+    cy.get('#createTicketButton') // because we mount the Tickets and the store with permissions is empty we must not be able to see the createButton
+        .should('not.exist');
+  });
+
 
   it('The system must provide the functionality to filter and sort tickets based on creation time, status and priority.  ', () => {
     mount(Tickets, {
