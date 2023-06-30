@@ -18,8 +18,6 @@ export default {
     signOut: 'Uitloggen',
     my_tenant: 'Mijn Tenant',
     organization_information: 'Organisatie Informatie',
-    invoices_page: 'Uw facturen, meneer',
-    services_no_way: 'Diensten, geen manier',
     token: 'TEKEN',
     active_relation: 'Actieve Relatie',
     permissions: 'Permissies',
