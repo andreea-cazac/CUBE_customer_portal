@@ -30,7 +30,7 @@
       </v-toolbar-title>
 
 
-      <v-menu location="bottom">
+      <v-menu id="activeRelation" location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn variant="flat" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`" size="small"
                  v-bind="props">
@@ -45,7 +45,7 @@
       </v-menu>
 
 
-      <v-menu location="bottom">
+      <v-menu id="activeLanguage" location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn variant="flat" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`" size="small"
                  v-bind="props">
