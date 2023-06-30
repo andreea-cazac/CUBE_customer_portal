@@ -23,6 +23,7 @@
     "oidc-client": "^1.11.5",
     "pinia": "^2.1.4",
     "roboto-fontface": "*",
+    "sinon": "^15.2.0",
     "vue": "^3.2.13",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.0.3",

@@ -4,7 +4,8 @@ import {createI18n} from 'vue-i18n';
 import en from '@/stores/en';
 import nl from '@/stores/nl';
 import {createPinia} from 'pinia';
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
+import {shallowMount} from "@vue/test-utils";
 
 const i18n = createI18n({
   locale: 'en', // set locale
@@ -42,6 +43,7 @@ describe('<Tickets />', () => {
       });
     });
 
+
   it('Check if the API for getting the tickets exits so that the table below wll be filled.', () => {
     cy.get('@token').then((token) => {
       cy.get('@relationId').then((relationId) => {
@@ -60,8 +62,6 @@ describe('<Tickets />', () => {
         });
       });
     });
-  });
-  it('Check if the table that needs to be filled with tickets exists', () => {
     mount(Tickets, {
       global: {
         plugins: [pinia, i18n],
@@ -69,7 +69,9 @@ describe('<Tickets />', () => {
     });
     cy.get('#ticketTable') // Update the selector to target the v-table element with the specific id
         .should('exist');
+
   });
+
 
   it('User should be able to create a ticket.', () => {
     mount(Tickets, {
@@ -82,6 +84,7 @@ describe('<Tickets />', () => {
     cy.get('#createTicketForm') // Update the selector to target the v-table element with the specific id
         .should('exist');
   });
+
   it('The system must provide the functionality to filter and sort tickets based on creation time, status and priority.  ', () => {
     mount(Tickets, {
       global: {
@@ -102,8 +105,6 @@ describe('<Tickets />', () => {
 
     // Add any assertions you need here to verify sortStatus was called
   });
-
-
 
 });
 
