@@ -139,17 +139,13 @@ describe('<Tickets />', () => {
 
     // Simulate typing in the search bar
     wrapper.setData({ search: "2022" });
-
     // Trigger the keydown event with Enter key on the search bar
     const searchBar = wrapper.find("#searchBar");
     searchBar.trigger("keydown.enter");
-
     // Assert that the searching functionality is triggered when searching for tickets with number starting with '2022'
     expect(wrapper.vm.search).to.equal("2022");
-
     // Retrieve the filtered tickets from the component instance
     const filteredTickets = wrapper.vm.tickets;
-
     // Assert that all filtered tickets have a number starting with '2022'
     const hasTicketsWithNumberStartingWith2022 = filteredTickets.every(ticket => ticket.code && ticket.code.toString().startsWith("2022"));
     expect(hasTicketsWithNumberStartingWith2022).to.be.true;
@@ -165,17 +161,13 @@ describe('<Tickets />', () => {
 
     // Simulate typing in the search bar
     wrapper.setData({ search: "test" });
-
     // Trigger the keydown event with Enter key on the search bar
     const searchBar = wrapper.find("#searchBar");
     searchBar.trigger("keydown.enter");
-
     // Assert that the searching functionality is triggered when searching for tickets with title containing 'test'
     expect(wrapper.vm.search).to.equal("test");
-
     // Retrieve the filtered tickets from the component instance
     const filteredTickets = wrapper.vm.tickets;
-
     // Assert that all filtered tickets have a title containing 'test'
     const hasTicketsWithTitleContainingTest = filteredTickets.every(ticket => ticket.title && ticket.title.toLowerCase().includes("test"));
     expect(hasTicketsWithTitleContainingTest).to.be.true;
@@ -190,13 +182,23 @@ describe('<Tickets />', () => {
 
       // Check that showAll is initially false
       expect(wrapper.vm.showAll).to.equal(false)
-
       // Find the Show All button and trigger a click event
       wrapper.find('#showAllButton').trigger('click')
-
       // showAll should now be true
       expect(wrapper.vm.showAll).to.equal(true)
     })
+
+  it('should only display tickets with status "In-Progress" or "To-Do" by default', async () => {
+    const wrapper = shallowMount(Tickets, {
+      global: {
+        plugins: [pinia, i18n],
+      },
+    })
+
+    const filteredTickets = wrapper.vm.tickets;
+    const filteredTicketsOpenStatus = filteredTickets.every(ticket => ticket.status && (ticket.status.toString().equals("To-Do") || ticket.status.toString().equals("In-Progress")));
+    expect(filteredTicketsOpenStatus).to.be.true;
+  })
 });
 
 
