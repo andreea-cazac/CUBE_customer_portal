@@ -17,8 +17,22 @@
 </template>
 
 <script>
+import {computed, onMounted} from "vue";
+import {useFavicon} from "@vueuse/core";
+import {useTenantStore} from "@/stores/tenantStore";
+
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Unauthorized",
+  setup(){
+    const tenantStore = useTenantStore();
+    const favicon = tenantStore.tenant.settings.favicon;
+
+    onMounted(() => useFavicon(computed(() => tenantStore.tenant.settings.favicon).value));
+
+    return {
+      favicon
+    }
+  }
 }
 </script>

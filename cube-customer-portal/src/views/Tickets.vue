@@ -4,6 +4,7 @@
       <!-- Search bar -->
       <v-col cols="12" md="8">
         <v-text-field
+            id = "searchBar"
             v-model="search"
             append-icon="mdi-magnify"
             :label="$t('search')"
@@ -13,7 +14,7 @@
       </v-col>
       <!-- Show all button -->
       <v-col cols="6" md="2" class="text-md-right text-center">
-        <v-btn @click="showAll = !showAll" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`">
+        <v-btn id="showAllButton" @click="showAll = !showAll" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`">
           {{ showAll ? $t('showOpenTickets') : $t('showAll') }}
         </v-btn>
       </v-col>
@@ -144,10 +145,11 @@
 <script>
 import {useActiveRelationStore} from "@/stores/activeRelationStore";
 import {useUserStore} from "@/stores/userStore";
-import {computed, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {getTickets, postTicket} from "@/cube-api-calls";
 import {useTenantStore} from "@/stores/tenantStore";
 import {calculateTextColor} from "@/text-color";
+import {useFavicon} from "@vueuse/core";
 
 export default {
   setup() {
@@ -162,6 +164,9 @@ export default {
     const logo = tenantStore.tenant.settings.logo;
     const accent_color = tenantStore.tenant.settings.accent_color;
     const primary_color = tenantStore.tenant.settings.primary_color;
+    const favicon = tenantStore.tenant.settings.favicon;
+
+    onMounted(() => useFavicon(computed(() => tenantStore.tenant.settings.favicon).value));
 
     return {
       relationId,
@@ -169,7 +174,8 @@ export default {
       accent_color,
       activeRelation,
       primary_color,
-      logo
+      logo,
+      favicon
     }
   },
 
