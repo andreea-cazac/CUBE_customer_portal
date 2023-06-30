@@ -313,17 +313,13 @@ export default {
     },
     async downloadFile(attachment) {
       try {
-        const response = await axios({
-          url: attachment.url,
-          method: 'GET',
-          responseType: 'blob', // important
-        });
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const url = window.URL.createObjectURL(new Blob([attachment.url]));
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', attachment.name);
         document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
       } catch (error) {
         console.error('Error downloading file:', error);
       }
