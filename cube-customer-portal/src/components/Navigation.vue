@@ -61,7 +61,8 @@
       </v-menu>
 
 
-      <v-btn id="logoutButton" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`" :key="logout" router
+      <v-btn id="logoutButton" v-bind:color="primary_color" :class="`${colorCalculation(primary_color)}`" :key="logout"
+             router
              :to="loginRoute">
         <span class="d-none d-sm-flex" @click="logout()">{{ $t('signOut') }}</span>
         <v-icon>mdi-exit-to-app</v-icon>
@@ -104,15 +105,7 @@ export default {
       pages: [
         {icon: "mdi-view-dashboard", textKey: "dashboard", route: "/account/dashboard"},
         {icon: "mdi-account", textKey: "profile", route: "/account/profile"},
-        {icon: "mdi-clipboard-text", textKey: "tickets", route: "/account/tickets", permission: "customer:ticket:show"},
-        {icon: "mdi-receipt", textKey: "invoices", route: "/account/invoices", permission: "customer:invoice:show"},
-        {
-          icon: "mdi-toolbox-outline",
-          textKey: "services",
-          route: "/account/services",
-          permission: "customer:service:show"
-        },
-        {icon: "mdi-account-group", textKey: "team", route: "/account/teams", permission: "customer:team:show"}
+        {icon: "mdi-clipboard-text", textKey: "tickets", route: "/account/tickets", permission: "customer:ticket:show"}
       ],
       loginRoute: "/"
     };

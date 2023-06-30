@@ -2,8 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Account from '../views/Account.vue'
 import Login from '../views/Login.vue'
 import Tickets from '../views/Tickets.vue'
-import Invoices from '../views/Invoices.vue'
-import Services from '../views/Services.vue'
 import Profile from "../views/Profile.vue"
 import TicketDetails from "../views/TicketDetails.vue";
 import Dashboard from "../views/Dashboard.vue"
@@ -37,18 +35,6 @@ const routes = [
         path: 'profile',
         name: 'profile',
         component: Profile,
-        meta: { requiresAuth: true }
-      },
-      {
-        path: 'invoices',
-        name: 'invoices',
-        component: Invoices,
-        meta: { requiresAuth: true }
-      },
-      {
-        path: 'services',
-        name: 'services',
-        component: Services,
         meta: { requiresAuth: true }
       },
       {

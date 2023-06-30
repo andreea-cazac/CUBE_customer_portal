@@ -18,8 +18,6 @@ export default {
     signOut: 'Sign Out',
     my_tenant: 'My Tenant',
     organization_information: 'Organization Information',
-    invoices_page: 'Your invoices,sir',
-    services_no_way: 'Services, no way',
     token: 'TOKEN',
     active_relation: 'Active Relation',
     permissions: 'Permissions',
