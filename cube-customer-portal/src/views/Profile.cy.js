@@ -4,7 +4,7 @@ import en from "@/stores/en";
 import nl from "@/stores/nl";
 import {createPinia} from "pinia";
 import {mount} from "@cypress/vue";
-import {useTenantStore} from "@/stores/tenant";
+import {useTenantStore} from "@/stores/tenantStore";
 
 const i18n = createI18n({
   locale: 'en', // set locale
@@ -71,6 +71,4 @@ describe('<Profile />', () => {
       });
     });
   });
-
-
 });

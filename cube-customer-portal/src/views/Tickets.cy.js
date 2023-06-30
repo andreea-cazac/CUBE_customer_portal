@@ -44,6 +44,7 @@ describe('<Tickets />', () => {
       });
     });
 
+
   it('Check if the API for getting the tickets exits so that the table below wll be filled.', () => {
     cy.get('@token').then((token) => {
       cy.get('@relationId').then((relationId) => {
@@ -62,8 +63,6 @@ describe('<Tickets />', () => {
         });
       });
     });
-  });
-  it('Check if the table that needs to be filled with tickets exists', () => {
     mount(Tickets, {
       global: {
         plugins: [pinia, i18n],
@@ -71,7 +70,9 @@ describe('<Tickets />', () => {
     });
     cy.get('#ticketTable') // Update the selector to target the v-table element with the specific id
         .should('exist');
+
   });
+
 
   it('User should be able to create a ticket.', () => {
     mount(Tickets, {
