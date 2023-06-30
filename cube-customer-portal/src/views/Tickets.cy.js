@@ -32,17 +32,17 @@ tenantStore.setTenant({
 });
 
 describe('<Tickets />', () => {
-    beforeEach(() => {
-      cy.on('uncaught:exception', (err, runnable) => {
-        // Prevent failing the test
-        return false
-      })
+  beforeEach(() => {
+    cy.on('uncaught:exception', (err, runnable) => {
+      // Prevent failing the test
+      return false
+    })
 
-      cy.login().then(() => {
-        cy.getTickets();
-        cy.fetchRelationData();
-      });
+    cy.login().then(() => {
+      cy.getTickets();
+      cy.fetchRelationData();
     });
+  });
 
 
   it('Check if the API for getting the tickets exits so that the table below wll be filled.', () => {
@@ -116,7 +116,7 @@ describe('<Tickets />', () => {
     });
 
     // Simulate typing in the search bar
-    wrapper.setData({ search: "incident" });
+    wrapper.setData({search: "incident"});
     // Trigger the keydown event with Enter key on the search bar
     const searchBar = wrapper.find("#searchBar");
     searchBar.trigger("keydown.enter");
@@ -138,7 +138,7 @@ describe('<Tickets />', () => {
     });
 
     // Simulate typing in the search bar
-    wrapper.setData({ search: "2022" });
+    wrapper.setData({search: "2022"});
     // Trigger the keydown event with Enter key on the search bar
     const searchBar = wrapper.find("#searchBar");
     searchBar.trigger("keydown.enter");
@@ -160,7 +160,7 @@ describe('<Tickets />', () => {
     });
 
     // Simulate typing in the search bar
-    wrapper.setData({ search: "test" });
+    wrapper.setData({search: "test"});
     // Trigger the keydown event with Enter key on the search bar
     const searchBar = wrapper.find("#searchBar");
     searchBar.trigger("keydown.enter");
@@ -173,20 +173,20 @@ describe('<Tickets />', () => {
     expect(hasTicketsWithTitleContainingTest).to.be.true;
   });
 
-    it('toggles showAll when Show All button is clicked', () => {
-      const wrapper = shallowMount(Tickets, {
-        global: {
-          plugins: [pinia, i18n],
-        },
-      })
-
-      // Check that showAll is initially false
-      expect(wrapper.vm.showAll).to.equal(false)
-      // Find the Show All button and trigger a click event
-      wrapper.find('#showAllButton').trigger('click')
-      // showAll should now be true
-      expect(wrapper.vm.showAll).to.equal(true)
+  it('toggles showAll when Show All button is clicked', () => {
+    const wrapper = shallowMount(Tickets, {
+      global: {
+        plugins: [pinia, i18n],
+      },
     })
+
+    // Check that showAll is initially false
+    expect(wrapper.vm.showAll).to.equal(false)
+    // Find the Show All button and trigger a click event
+    wrapper.find('#showAllButton').trigger('click')
+    // showAll should now be true
+    expect(wrapper.vm.showAll).to.equal(true)
+  })
 
   it('should only display tickets with status "In-Progress" or "To-Do" by default', async () => {
     const wrapper = shallowMount(Tickets, {
@@ -198,6 +198,27 @@ describe('<Tickets />', () => {
     const filteredTickets = wrapper.vm.tickets;
     const filteredTicketsOpenStatus = filteredTickets.every(ticket => ticket.status && (ticket.status.toString().equals("To-Do") || ticket.status.toString().equals("In-Progress")));
     expect(filteredTicketsOpenStatus).to.be.true;
+  })
+
+  it('should display tickets sorted by creation date in ascending order by default', () => {
+    const wrapper = shallowMount(Tickets, {
+      global: {
+        plugins: [pinia, i18n],
+      },
+    })
+
+    // Retrieve the tickets from the component
+    const tickets = wrapper.vm.tickets;
+    // Check if tickets are sorted by creation date in ascending order
+    let previousDate = null;
+    for (let i = 0; i < tickets.length; i++) {
+      const currentDate = new Date(tickets[i].created_at);
+      if (previousDate !== null) {
+        // Assert that the current ticket's creation date is greater than or equal to the previous ticket's creation date
+        expect(currentDate >= previousDate).toBe(true);
+      }
+      previousDate = currentDate;
+    }
   })
 });
 
