@@ -311,9 +311,27 @@ export default {
         }, 2000);
       }
     },
+    // async downloadFile(attachment) {
+    //   try {
+    //     const url = window.URL.createObjectURL(new Blob([attachment.url]));
+    //     const link = document.createElement('a');
+    //     link.href = url;
+    //     link.setAttribute('download', attachment.name);
+    //     document.body.appendChild(link);
+    //     link.click();
+    //     document.body.removeChild(link);
+    //   } catch (error) {
+    //     console.error('Error downloading file:', error);
+    //   }
+    // },
     async downloadFile(attachment) {
       try {
-        const url = window.URL.createObjectURL(new Blob([attachment.url]));
+        const response = await fetch(attachment.url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const blob = await response.blob(); 
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', attachment.name);
