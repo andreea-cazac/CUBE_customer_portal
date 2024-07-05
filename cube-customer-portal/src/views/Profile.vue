@@ -53,6 +53,8 @@ import {computed, onMounted, ref} from "vue";
 import {getProfileInfo} from "@/cube-api-calls";
 import {useFavicon} from "@vueuse/core";
 
+require('dotenv').config();
+
 export default {
   setup() {
     const activeRelationStore = useActiveRelationStore();
@@ -63,7 +65,7 @@ export default {
     const activeRelation = computed(() => activeRelationStoreRef.value.getActiveRelation);
     const token = computed(() => userStoreRef.value.getToken);
     const profile = ref({});
-    const apiKey = 'AIzaSyCb-VXv9duPI7zRwSm_nu-_KUbHUrnV23A';
+    const apiKey = process.env.API_KEY;
 
     const tenantStore = useTenantStore();
     const accent_color = tenantStore.tenant.settings.accent_color;

@@ -3,9 +3,9 @@ Cypress.Commands.add('login', () => {
         method: 'POST',
         url: 'https://cube-testing.solidpartners.nl/cp/login',
         body: {
-            "ap": "google",   // change the token and email according to you
-            "token" :"ya29.a0AbVbY6OLuEfirnmdV8HobNXWqiPCzQDoQc5rTKZZMkLe1-V0Ly1Erhd1smZPkqn73oGQWkQUgghYa4lQKJRckelzgfvQI4MxYxspi6g5ndzqAeRN7dpw2IwSjZRmdbRT7llWwEUeuhvbj9ml_LgO1zjoF1SL9QaCgYKAdoSARASFQFWKvPl_yHwaXyyQvhq8WLRksQNsQ0165" ,
-            "email" : "alexblajievschi07@gmail.com"
+            "ap": "google",   // change the token and email according to your OAuth details
+            "token" :"" ,
+            "email" : ""
         }
     })
         .its('body')
