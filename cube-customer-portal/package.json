@@ -20,6 +20,8 @@
     "axios": "^1.4.0",
     "chai": "^4.3.7",
     "core-js": "^3.8.3",
+    "dotenv": "^16.4.5",
+    "git-filter-repo": "^0.0.30",
     "moment": "^2.29.4",
     "oidc-client": "^1.11.5",
     "pinia": "^2.1.4",
