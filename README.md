@@ -56,6 +56,12 @@ Below are some images showcasing the visual aspects of the CUBE project:
 #### Create page of a ticket
 ![Create page of a ticket](cube-customer-portal/wireframes/create_ticket_M.png)
 
+## Feedback and Contributions
 
-## Contact 
-Feel free to leave any feedback or text me if you need additional documentation related to this wonderful product!
+We welcome your feedback and ideas to improve this project! If you have suggestions for new features, improvements, or if you encounter any issues, please let us know. You can contribute by:
+
+- Opening an issue on the [GitHub repository](https://github.com/andreea-cazac/portable_escape_room).
+- Submitting a pull request with your improvements or bug fixes.
+- Sharing your thoughts or ideas for new games or enhancements.
+
+Your contributions help make this project better for everyone. Thank you for being a part of this educational adventure!
