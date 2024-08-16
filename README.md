@@ -60,7 +60,7 @@ Below are some images showcasing the visual aspects of the CUBE project:
 
 We welcome your feedback and ideas to improve this project! If you have suggestions for new features, improvements, or if you encounter any issues, please let us know. You can contribute by:
 
-- Opening an issue on the [GitHub repository](https://github.com/andreea-cazac/portable_escape_room).
+- Opening an issue on the [GitHub repository](https://github.com/andreea-cazac/CUBE_customer_portal).
 - Submitting a pull request with your improvements or bug fixes.
 - Sharing your thoughts or ideas for new games or enhancements.
 
