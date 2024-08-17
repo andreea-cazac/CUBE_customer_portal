@@ -1,4 +1,4 @@
-# CUBE Project
+# CUBE Project (educational)
 
 ## Overview
 CUBE is a CRM platform designed to support workflow within companies handling daily ticket resolution. The project uses the Vue.js and Vuetify framework. Also, it uses the OpenID connect protocol for client authentication. This project was initially developed as an educational exercise for Solid Partners, who were so impressed with the outcome that they considered further development for real-world use.
@@ -55,6 +55,9 @@ Below are some images showcasing the visual aspects of the CUBE project:
 
 #### Create page of a ticket
 ![Create page of a ticket](cube-customer-portal/wireframes/create_ticket_M.png)
+
+## Tests
+This project is supported by Cypress tests.
 
 ## Feedback and Contributions
 
